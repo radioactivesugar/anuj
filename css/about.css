@@ -526,7 +526,7 @@
 .resume-modal__toolbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 1.5rem;
   padding: 0.75rem 1.1rem;
   border-bottom: 1px solid var(--card-border);
@@ -537,54 +537,6 @@
   display: flex;
   align-items: center;
   gap: 1.5rem;
-}
-
-.resume-modal__zoom {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.resume-modal__zoom-btn {
-  width: 26px;
-  height: 26px;
-  border: 1px solid var(--card-border);
-  border-radius: 4px;
-  background: none;
-  font-size: 1rem;
-  line-height: 1;
-  color: var(--text-color);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.2s ease, background 0.2s ease;
-}
-
-.resume-modal__zoom-btn:hover {
-  background: var(--card-border);
-}
-
-.resume-modal__zoom-btn:disabled {
-  opacity: 0.35;
-  cursor: default;
-  background: none;
-}
-
-.resume-modal__zoom-level {
-  min-width: 3.4rem;
-  text-align: center;
-  border: none;
-  background: none;
-  font-family: var(--font-caption);
-  font-size: 0.78rem;
-  letter-spacing: 0.02em;
-  color: var(--text-color);
-  cursor: pointer;
-}
-
-.resume-modal__zoom-level:hover {
-  opacity: 0.6;
 }
 
 .resume-modal__download {
@@ -617,19 +569,15 @@
 }
 
 .resume-modal__frame-wrap {
-  overflow: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.resume-modal__frame-wrap.is-zoomed {
-  display: block;
+  position: relative;
+  overflow: hidden;
 }
 
 .resume-modal__frame {
   display: block;
-  flex-shrink: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 793px;
   height: 1123px;
   border: 0;

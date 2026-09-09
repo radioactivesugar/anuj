@@ -160,69 +160,37 @@ if (typeof ScrollTrigger !== 'undefined') {
   }
 }
 
-// Resume popup - opens resume.html (a fixed-size A4 print page,
-// 793x1123px at 96dpi) in an iframe instead of letting the link
-// navigate. The iframe always renders resume.html at that true size;
-// scale shrinks/grows it with a CSS transform. Zoom starts at
-// "fit" (the whole page visible) and the user can zoom in/out from
-// there with the toolbar controls, +/-/0 keys, or ctrl/cmd+scroll;
-// the frame-wrap becomes a scrollable viewport once zoomed past fit
-// rather than fighting the page's own mm-based print layout with
-// responsive CSS.
+// Resume popup - opens resume.html (a fixed-size A4 portrait print
+// page, 793x1123px at 96dpi) in an iframe instead of letting the
+// link navigate. The iframe always renders resume.html at that true
+// size; a CSS transform scales the whole thing down to fit the
+// viewport. The popup is sized to hug the scaled page itself (not a
+// generic 90vw/92vh box), so the panel always reads as a portrait
+// window - fixed at "fit", no zoom controls.
 const resumeLink = document.getElementById('resumeLink');
 const resumeModal = document.getElementById('resumeModal');
 const resumeModalBackdrop = document.getElementById('resumeModalBackdrop');
 const resumeModalClose = document.getElementById('resumeModalClose');
 const resumeFrame = document.getElementById('resumeFrame');
 const resumeFrameWrap = document.getElementById('resumeFrameWrap');
-const resumeZoomIn = document.getElementById('resumeZoomIn');
-const resumeZoomOut = document.getElementById('resumeZoomOut');
-const resumeZoomLevel = document.getElementById('resumeZoomLevel');
 
 if (resumeLink && resumeModal && resumeFrame && resumeFrameWrap) {
   const RESUME_W = 793;
   const RESUME_H = 1123;
-  const MIN_SCALE = 0.3;
-  const MAX_SCALE = 3;
-  const ZOOM_FACTOR = 1.2;
 
-  let fitScale = 1;
-  let scale = 1;
-
-  function getViewport() {
+  function render() {
     const toolbarH = resumeModal.querySelector('.resume-modal__toolbar').offsetHeight;
     const maxW = window.innerWidth * 0.9;
     const maxH = window.innerHeight * 0.92 - toolbarH;
-    return { maxW, maxH };
-  }
-
-  function render() {
-    const { maxW, maxH } = getViewport();
-    resumeFrameWrap.style.width = `${maxW}px`;
-    resumeFrameWrap.style.height = `${maxH}px`;
+    const scale = Math.min(maxW / RESUME_W, maxH / RESUME_H, 1);
+    resumeFrameWrap.style.width = `${RESUME_W * scale}px`;
+    resumeFrameWrap.style.height = `${RESUME_H * scale}px`;
     resumeFrame.style.transform = `scale(${scale})`;
-    resumeFrameWrap.classList.toggle('is-zoomed', scale > fitScale + 0.001);
-    if (resumeZoomLevel) resumeZoomLevel.textContent = `${Math.round(scale * 100)}%`;
-    if (resumeZoomOut) resumeZoomOut.disabled = scale <= MIN_SCALE + 0.001;
-    if (resumeZoomIn) resumeZoomIn.disabled = scale >= MAX_SCALE - 0.001;
-  }
-
-  function setScale(next) {
-    scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, next));
-    render();
-  }
-
-  function zoomIn() { setScale(scale * ZOOM_FACTOR); }
-  function zoomOut() { setScale(scale / ZOOM_FACTOR); }
-  function resetZoom() {
-    const { maxW, maxH } = getViewport();
-    fitScale = Math.min(maxW / RESUME_W, maxH / RESUME_H, 1);
-    setScale(fitScale);
   }
 
   function openResumeModal() {
     if (!resumeFrame.src) resumeFrame.src = 'resume.html';
-    resetZoom();
+    render();
     resumeModal.classList.add('is-open');
     resumeModal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
@@ -240,24 +208,11 @@ if (resumeLink && resumeModal && resumeFrame && resumeFrameWrap) {
   });
   resumeModalClose.addEventListener('click', closeResumeModal);
   resumeModalBackdrop.addEventListener('click', closeResumeModal);
-  if (resumeZoomIn) resumeZoomIn.addEventListener('click', zoomIn);
-  if (resumeZoomOut) resumeZoomOut.addEventListener('click', zoomOut);
-  if (resumeZoomLevel) resumeZoomLevel.addEventListener('click', resetZoom);
 
   document.addEventListener('keydown', (e) => {
     if (!resumeModal.classList.contains('is-open')) return;
     if (e.key === 'Escape') closeResumeModal();
-    else if (e.key === '+' || e.key === '=') zoomIn();
-    else if (e.key === '-' || e.key === '_') zoomOut();
-    else if (e.key === '0') resetZoom();
   });
-
-  resumeFrameWrap.addEventListener('wheel', (e) => {
-    if (!(e.ctrlKey || e.metaKey)) return;
-    e.preventDefault();
-    if (e.deltaY < 0) zoomIn();
-    else if (e.deltaY > 0) zoomOut();
-  }, { passive: false });
 
   window.addEventListener('resize', () => {
     if (resumeModal.classList.contains('is-open')) render();
