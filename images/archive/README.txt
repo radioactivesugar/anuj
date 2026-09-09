@@ -2,7 +2,7 @@ This folder holds the cover image for each Archive timeline project
 (the horizontal gallery on the homepage, under the bubble chart).
 
 Filenames are fixed slots numbered by chronological position - not
-derived from the project name anymore - matching the convention used
+derived from the project name anymore - m atching the convention used
 in images/project/, images/aboutme/, etc. Position 1 is the earliest
 project on the timeline, position 43 the most recent. Drop a matching
 .png in here and it's picked up automatically, no code changes
@@ -51,14 +51,19 @@ Expected filenames, from the current timeline.csv, oldest to newest:
 33.png  <- Exp - #003 _ particle and audio (2026-02)
 34.png  <- Exp. #006 _ particles and noise (2026-03)
 35.png  <- Intermission: Asian Paints [Asian Paints episode] (2026-03-22)
-36.png  <- Lighrock (2026-03-30)
-37.png  <- Undersea cables (2026-04)
+36.png  <- Lighrock (2026-03-30) [filled - copy of images/lightrock/00-cover.png]
+37.png  <- Undersea cables (2026-04) [filled - copy of images/undersea-cables/00-cover.png]
 38.png  <- Aquiring Bubble Chart (2026-04-15)
 39.png  <- Exp 010 . hand tracking + audio & object transform . (2026-05)
 40.png  <- Intermission: Bajaj Finance (2026-05-11)
-41.png  <- Intermission: Asian Paints [Bharti Airtel episode] (2026-06-28)
-42.png  <- NBFC Revenue Chart (2026-07-06)
-43.png  <- Intermission: Asian Paints [ITC episode] (2026-08-17)
+41.png  <- Intermission: Asian Paints [Bharti Airtel episode] (2026-06-28) [filled - copy of images/airtel/00-cover.png]
+42.png  <- NBFC Revenue Chart (2026-07-06) [filled - copy of images/revenue-growth/00-cover.png]
+43.png  <- Intermission: Asian Paints [ITC episode] (2026-08-17) [filled - copy of images/project/00-cover.png]
+
+Slots 35, 38 and 40 are still missing - none of those three projects
+(the Asian Paints episode, Aquiring Bubble Chart, and the Bajaj
+Finance episode) has its own case-study page/image folder in this
+repo to copy a cover from.
 
 --- Still worth fixing in timeline.csv (unrelated to filenames now) ---
 

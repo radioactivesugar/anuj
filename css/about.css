@@ -295,10 +295,10 @@
   padding: 0;
 }
 
-/* Same glass recipe and squared-off radius as .discipline-filter
-   above, so the tools row reads as the same family of surfaces as
-   the filters sitting right above it - just without the pointer/
-   hover-lift affordance, since these tags aren't clickable. */
+/* Flat solid grey rather than the frosted glass of .discipline-filter
+   above - a deliberately different, inert-looking surface so the
+   tools row doesn't read as pressable the way the filters above it
+   do, since these tags aren't clickable. */
 .tool-tag {
   display: flex;
   align-items: center;
@@ -306,11 +306,9 @@
   flex-shrink: 0;
   padding: 0.55rem 1.15rem;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(12px) saturate(180%);
-  -webkit-backdrop-filter: blur(12px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: none;
   font-family: var(--font-caption);
   font-size: 0.78rem;
   color: var(--text-muted);
@@ -528,11 +526,65 @@
 .resume-modal__toolbar {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 1.5rem;
   padding: 0.75rem 1.1rem;
   border-bottom: 1px solid var(--card-border);
   flex-shrink: 0;
+}
+
+.resume-modal__toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.resume-modal__zoom {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.resume-modal__zoom-btn {
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--card-border);
+  border-radius: 4px;
+  background: none;
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--text-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease, background 0.2s ease;
+}
+
+.resume-modal__zoom-btn:hover {
+  background: var(--card-border);
+}
+
+.resume-modal__zoom-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+  background: none;
+}
+
+.resume-modal__zoom-level {
+  min-width: 3.4rem;
+  text-align: center;
+  border: none;
+  background: none;
+  font-family: var(--font-caption);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.resume-modal__zoom-level:hover {
+  opacity: 0.6;
 }
 
 .resume-modal__download {
@@ -565,11 +617,19 @@
 }
 
 .resume-modal__frame-wrap {
-  overflow: hidden;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.resume-modal__frame-wrap.is-zoomed {
+  display: block;
 }
 
 .resume-modal__frame {
   display: block;
+  flex-shrink: 0;
   width: 793px;
   height: 1123px;
   border: 0;

@@ -462,8 +462,7 @@ async function loadArchiveProjects() {
   // chronological position in archiveProjects (same convention the
   // old gallery used: images/archive/01.png is the earliest project,
   // etc. - see images/archive/README.txt), falling back to a stable
-  // placeholder photo if that slot has no real image yet. Bubbles are
-  // otherwise inert - no click-through to a project page. Deliberately
+  // placeholder photo if that slot has no real image yet. Deliberately
   // one-directional: there's no mouseout handler, so moving off a
   // bubble leaves the panel showing whatever was last hovered instead
   // of reverting to the default copy.
@@ -471,6 +470,14 @@ async function loadArchiveProjects() {
     const proj = params.data.projectData;
     const src = `images/archive/${String(proj.imageIndex).padStart(2, '0')}.png`;
     updateHeroPreview(src, getArchiveFallbackImage(proj.id), proj);
+  });
+
+  // Clicking a bubble jumps down to the Work section (css/style.css's
+  // scroll-behavior: smooth animates it) instead of linking out to a
+  // project page directly - the timeline lives up in the hero/about
+  // section, so this is just "show me the projects".
+  archiveChart.on('click', 'series', function () {
+    window.location.hash = 'works';
   });
 
   let selectedArchiveCategories = new Set(['All']);

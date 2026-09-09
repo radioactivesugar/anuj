@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Anuj Debnath — Cover Letter</title>
+<style>
+  @font-face {
+    font-family: 'Anta';
+    src: url('fonts/Anta-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'DM Sans';
+    src: url('fonts/DMSans-VariableFont.ttf') format('truetype-variations');
+    font-weight: 100 1000;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Fragment Mono';
+    src: url('fonts/FragmentMono-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  :root {
+    --font-heading: 'Anta', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-caption: 'Fragment Mono', "SF Mono", Menlo, Consolas, monospace;
+    --text-color: #000000;
+    --text-muted: #555555;
+    --text-faint: #6e6e73;
+    --line-color: #1d1d1f;
+    --card-border: #cccccc;
+    --color-web-development: #3182ce;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  @page { size: A4; margin: 0; }
+
+  html, body {
+    background: #f2f2f2;
+  }
+
+  body {
+    display: flex;
+    justify-content: center;
+    font-family: var(--font-body);
+    color: var(--text-color);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .letter-page {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 16mm 18mm 16mm;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---------- Header (mirrors resume.html) ---------- */
+  .letter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 1.5px solid var(--line-color);
+    padding-bottom: 4mm;
+  }
+
+  .letter-header__name h1 {
+    font-family: var(--font-heading);
+    font-weight: 400;
+    font-size: 24pt;
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+
+  .letter-tagline {
+    font-family: var(--font-caption);
+    font-size: 8.4pt;
+    letter-spacing: 0.02em;
+    color: var(--text-muted);
+    margin-top: 1.5mm;
+  }
+
+  .letter-header__meta {
+    text-align: right;
+  }
+
+  .letter-contact {
+    list-style: none;
+    font-family: var(--font-caption);
+    font-size: 8.4pt;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .letter-contact a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* ---------- Subject line ---------- */
+  .letter-subject__role {
+    font-family: var(--font-heading);
+    font-weight: 400;
+    font-size: 12.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin-top: 7mm;
+  }
+
+  .letter-date {
+    font-family: var(--font-caption);
+    font-size: 8pt;
+    color: var(--text-faint);
+    margin-top: 1.6mm;
+  }
+
+  /* ---------- Body ---------- */
+  .letter-body {
+    margin-top: 7mm;
+    font-size: 10.3pt;
+    line-height: 1.65;
+    color: var(--line-color);
+  }
+
+  .letter-body p + p {
+    margin-top: 4.2mm;
+  }
+
+  .letter-body strong {
+    font-weight: 700;
+  }
+
+  /* ---------- Sign-off ---------- */
+  .letter-signoff {
+    margin-top: 8mm;
+    font-size: 10.3pt;
+    line-height: 1.6;
+    color: var(--line-color);
+  }
+
+  .letter-signoff__name {
+    font-family: var(--font-heading);
+    font-weight: 400;
+    font-size: 13pt;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    margin-top: 5mm;
+  }
+
+  /* ---------- Footer rule ---------- */
+  .letter-footer {
+    margin-top: auto;
+    padding-top: 6mm;
+    border-top: 1px solid var(--card-border);
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-caption);
+    font-size: 7.4pt;
+    color: var(--text-faint);
+    letter-spacing: 0.02em;
+  }
+
+  @media print {
+    html, body { background: #fff; }
+    .letter-page { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="letter-page">
+
+    <header class="letter-header">
+      <div class="letter-header__name">
+        <h1>Cover Letter</h1>
+      </div>
+      <div class="letter-header__meta">
+        <ul class="letter-contact">
+          <li><a href="mailto:anujdebnath246@gmail.com">anujdebnath246@gmail.com</a></li>
+          <li><a href="tel:+919874608128">+91 98746 08128</a></li>
+          <li><a href="https://anuj246.vercel.app/" target="_blank" rel="noopener">anuj246.vercel.app</a></li>
+        </ul>
+      </div>
+    </header>
+
+    <h2 class="letter-subject__role">Product Designer, ETS Insight</h2>
+    <p class="letter-date">September 9, 2026</p>
+
+    <div class="letter-body">
+      <p>Dear Hiring Team,</p>
+
+      <p>I'm applying for the Product Designer role on the ETS Insight team. This role felt like a good fit for me, as my work has centered on turning raw data into interactive artefacts that people can interact with and find visual patterns in to understand the context of a story.</p>
+
+      <p>At The Ken, I built 50+ data visualizations directly from raw data using JavaScript, working alongside engineers, visual artists, writers, researchers, and editors. These were live prototypes published on The Ken's website within its existing architecture, matching an established design language and codebase of the platform.</p>
+
+      <p>I also have UX design experience. At TVS Motors, I designed gamified features for the flagship electric scooter, TVS X, grounded in research across 14 rider personas and 50,000+ connected vehicles. At Terrabyte Games, I worked daily with 20+ developers and artists, building prototypes and documentation to align design and engineering early.</p>
+
+      <p>My coding background in JavaScript, HTML/CSS, and C# has taught me to adapt quickly across various programming languages, which I can extend to tools like D3, SQL, and Python to prototype data-driven visualizations rather than handing off static designs. From experience, I realise it is a more efficient way for the tech team to audit and integrate the designs and interactions. This whole process has further been enabled by the use of AI tools like Google Antigravity and Claude Code in my local workflow, which has made my work faster and more efficient.</p>
+
+      <p>I feel this role is a good fit for me and would be excited to have the chance to bring this blend of data storytelling, rapid prototyping, and cross-functional collaboration to the ETS Insight team at Apple. Thank you for your time and consideration.</p>
+    </div>
+
+    <div class="letter-signoff">
+      <p>Sincerely,</p>
+      <p class="letter-signoff__name">Anuj Debnath</p>
+    </div>
+
+    <div class="letter-footer">
+      <span>Anuj Debnath — Cover Letter</span>
+      <span>anuj246.vercel.app</span>
+    </div>
+
+  </div>
+
+</body>
+</html>
