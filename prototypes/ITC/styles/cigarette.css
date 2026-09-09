@@ -1,0 +1,183 @@
+/* styles/cigarette.css — QW4K11 */
+
+.QW4K11-chart-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.QW4K11-chart-frame {
+  width: 100%;
+  max-width: 1450px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 40px 24px;
+  box-sizing: border-box;
+}
+
+.QW4K11-chart-container {
+  width: 100%;
+  max-width: 1350px;
+  min-width: 0;
+  margin: 0 auto;
+  background: var(--color-bg);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.32);
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+.QW4K11-chart-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px 20px;
+  margin-bottom: 48px;
+}
+
+.QW4K11-chart-header-text {
+  /* wider than 1fr-vs-auto would give it, so the legend's column is
+     narrow enough to force its 6 items into 2 rows of 3 instead of
+     spreading across a single wide row */
+  flex: 0 1 calc(65% - 75px);
+  max-width: calc(65% - 60px);
+  min-width: 0;
+}
+
+.QW4K11-chart-title {
+  margin: 0 0 12px 0;
+  font-family: var(--font-display);
+  font-size: var(--type-heading);
+  color: var(--color-text);
+}
+
+.QW4K11-chart-subtitle {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--type-subheading);
+  font-weight: 400;
+  color: var(--color-muted);
+}
+
+.QW4K11-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  justify-content: flex-end;
+  flex: 0 1 calc(35% - 10px);
+  max-width: calc(35% - 10px);
+}
+
+.QW4K11-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-size: var(--type-legend);
+  color: var(--color-text);
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.15s ease;
+  white-space: nowrap;
+}
+
+.QW4K11-legend-item.is-inactive {
+  opacity: 0.35;
+}
+
+.QW4K11-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.QW4K11-charts-split {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+}
+
+.QW4K11-chart-col {
+  flex: 1;
+  min-width: 0;
+}
+
+/* a visible divider between the two charts, on top of the "Revenue"/"Profit"
+   headers, so it reads as two distinct charts at a glance rather than one
+   wide chart that happens to have a gap in the middle */
+.QW4K11-chart-col:not(:last-child) {
+  border-right: 1px solid color-mix(in srgb, var(--color-text) 15%, transparent);
+  padding-right: 24px;
+}
+
+.QW4K11-chart-col-title {
+  margin: 0 0 8px 0;
+  font-family: var(--font-body);
+  font-size: var(--type-legend);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+.QW4K11-chart-el {
+  width: 100%;
+  min-width: 0;
+  height: 600px;
+}
+
+.QW4K11-footer-note {
+  margin-top: 20px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--color-muted);
+  text-align: left;
+}
+
+@media (max-width: 1023px) {
+  .QW4K11-chart-frame { padding: 30px 20px; }
+  .QW4K11-chart-container { padding: 24px; }
+  .QW4K11-chart-el { height: 500px; }
+}
+
+@media (max-width: 768px) {
+  .QW4K11-chart-frame { padding: 20px 12px; }
+  .QW4K11-chart-container { padding: 16px; }
+
+  .QW4K11-chart-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .QW4K11-chart-header-text {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .QW4K11-legend {
+    width: 100%;
+    max-width: 100%;
+    justify-content: center;
+  }
+
+  /* side-by-side columns get too narrow to read on a phone — stack them */
+  .QW4K11-charts-split {
+    flex-direction: column;
+  }
+
+  /* stacked layout needs a horizontal divider instead of the desktop's
+     vertical one between columns */
+  .QW4K11-chart-col:not(:last-child) {
+    border-right: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-text) 15%, transparent);
+    padding-right: 0;
+    padding-bottom: 24px;
+  }
+
+  .QW4K11-chart-el { height: 460px; }
+}

@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Airtel Africa Operating Footprint</title>
+
+        <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+
+        <style>
+            @import url("https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&display=swap");
+
+            :root {
+                --html-bg-color: transparent;
+                --water-bg-color: #fdfbf7;
+                --land-inactive-color: #f3ece2;
+                --land-active-1st: #d96b27;
+                --land-active-2nd: #e6bfa3;
+                --land-border-color: #dfd5c6;
+                --text-main-color: #4a3b32;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            .QW4K-map-outer-wrapper,
+            .QW4K-map-outer-wrapper p,
+            .QW4K-map-outer-wrapper span,
+            .QW4K-map-outer-wrapper div {
+                font-family: "Archivo", sans-serif;
+            }
+            .QW4K-map-outer-wrapper p {
+                font-size: 18px;
+                opacity: 0.5;
+                padding-top: 4px;
+            }
+
+            .QW4K-map-outer-wrapper h2 {
+                font-family: "Reckless", "Times New Roman", Georgia, serif;
+                font-weight: 400;
+                font-size: 32px;
+            }
+
+            .QW4K-map-outer-wrapper {
+                position: relative;
+                width: 100vw;
+                height: 90vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                background-color: var(--html-bg-color);
+                box-sizing: border-box;
+                padding: 20px;
+                overflow: hidden;
+            }
+
+            .QW4K-map-frame-box {
+                position: relative;
+                width: 100%;
+                max-width: 1050px;
+                height: 75vh;
+                border: 1.5px solid var(--land-border-color);
+                background-color: var(--water-bg-color);
+                overflow: hidden;
+            }
+
+            .QW4K-custom-map-legend {
+                position: absolute;
+                bottom: 25px;
+                left: 25px;
+                background-color: rgba(253, 251, 247, 0.95);
+                border: 1px solid var(--land-border-color);
+                border-radius: 6px;
+                padding: 12px 15px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                z-index: 30;
+                box-shadow: 0 2px 8px rgba(74, 59, 50, 0.08);
+            }
+
+            .QW4K-legend-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 13px;
+                color: var(--text-main-color);
+                font-weight: 500;
+            }
+
+            .QW4K-legend-square {
+                width: 16px;
+                height: 16px;
+                border-radius: 3px;
+                border: 1px solid transparent;
+            }
+
+            .QW4K-legend-square.QW4K-deep-red {
+                background-color: var(--land-active-1st);
+            }
+
+            .QW4K-legend-square.QW4K-coral-pink {
+                background-color: var(--land-active-2nd);
+                border-color: rgba(74, 59, 50, 0.1);
+            }
+
+            .QW4K-legend-square.QW4K-inactive {
+                background-color: var(--land-inactive-color);
+                border-color: var(--land-border-color);
+            }
+        </style>
+    </head>
+    <body>
+        <section>
+            <div class="QW4K-map-outer-wrapper">
+                <div
+                    style="text-align: center; margin-bottom: 20px; z-index: 10"
+                >
+                    <h2
+                        style="
+                            margin: 0;
+                            color: var(--text-main-color);
+                            font-size: 32px;
+                            letter-spacing: -0.5px;
+                        "
+                    >
+                        Airtel Africa Operating Footprint
+                    </h2>
+                    <p style="margin: 5px 0 0 0; color: #555; font-size: 18px">
+                        Map of Airtel's 14 Operating Countries in Africa with
+                        it's market ranking in that country.
+                    </p>
+                </div>
+
+                <div class="QW4K-map-frame-box">
+                    <div
+                        id="africa-map"
+                        style="width: 100%; height: 100%"
+                    ></div>
+
+                    <div class="QW4K-custom-map-legend">
+                        <div class="QW4K-legend-item">
+                            <div class="QW4K-legend-square QW4K-deep-red"></div>
+                            <span>1st Market Rank</span>
+                        </div>
+                        <div class="QW4K-legend-item">
+                            <div
+                                class="QW4K-legend-square QW4K-coral-pink"
+                            ></div>
+                            <span>2nd Market Rank</span>
+                        </div>
+                        <div class="QW4K-legend-item">
+                            <div class="QW4K-legend-square QW4K-inactive"></div>
+                            <span>Non-operating State</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const chartDom = document.getElementById("africa-map");
+                const myChart = echarts.init(chartDom);
+
+                // Helper function to dynamically grab the CSS variable colors
+                const getCSSVar = (varName) =>
+                    getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+
+                // Map your countries dynamically using your updated CSS variables
+                const airtelCountryColors = {
+                    Niger: getCSSVar("--land-active-2nd"),
+                    Nigeria: getCSSVar("--land-active-2nd"),
+                    Zambia: getCSSVar("--land-active-1st"),
+                    Malawi: getCSSVar("--land-active-1st"),
+                    "Democratic Republic of the Congo": getCSSVar("--land-inactive-color"),
+                    Kenya: getCSSVar("--land-active-2nd"),
+                    Chad: getCSSVar("--land-active-2nd"),
+                    Tanzania: getCSSVar("--land-active-1st"),
+                    Uganda: getCSSVar("--land-active-2nd"),
+                    Madagascar: getCSSVar("--land-active-2nd"),
+                    Rwanda: getCSSVar("--land-active-2nd"),
+                    "Republic of the Congo": getCSSVar("--land-active-1st"),
+                    Gabon: getCSSVar("--land-active-1st"),
+                    Seychelles: getCSSVar("--land-active-1st"),
+                };
+
+                // Custom static label dictionary for your highlighted regions
+                const labelMap = {
+                    Niger: "Niger",
+                    Nigeria: "Nigeria",
+                    Zambia: "Zambia",
+                    Malawi: "Malawi",
+                    Kenya: "Kenya",
+                    Chad: "Chad",
+                    Gabon: "Gabon",
+                    Tanzania: "Tanzania",
+                    Uganda: "Uganda",
+                    Madagascar: "Madagascar",
+                    Rwanda: "Rwanda",
+                    "Republic of the Congo": "Congo",
+                    "Democratic Republic of the Congo": "DRC",
+                };
+
+                fetch(
+                    "https://raw.githubusercontent.com/apache/echarts-website/asf-site/examples/data/asset/geo/world.json",
+                )
+                    .then((response) => response.json())
+                    .then((worldJson) => {
+                        echarts.registerMap("world", worldJson);
+                        const isMobile = window.innerWidth <= 768;
+
+                        const option = {
+                            backgroundColor: getCSSVar("--water-bg-color"),
+
+                            tooltip: {
+                                show: false,
+                            },
+
+                            grid: {
+                                left: 0,
+                                right: 0,
+                                top: 0,
+                                bottom: 0,
+                                containLabel: false,
+                            },
+                            xAxis: { show: false },
+                            yAxis: { show: false },
+
+                            geo: {
+                                map: "world",
+                                roam: false,
+                                zoom: isMobile ? 5 : 3.8,
+                                center: [16, -2],
+                                zlevel: 2,
+
+                                label: {
+                                    show: false,
+                                },
+                                itemStyle: {
+                                    areaColor: getCSSVar("--land-inactive-color"),
+                                    borderColor: getCSSVar("--land-border-color"),
+                                    borderWidth: 1.2,
+                                },
+
+                                regions: worldJson.features.map((feature) => {
+                                    const countryName = feature.properties.name;
+                                    const isActive = airtelCountryColors.hasOwnProperty(countryName);
+                                    const baseColor = isActive
+                                        ? airtelCountryColors[countryName]
+                                        : getCSSVar("--land-inactive-color");
+                                    const borderColor = getCSSVar("--land-border-color");
+
+                                    return {
+                                        name: countryName,
+                                        label: {
+                                            show: isActive,
+                                            position: "inside",
+                                            color: getCSSVar("--text-main-color"),
+                                            fontFamily: "Archivo, sans-serif",
+                                            fontWeight: "bold",
+                                            fontSize: 10,
+                                            formatter: function () {
+                                                return labelMap[countryName] || countryName;
+                                            },
+                                        },
+                                        itemStyle: {
+                                            areaColor: baseColor,
+                                            borderColor: borderColor,
+                                            borderWidth: 1.2,
+                                        },
+                                        emphasis: {
+                                            itemStyle: {
+                                                areaColor: baseColor,
+                                                borderColor: borderColor,
+                                                borderWidth: 1.2,
+                                            },
+                                        },
+                                    };
+                                }),
+
+                                emphasis: {
+                                    focus: "none",
+                                    label: {
+                                        show: true,
+                                        position: "inside",
+                                        color: getCSSVar("--text-main-color"),
+                                        fontFamily: "Archivo, sans-serif",
+                                        fontWeight: "bold",
+                                        fontSize: 11,
+                                        formatter: function (params) {
+                                            const isActive = airtelCountryColors.hasOwnProperty(
+                                                params.name,
+                                            );
+                                            return !isActive
+                                                ? params.name
+                                                : labelMap[params.name] || params.name;
+                                        },
+                                    },
+                                },
+                            },
+                            series: [
+                                {
+                                    type: "map",
+                                    map: "world",
+                                    geoIndex: 0,
+                                    data: Object.keys(airtelCountryColors).map((name) => ({
+                                        name: name,
+                                        value: 1,
+                                    })),
+                                },
+                            ],
+                        };
+
+                        myChart.setOption(option);
+                    })
+                    .catch((error) =>
+                        console.error("Error setting up data asset dependencies:", error),
+                    );
+
+                window.addEventListener("resize", () => {
+                    myChart.resize();
+                });
+            });
+        </script>
+    </body>
+</html>

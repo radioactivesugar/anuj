@@ -1,0 +1,226 @@
+/* =========================================================
+   CASE STUDY DESIGN SYSTEM
+   Shared by every case-study page (project.html, airtel.html,
+   undersea-cables.html, ...): the hero (image + overlapping title +
+   bottom-aligned meta) and the prev/next pager. No page-specific
+   content lives here - only the reusable structure. Story content
+   below the hero reuses the shared blocks in css/story.css. Each
+   page may add its own small companion stylesheet (e.g.
+   css/airtel.css) for anything unique to that page only.
+   ========================================================= */
+
+/* Only the title overlaps the image, at its TOP-right corner - the
+   row is top-aligned and just the title (not its siblings) gets
+   pulled left into the image via negative margin, and nudged down a
+   touch so its own top sits just inside the image rather than flush
+   with (or above) the image's top edge. Subtitle is a normal sibling
+   of the title within .case-study-hero__content, landing right under
+   it, clear of the image. The meta list is its own sibling of the
+   image, absolutely positioned so its bottom lines up with the
+   image's bottom - independent of how tall the subtitle ends up. */
+.case-study-hero {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 2rem;
+  position: relative;
+}
+
+.case-study-hero__image {
+  flex: 0 0 60%;
+  height: clamp(320px, 42vw, 520px);
+  background-color: var(--card-bg-strong);
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  /* Reveal via clip-path (js/case-study.js), not a scaleY transform -
+     see css/hero.css's .hero-image-mask for why. */
+  clip-path: inset(0% 0% 100% 0%);
+}
+
+.case-study-hero__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.case-study-hero__content {
+  flex: 1 1 auto;
+  padding-left: 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.case-study-hero__title {
+  justify-content: flex-start;
+  font-size: clamp(2.5rem, 7vw, 5.5rem);
+  white-space: nowrap;
+  margin-left: -10rem;
+  margin-top: 2.5rem;
+}
+
+.case-study-hero__subtitle {
+  text-align: left;
+  max-width: 320px;
+  margin-top: 1rem;
+}
+
+.case-study-hero__meta {
+  position: absolute;
+  left: calc(60% + 1.5rem);
+  bottom: 0;
+  max-width: 360px;
+}
+
+/* ---------- Prev / next project pager ----------
+   NEXT (and BACK, once a project exists to link to) is sized like a
+   page title and overlaps its own preview image, the same
+   heading-over-image trick as elsewhere on this page. */
+.case-study-pager {
+  margin: 6rem 0 2rem;
+}
+
+/* First/last project in the series has only one pager card (no BACK
+   or no NEXT). Let the row's justify-content:center handle it like
+   the two-card case, instead of pinning the lone card to one edge. */
+
+.case-study-pager__label {
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 7vw, 5.5rem);
+  text-decoration: none;
+  color: var(--text-color);
+  transition: transform 0.3s ease;
+}
+
+.case-study-pager-preview:hover .case-study-pager__label {
+  transform: translateX(2.5rem);
+}
+
+/* BACK reads backwards - right-aligned over its image (opposite of
+   NEXT's default left alignment) and slides further left/away on
+   hover instead of right. */
+.case-study-pager-preview--back:hover .case-study-pager__label {
+  transform: translateX(-2.5rem);
+}
+
+/* The pair of cards reads as one centered group on the page, rather
+   than pinned to the row's opposite edges - flex: 0 (no grow) so
+   there's actual leftover space left for justify-content to center. */
+.case-study-pager-previews {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin: 3rem 0 6rem;
+}
+
+.case-study-pager-preview {
+  flex: 0 1 46%;
+  max-width: 46%;
+  text-decoration: none;
+  color: var(--text-color);
+  display: block;
+  /* Default arrow hidden in favor of #customCursor below (js/case-study.js
+     positions it on mousemove and toggles .is-active on enter/leave). */
+  cursor: none;
+}
+
+@media (hover: none) {
+  /* No real pointer to track (touch) - keep the normal tap behavior. */
+  .case-study-pager-preview {
+    cursor: pointer;
+  }
+}
+
+/* ---------- Custom "expand" cursor over the BACK/NEXT pager previews ----------
+   Same component as index.html's featured work cards (css/work.css) -
+   kept as its own copy here since case-study pages don't load work.css. */
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 68px;
+  height: 68px;
+  margin: -34px 0 0 -34px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.custom-cursor.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.custom-cursor svg {
+  width: 22px;
+  height: 22px;
+  stroke: var(--line-color);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.case-study-pager-preview .story-overlap {
+  margin-bottom: 1.5rem;
+}
+
+.case-study-pager-preview__lede {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  max-width: 68%;
+}
+
+/* BACK's label (.back-header, css/story.css) still reads
+   right-aligned over its image, but the body text/meta below it
+   stays left-aligned like NEXT's - reads as normal left-aligned
+   copy regardless of which side of the pager it's on. */
+
+/* Responsive */
+@media (max-width: 900px) {
+  .case-study-hero {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .case-study-hero__image {
+    flex-basis: auto;
+    height: 320px;
+  }
+
+  .case-study-hero__content {
+    padding-left: 0;
+    margin-top: 2rem;
+  }
+
+  .case-study-hero__title {
+    margin-left: 0;
+    margin-top: 0;
+  }
+
+  /* The image no longer defines the row's height once stacked, so
+     bottom-aligning to it stops making sense - fall back to a normal
+     stacked block. */
+  .case-study-hero__meta {
+    position: static;
+    max-width: none;
+    margin-top: 2rem;
+  }
+
+  .case-study-pager-previews {
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .case-study-pager-preview {
+    max-width: 100%;
+  }
+}

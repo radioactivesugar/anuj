@@ -1,0 +1,190 @@
+/* =========================================================
+   CONTACT + FOOTER SECTION  (#connect)
+   ========================================================= */
+
+.contact-section {
+  padding-bottom: 0;
+}
+
+/* index.html/index_linked.html only: #works (ending with the
+   archive timeline) sits directly above this section there - match
+   .work-section's own 2rem top padding (css/work.css) so the gap
+   into CONTACT reads the same as the gap into WORK, instead of
+   the base .section's larger 4rem default making it look bigger. */
+#works + .contact-section {
+  padding-top: 2rem;
+}
+
+/* Phone / email block, right aligned */
+.contact-details {
+  text-align: right;
+  margin-bottom: 1.25rem;
+}
+
+.contact-details__line {
+  display: block;
+  font-size: clamp(1.25rem, 2.6vw, 2rem);
+  color: var(--text-color);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+
+.contact-details__line:hover {
+  opacity: 0.7;
+}
+
+/* Social links row, right aligned */
+.contact-social-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 2rem;
+  margin-bottom: 3.5rem;
+  flex-wrap: wrap;
+}
+
+/* Nav + address columns */
+.footer-columns {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2.5rem;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.footer-nav {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.footer-nav__link {
+  color: var(--text-color);
+  text-decoration: none;
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.footer-nav__link:hover {
+  opacity: 0.6;
+}
+
+.footer-address {
+  text-align: right;
+  font-family: var(--font-caption);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+/* Dribbble / Behance / LinkedIn style link row */
+.footer-links-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-links-row__link {
+  color: var(--text-color);
+  text-decoration: none;
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+}
+
+.footer-links-row__link:hover {
+  opacity: 0.6;
+}
+
+/* Giant name wordmark.
+   Uses the same .letter split-reveal as the section titles, but
+   reversed: letters rise up from below instead of dropping from above. */
+.footer-wordmark {
+  font-size: clamp(3rem, 12vw, 9rem);
+  letter-spacing: -0.02em;
+  line-height: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-bottom: 2.5rem;
+}
+
+.footer-wordmark .letter {
+  transform: translateY(120%);
+}
+
+/* Bottom utility bar */
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem var(--section-pad-x) 2rem;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.footer-bottom__location {
+  color: var(--text-color);
+}
+
+.footer-bottom__credit {
+  color: var(--text-color);
+  text-transform: uppercase;
+}
+
+.footer-bottom__copyright {
+  text-align: right;
+  max-width: 320px;
+  line-height: 1.4;
+  color: var(--text-faint);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .contact-details,
+  .contact-social-row {
+    text-align: center;
+    justify-content: center;
+  }
+
+  .footer-columns {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-address {
+    text-align: center;
+  }
+
+  .footer-links-row {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .footer-bottom {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .footer-bottom__copyright {
+    text-align: center;
+    max-width: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .footer-wordmark {
+    font-size: clamp(2.25rem, 14vw, 4rem);
+    white-space: normal;
+  }
+}

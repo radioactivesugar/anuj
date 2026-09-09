@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LightRock Investment</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+@font-face { font-family: 'Jazmin Alt'; src: local('JazminAlt-Bold.otf'); font-weight: bold; }
+@font-face { font-family: 'GT America Bold'; src: local('GT-America-Standard-Black.ttf'); font-weight: bold; }
+@font-face { font-family: 'GT America'; src: local('GT-America-Standard-Light.ttf'); font-weight: 300; }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #F7F2F2;
+  font-family: 'GT America', Arial, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 0;
+}
+.page {
+  width: 100%;
+  max-width: 640px;
+  background: #F7F2F2;
+  padding: clamp(16px, 4vw, 32px) clamp(12px, 4vw, 28px) 0;
+  display: flex;
+  flex-direction: column;
+}
+.main-title {
+  font-family: 'Jazmin Alt', Georgia, serif;
+  font-size: clamp(28px, 6vw, 42px);
+  font-weight: bold;
+  color: #1A1208;
+  line-height: 1.05;
+  letter-spacing: -1px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.subtitle {
+  font-family: 'GT America', Arial, sans-serif;
+  font-size: clamp(14px, 2.2vw, 15px);
+  color: #5C4A4A;
+  margin-bottom: 16px;
+  text-align: center;
+  line-height: 1.5;
+}
+.legend-box {
+  border-top: 1.5px solid #DCCFCF;
+  border-bottom: 1.5px solid #DCCFCF;
+  padding: 6px 0;
+  margin-bottom: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.legend-row { display: flex; align-items: center; gap: 0; }
+.legend-key {
+  font-family: 'GT America Bold', Arial, sans-serif;
+  font-size: clamp(9px, 1.8vw, 9px);
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #5C4A4A;
+  letter-spacing: 0.08em;
+  width: clamp(64px, 13vw, 80px);
+  min-width: 56px;
+  flex-shrink: 0;
+  line-height: 1.4;
+  padding-top: 1px;
+}
+.legend-items { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; }
+.leg-item {
+  display: flex; align-items: center; gap: 5px;
+  font-family: 'GT America', Arial, sans-serif;
+  font-size: clamp(9px, 3.7vw, 14px);
+  color: #4A3535;
+  cursor: pointer;
+  padding: 3px 6px 3px 4px;
+  border-radius: 3px;
+  border: 1.5px solid transparent;
+  transition: border-color 0.15s, opacity 0.15s;
+  user-select: none;
+}
+.leg-item:hover { border-color: #DCCFCF; }
+.leg-item.active { border-color: #2A1818; background: rgba(42,24,24,0.06); }
+.leg-item.dimmed { opacity: 0.35; }
+.dot-fill { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.size-dot { border-radius: 50%; border: 1.5px solid #C4AAAA; background: transparent; display: inline-block; flex-shrink: 0; }
+.size-leg-item {
+  display: flex; align-items: center; gap: 5px;
+  font-family: 'GT America', Arial, sans-serif;
+  font-size: clamp(9px, 3.7vw, 14px);
+  color: #4A3030;
+  cursor: pointer;
+  padding: 3px 6px 3px 4px;
+  border-radius: 3px;
+  border: 1.5px solid transparent;
+  transition: border-color 0.15s, opacity 0.15s;
+  user-select: none;
+}
+.size-leg-item:hover { border-color: #DCCFCF; }
+.size-leg-item.active { border-color: #2A1818; background: rgba(42,24,24,0.06); }
+.size-leg-item.dimmed { opacity: 0.35; }
+#viz-area { position: relative; width: 100%; flex-grow: 1; }
+canvas { width: 100%; height: 100%; display: block; }
+#tooltip {
+  position: fixed;
+  background: #F7F2F2;
+  border: 1px solid #DCCFCF;
+  color: #1A1208;
+  padding: 12px 14px;
+  border-radius: 3px;
+  pointer-events: none;
+  opacity: 0;
+  font-family: 'GT America', Arial, sans-serif;
+  font-size: 13px;
+  z-index: 100;
+  min-width: 180px;
+  max-width: 250px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.10);
+  transition: opacity 0.1s;
+  line-height: 1.6;
+}
+#tooltip .tt-name {
+  font-family: 'GT America Bold', Arial, sans-serif;
+  font-size: 22px;
+  font-weight: bold;
+  color: #1A1208;
+  margin-bottom: 10px;
+}
+#tooltip .tt-valuation { font-size: 13px; color: #3A2E20; margin-bottom: 0px; }
+#tooltip .tt-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+}
+#tooltip .tt-invested {
+  margin-top: 6px;
+  border-top: 1px solid #E0D8C8;
+  padding-top: 6px;
+}
+#tooltip .tt-funding { font-size: 13px; color: #3A2E20; }
+#tooltip .tt-invested { font-size: 13px; color: #5A4A38; }
+.footer {
+  border-top: 1.5px solid #DCCFCF;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 0 16px 0;
+  margin-top: 4px;
+  gap: 8px;
+}
+.footer-logo { height: 18px; display: flex; align-items: center; justify-content: center; }
+.footer-center { font-family: 'GT America', Arial, sans-serif; font-size: 14px; color: #5C4A4A; text-align: center; flex: 1; }
+.footer-right { font-family: 'GT America', Arial, sans-serif; font-size: 14px; color: #5C4A4A; text-align: right; max-width: 170px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="main-title">The rise and retreat</div>
+  <div class="subtitle">Lightrock was active during the ZIRP era before going quiet</div>
+
+  <div class="legend-box">
+    <div class="legend-row">
+      <div class="legend-key">Industry</div>
+      <div class="legend-items" id="ind-legend"></div>
+    </div>
+    <div class="legend-row">
+      <div class="legend-key" style="line-height:1.3">Scale<br>(Valuation)</div>
+      <div class="legend-items" id="size-legend">
+        <div class="size-leg-item" data-size="small"><div class="size-dot" style="width:7px;height:7px;"></div>&lt;$100M</div>
+        <div class="size-leg-item" data-size="mid"><div class="size-dot" style="width:13px;height:13px;"></div>$100M–$500M</div>
+        <div class="size-leg-item" data-size="large"><div class="size-dot" style="width:20px;height:20px;"></div>$500M+</div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:2px 0 0 0;">
+      <div style="font-style:italic;font-size:12px;color:#5C4A4A;padding:0 10px 0 0;">$ inside bubble = Lightrock's investment amount</div>
+      <div style="font-style:italic;font-size:12px;color:#5C4A4A;">Click a legend item to filter · Click again to clear</div>
+    </div>
+  </div>
+
+  <div id="viz-area"><canvas id="viz"></canvas></div>
+
+  <div class="footer">
+    <div><img src="logo.png" alt="The Ken" class="footer-logo"></div>
+    <div class="footer-center">Graphic by Anuj, 30 Mar '26</div>
+    <div class="footer-right">Source: The Ken research, Tracxn, Lightrock</div>
+  </div>
+</div>
+
+<div id="tooltip">
+  <div class="tt-name" id="tt-name"></div>
+  <div class="tt-valuation" id="tt-valuation"></div>
+  <div class="tt-group">
+    <div class="tt-funding" id="tt-funding"></div>
+    <div class="tt-invested" id="tt-invested"></div>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('viz');
+const ctx = canvas.getContext('2d');
+const tt = document.getElementById('tooltip');
+
+const IND_COLORS = {
+  "Finance":    "#C8423A",
+  "Agri":       "#4A7A5A",
+  "Healthcare": "#D4A8A0",
+  "Education":  "#3D3D3D",
+  "Energy":     "#4A9E9A",
+  "Climate":    "#7A9E4A",
+  "Logistics":  "#A89880"
+};
+
+const data = [
+  { co: "Aye finance",            year: 2017, industry: "Finance",    lightrockInvestment: null,   latestValuation: 404.5,   totalFunding: 164.4  },
+  { co: "Ummeed housing finance", year: 2018, industry: "Finance",    lightrockInvestment: null,   latestValuation: 281.9,   totalFunding: 150.0  },
+  { co: "Arya.ag",                year: 2019, industry: "Agri",       lightrockInvestment: null,   latestValuation: 309.7,   totalFunding: 168.4  },
+  { co: "Dunzo",                  year: 2019, industry: "Logistics",  lightrockInvestment: null,   latestValuation: 775.4,   totalFunding: 452.2  },
+  { co: "EM3 agri services",      year: 2019, industry: "Agri",       lightrockInvestment: null,   latestValuation: 36.8,    totalFunding: 23.5   },
+  { co: "Kauvery hospitals",      year: 2019, industry: "Healthcare", lightrockInvestment: 10,   latestValuation: null,    totalFunding: null  },
+  { co: "Pharmeasy",              year: 2019, industry: "Healthcare", lightrockInvestment: 50,  latestValuation: 456.0,   totalFunding: 688.4   },
+  { co: "Neogrowth",              year: 2019, industry: "Finance",    lightrockInvestment: null,   latestValuation: 119.3,   totalFunding: 147.3  },
+  { co: "Waycool",                year: 2019, industry: "Agri",       lightrockInvestment: 95.0,  latestValuation: 745.1,   totalFunding: 388.2   },
+  { co: "Aknamed",                year: 2020, industry: "Healthcare", lightrockInvestment: null,   latestValuation: 42.0,    totalFunding: 21.8   },
+  { co: "Ampin energy",           year: 2020, industry: "Energy",     lightrockInvestment: null,   latestValuation: 507.3,   totalFunding: 448.3  },
+  { co: "Vivriti capital",        year: 2020, industry: "Finance",    lightrockInvestment: 80.0,  latestValuation: 1701.5,  totalFunding: 205.2  },
+  { co: "Porter",                 year: 2020, industry: "Logistics",  lightrockInvestment: 25.0,  latestValuation: 1152.8,  totalFunding: 197.9   },
+  { co: "Olyv",                   year: 2020, industry: "Finance",    lightrockInvestment: null,   latestValuation: 107.1,   totalFunding: 49.5   },
+  { co: "Cuemath",                year: 2020, industry: "Education",  lightrockInvestment: null,   latestValuation: 380.8,   totalFunding: 126.5  },
+  { co: "Scaler",                 year: 2021, industry: "Education",  lightrockInvestment: null,   latestValuation: 710.0,   totalFunding: 76.5   },
+  { co: "Shiprocket",             year: 2021, industry: "Logistics",  lightrockInvestment: 45.0,  latestValuation: 1151.8,  totalFunding: 321.6   },
+  { co: "Yubi",                   year: 2021, industry: "Finance",    lightrockInvestment: null,   latestValuation: 1199.3,  totalFunding: 240.9  },
+  { co: "Medibuddy",              year: 2021, industry: "Healthcare", lightrockInvestment: null,   latestValuation: 396.6,   totalFunding: 193.1  },
+  { co: "Navya technology",       year: 2021, industry: "Healthcare", lightrockInvestment: null,   latestValuation: 222.0,   totalFunding: 38.5   },
+  { co: "Eupheus learning",       year: 2021, industry: "Education",  lightrockInvestment: null,   latestValuation: 72.2,    totalFunding: 27.2   },
+  { co: "Axio",                   year: 2021, industry: "Finance",    lightrockInvestment: null,   latestValuation: 200.0,   totalFunding: 800.0   },
+  { co: "Bugworks research",      year: 2021, industry: "Healthcare", lightrockInvestment: null,   latestValuation: null,    totalFunding: 42.9   },
+  { co: "Chalo",                  year: 2021, industry: "Logistics",  lightrockInvestment: null,   latestValuation: 290.0,   totalFunding: 117.4  },
+  { co: "DeHaat",                 year: 2021, industry: "Agri",       lightrockInvestment: null,   latestValuation: 688.5,   totalFunding: 222.0  },
+  { co: "Sukoon",                 year: 2022, industry: "Healthcare", lightrockInvestment: null,   latestValuation: 21.2,    totalFunding: 15.0   },
+  { co: "BeatO",                  year: 2022, industry: "Healthcare", lightrockInvestment: null,   latestValuation: 93.9,    totalFunding: 50.8   },
+  { co: "EdgeGrid",               year: 2022, industry: "Energy",     lightrockInvestment: null,   latestValuation: 16.7,    totalFunding: 6.0    },
+  { co: "Even",                   year: 2022, industry: "Healthcare", lightrockInvestment: null,   latestValuation: 152.8,   totalFunding: 72.5   },
+  { co: "Niyo",                   year: 2022, industry: "Finance",    lightrockInvestment: null,   latestValuation: 136.4,   totalFunding: 179.4  },
+  { co: "Solarsquare",            year: 2024, industry: "Energy",     lightrockInvestment: null,   latestValuation: 215.6,   totalFunding: 61.1   },
+  { co: "ATEC global",            year: 2025, industry: "Climate",    lightrockInvestment: null,   latestValuation: null,    totalFunding: 20.8   },
+];
+
+const allYears = [2019, 2020, 2021, 2022, 2023, 2024, 2025];
+
+let activeIndustry = null;
+let activeSizeFilter = null;
+let nodes = [], hoverId = null;
+
+function fmtVal(val) {
+  if (typeof val !== 'number') return null;
+  if (val >= 1000) return `$${(val / 1000).toFixed(1)}B`;
+  return `$${Math.round(val)}M`;
+}
+
+function getSizeBucket(val) {
+  if (val === null || val === undefined) return 'small';
+  if (val >= 500) return 'large';
+  if (val >= 100) return 'mid';
+  return 'small';
+}
+
+function isVisible(co) {
+  const indOk = !activeIndustry || co.industry === activeIndustry;
+  const sizeOk = !activeSizeFilter || getSizeBucket(co.latestValuation) === activeSizeFilter;
+  return indOk && sizeOk;
+}
+
+function seededRand(seed) {
+  let s = seed;
+  return () => { s = (s * 16807 + 0) % 2147483647; return (s - 1) / 2147483646; };
+}
+
+function applyGrain(ctx, x, y, r, seed) {
+  const rng = seededRand(seed * 1337);
+  const dots = Math.floor(r * r * 1.1);
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.clip();
+  for (let i = 0; i < dots; i++) {
+    const angle = rng() * Math.PI * 2;
+    const dist  = Math.sqrt(rng()) * r * 0.97;
+    const gx = x + Math.cos(angle) * dist;
+    const gy = y + Math.sin(angle) * dist;
+    const alpha = 0.02 + rng() * 0.07;
+    ctx.beginPath();
+    ctx.arc(gx, gy, 0.65, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function updateLegendStates() {
+  document.querySelectorAll('#ind-legend .leg-item[data-ind]').forEach(el => {
+    const ind = el.dataset.ind;
+    el.classList.toggle('active', activeIndustry === ind);
+    el.classList.toggle('dimmed', activeIndustry !== null && activeIndustry !== ind);
+  });
+  document.querySelectorAll('#size-legend .size-leg-item').forEach(el => {
+    const sz = el.dataset.size;
+    el.classList.toggle('active', activeSizeFilter === sz);
+    el.classList.toggle('dimmed', activeSizeFilter !== null && activeSizeFilter !== sz);
+  });
+}
+
+function buildIndLegend() {
+  const el = document.getElementById('ind-legend');
+  el.innerHTML = '';
+  Object.entries(IND_COLORS).forEach(([n, c]) => {
+    const div = document.createElement('div');
+    div.className = 'leg-item';
+    div.dataset.ind = n;
+    div.innerHTML = `<div class="dot-fill" style="background:${c}"></div>${n}`;
+    div.addEventListener('click', () => {
+      activeIndustry = (activeIndustry === n) ? null : n;
+      updateLegendStates();
+      render();
+    });
+    el.appendChild(div);
+  });
+}
+
+function bindSizeLegend() {
+  document.querySelectorAll('#size-legend .size-leg-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const sz = el.dataset.size;
+      activeSizeFilter = (activeSizeFilter === sz) ? null : sz;
+      updateLegendStates();
+      render();
+    });
+  });
+}
+
+function getLayout() {
+  const area = document.getElementById('viz-area');
+  const w = area.offsetWidth;
+  const mobile = w < 800;
+  const rowH = mobile
+    ? Math.max(72, Math.round(w * 0.22))
+    : Math.max(80, Math.round(w * 0.15));
+  const topPad = 20;
+  const totalH = rowH * allYears.length + topPad;
+  return { w, rowH, totalH, topPad, mobile };
+}
+
+function setCanvasSize() {
+  const dpr = window.devicePixelRatio || 1;
+  const { w, totalH } = getLayout();
+  canvas.width  = w * dpr;
+  canvas.height = totalH * dpr;
+  canvas.style.width  = w + 'px';
+  canvas.style.height = totalH + 'px';
+  document.getElementById('viz-area').style.height = totalH + 'px';
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.scale(dpr, dpr);
+}
+
+function render() {
+  const { w, rowH, topPad } = getLayout();
+  const h = rowH * allYears.length + topPad;
+  ctx.clearRect(0, 0, w, h);
+
+  const yearFontSize = Math.max(14, Math.round(w * 0.030));
+  const labelW = Math.max(yearFontSize * 2.8, 46);
+  const startX = labelW + 6;
+  const usableW = w - startX - 6;
+  const GAP = -4;
+
+  const maxVal = Math.max(...data.map(d => typeof d.latestValuation === 'number' ? d.latestValuation : 0));
+  const maxR = rowH * 0.47 * 1.2 * 0.9;
+  const baseSize = maxR / Math.sqrt(maxVal);
+  const defaultR = rowH * 0.18 * 1.2 * 0.9;
+
+  const hasAnyFilter = activeIndustry || activeSizeFilter;
+
+  nodes = [];
+
+  allYears.forEach((year, i) => {
+    const cy = topPad + (i + 0.5) * rowH;
+
+    ctx.beginPath();
+    ctx.strokeStyle = "#E0D4D4";
+    ctx.lineWidth = 0.8;
+    ctx.setLineDash([]);
+    ctx.moveTo(startX - 4, cy);
+    ctx.lineTo(w - 6, cy);
+    ctx.stroke();
+
+    ctx.fillStyle = "#5C4A4A";
+    ctx.font = `bold ${yearFontSize}px 'GT America', Arial, sans-serif`;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    ctx.fillText(year, 0, cy);
+    ctx.textBaseline = "alphabetic";
+
+    const yearData = data.filter(d => d.year === year);
+    if (yearData.length === 0) return;
+
+    const radii = yearData.map(co =>
+      typeof co.latestValuation === 'number' ? Math.sqrt(co.latestValuation) * baseSize : defaultR
+    );
+
+    const totalNeeded = radii.reduce((sum, r) => sum + r * 2, 0) + GAP * (yearData.length - 1);
+    const scale = totalNeeded > usableW ? usableW / totalNeeded : 1;
+    const scaledRadii = radii.map(r => r * scale);
+    const scaledGap = GAP * scale;
+
+    let curX = startX;
+    yearData.forEach((co, idx) => {
+      const r = scaledRadii[idx];
+      const x = curX + r;
+      const visible = isVisible(co);
+      const isH = hoverId === `${year}-${idx}` && visible;
+      const dr = isH ? r * 1.07 : r;
+      const seed = year * 100 + idx;
+      const fillColor = IND_COLORS[co.industry] || '#A89880';
+
+      nodes.push({ x, y: cy, r: dr, co, id: `${year}-${idx}`, visible });
+
+      ctx.save();
+      if (hasAnyFilter && !visible) ctx.globalAlpha = 0.12;
+
+      ctx.beginPath();
+      ctx.arc(x, cy, dr, 0, Math.PI * 2);
+      ctx.fillStyle = fillColor;
+      ctx.fill();
+
+      if (!hasAnyFilter || visible) applyGrain(ctx, x, cy, dr, seed);
+
+      if (isH) {
+        ctx.beginPath();
+        ctx.arc(x, cy, dr, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+
+      if (hasAnyFilter && visible) {
+        ctx.beginPath();
+        ctx.arc(x, cy, dr, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(26,18,8,0.75)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+
+      if (visible && typeof co.lightrockInvestment === 'number') {
+        const label = `$${Math.round(co.lightrockInvestment)}M`;
+        ctx.font = `11px 'GT America', Arial, sans-serif`;
+        const tw = ctx.measureText(label).width;
+        if (tw < dr * 1.7) {
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = 'rgba(255,255,255,0.92)';
+          ctx.fillText(label, x, cy);
+          ctx.textBaseline = 'alphabetic';
+        }
+      }
+
+      ctx.restore();
+      curX += r * 2 + scaledGap;
+    });
+  });
+}
+
+function showTooltip(hit, clientX, clientY) {
+  tt.style.opacity = '1';
+  const ttW = 230, ttH = 130;
+  let tx = clientX + 16, ty = clientY + 16;
+  if (tx + ttW > window.innerWidth)  tx = clientX - ttW - 8;
+  if (ty + ttH > window.innerHeight) ty = clientY - ttH - 8;
+  if (tx < 4) tx = 4;
+  if (ty < 4) ty = 4;
+  tt.style.left = tx + 'px';
+  tt.style.top  = ty + 'px';
+  const co = hit.co;
+
+  function setLine(id, prefix, value) {
+    const el = document.getElementById(id);
+    el.textContent = '';
+    el.appendChild(document.createTextNode(prefix));
+    const b = document.createElement('b');
+    b.style.fontWeight = '700';
+    b.style.color = typeof value === 'number' ? '#1A1208' : '#9A8E7A';
+    b.textContent = typeof value === 'number' ? fmtVal(value) : 'N/A';
+    el.appendChild(b);
+  }
+
+  document.getElementById('tt-name').textContent = co.co;
+  setLine('tt-valuation', 'Latest valuation: ', co.latestValuation);
+  setLine('tt-funding', 'Total funding: ', co.totalFunding);
+
+  const invEl = document.getElementById('tt-invested');
+  invEl.textContent = '';
+  if (typeof co.lightrockInvestment === 'number') {
+    invEl.style.display = '';
+    invEl.appendChild(document.createTextNode('Lightrock invested '));
+    const span = document.createElement('u');
+    span.style.color = '#1A1208';
+    span.textContent = fmtVal(co.lightrockInvestment);
+    invEl.appendChild(span);
+  } else {
+    invEl.style.display = 'none';
+  }
+}
+
+function hitTest(clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  const mx = clientX - rect.left;
+  const my = clientY - rect.top;
+  return [...nodes].reverse().find(n => n.visible && Math.hypot(mx - n.x, my - n.y) < n.r);
+}
+
+canvas.addEventListener('mousemove', e => {
+  const hit = hitTest(e.clientX, e.clientY);
+  if (hit) {
+    if (hoverId !== hit.id) { hoverId = hit.id; render(); }
+    showTooltip(hit, e.clientX, e.clientY);
+  } else {
+    if (hoverId !== null) { hoverId = null; render(); }
+    tt.style.opacity = '0';
+  }
+});
+canvas.addEventListener('mouseleave', () => {
+  hoverId = null; tt.style.opacity = '0'; render();
+});
+
+canvas.addEventListener('touchstart', e => {
+  const touch = e.touches[0];
+  const hit = hitTest(touch.clientX, touch.clientY);
+  if (hit) {
+    e.preventDefault();
+    hoverId = hit.id;
+    render();
+    showTooltip(hit, touch.clientX, touch.clientY);
+  }
+}, { passive: false });
+
+canvas.addEventListener('touchmove', e => {
+  const touch = e.touches[0];
+  const hit = hitTest(touch.clientX, touch.clientY);
+  if (hit) {
+    e.preventDefault();
+    if (hoverId !== hit.id) { hoverId = hit.id; render(); }
+    showTooltip(hit, touch.clientX, touch.clientY);
+  } else {
+    if (hoverId !== null) { hoverId = null; render(); }
+    tt.style.opacity = '0';
+  }
+}, { passive: false });
+
+canvas.addEventListener('touchend', e => {
+  e.preventDefault();
+  setTimeout(() => { hoverId = null; tt.style.opacity = '0'; render(); }, 1800);
+}, { passive: false });
+
+function init() {
+  buildIndLegend();
+  bindSizeLegend();
+  updateLegendStates();
+  setCanvasSize();
+  render();
+}
+
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => { setCanvasSize(); render(); }, 100);
+});
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    CASE STUDY PAGE: Intermission // ITC
+    Built on the shared case-study design system: css/style.css +
+    css/story.css + css/case-study.css (+ js/common.js, js/story.js,
+    js/case-study.js). See also airtel.html, and the
+    "alternate layout" family - undersea-cables.html, lightrock.html,
+    revenue-growth.html - which share the same base system plus
+    css/case-study-alt.css.
+    Series order: project.html -> undersea-cables.html -> airtel.html -> lightrock.html -> revenue-growth.html
+    Places to edit if you duplicate this file for a new case study:
+      - <title>
+      - #caseStudyHeroImage placeholder -> real cover image
+      - #case-study-title text + .case-study-hero__subtitle + .case-study-hero__meta
+      - every .story-heading / .story-text / .story-image block below
+      - the .story-callout boxes (dark = Gemini step, warm = Claude step
+        in THIS project - rename/restyle per project as needed)
+      - the .case-study-pager-preview hrefs + content (link to the
+        actual previous/next case-study files)
+  -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intermission // ITC - Anuj Debnath</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/story.css">
+  <link rel="stylesheet" href="css/contact.css">
+  <link rel="stylesheet" href="css/case-study.css">
+  <link rel="stylesheet" href="css/itc-prototypes.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+</head>
+<body>
+
+  <!-- ============ SITE HEADER ============ -->
+  <header class="site-header">
+    <a href="index.html" class="site-header__brand">Anuj<br>Debnath</a>
+    <nav class="site-nav">
+      <a class="site-nav__link" href="index.html">home</a>
+      <a class="site-nav__link" href="aboutme.html">about me</a>
+      <a class="site-nav__link" href="index.html#works">works</a>
+      <a class="site-nav__link" href="index.html#connect">connect</a>
+    </nav>
+  </header>
+
+  <!-- ============ PROJECT HERO ============ -->
+  <section id="case-study-hero" class="section">
+    <div class="case-study-hero">
+      <div class="case-study-hero__image" id="caseStudyHeroImage"><img src="images/project/00-cover.png" alt="Intermission // ITC cover" onerror="this.remove()"></div>
+
+      <!-- Title overlaps the image's top-right corner (negative
+           margin + nudge-down on the title itself); subtitle is a
+           normal sibling below it, clear of the image. -->
+      <div class="case-study-hero__content">
+        <h1 class="section-title case-study-hero__title" id="case-study-title">INTERMISSION</h1>
+        <p class="story-text__lede case-study-hero__subtitle">ITC: The FMCG Company in a Cigarette Pack</p>
+      </div>
+
+      <!-- Meta is its own sibling, absolutely positioned so its
+           bottom lines up with the image's bottom regardless of how
+           tall the title/subtitle above end up. -->
+      <div class="meta-list case-study-hero__meta">
+        <span>17/09/2026</span>
+        <span>Duration: 3 Week</span>
+        <span>Information Design, Web Development</span>
+        <span>eCharts, GSAP, OpenStreetMap, Leaflet, CSS, JavaScript, Figma, GitHub, Google Gemini, Claude Code</span>
+        <span>Live link: <a href="#">Intermission/ITC</a></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STORY CONTENT ============ -->
+  <section class="section case-study-story">
+
+    <!-- Intro -->
+    <div class="story-block">
+      <div class="story-text">
+        <p class="story-text__lede">Intermission is a podcast series with dedicated companion websites, each episode tracing the history and legacy of a well-known Indian brand.</p>
+        <p class="story-text__body">Episode 4 covers ITC, the Indian FMCG conglomerate — from its origins as Imperial Tobacco through its transformation into one of India's most diversified businesses.</p>
+        <p class="story-text__body">This document walks through my process for conceiving, prototyping, and shipping the data visualisations for the episode's companion site.</p>
+      </div>
+      <div class="story-image-caption-group">
+        <div class="story-image story-image--landscape"><img src="images/project/01.png" alt="Intermission // ITC — image 01" onerror="this.remove()"></div>
+        <p class="story-image-label">Landing page of Intermission</p>
+      </div>
+    </div>
+
+    <!-- Script -->
+    <h2 class="section-title story-heading story-heading--script">SCRIPT</h2>
+    <div class="story-text-block">
+      <p class="story-text__lede">The process starts with the script.</p>
+    </div>
+    <div class="story-columns">
+      <div>
+        <p class="story-text__body">Hosts Rohin and Seetha, working with researcher Raghav, produce the first draft — source material for what becomes a four-hour-long podcast episode. Editor Brady then condenses this into a tighter, ten-page abridged document.</p>
+      </div>
+      <div>
+        <p class="story-text__body">Once the script is in hand, I sit down with the team to walk through the datasets we have and the points we want the visuals to emphasise. That conversation gives me an initial sense of direction, and from there I start ideating.</p>
+      </div>
+      <div aria-hidden="true"></div>
+    </div>
+    <div class="story-image-row">
+      <div class="doc-frame">
+        <div class="doc-frame__titlebar">
+          <svg class="doc-frame__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M5 2h9l5 5v15a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z" fill="#4285F4"/>
+            <path d="M14 2v5h5" fill="#a9c6fb"/>
+          </svg>
+          <span class="doc-frame__filename">Intermission — Episode 4 — ITC — Script</span>
+        </div>
+        <div class="doc-frame__page">
+          <p>BAT was unhappy with this drift. It also wanted to raise its stake in ITC, so it accused ITC's management of financial irregularities in 1995. The fight became a political flashpoint, framed in the press as a foreign takeover attempt of an Indian icon. Chugh resigned that December, 20 months before the intended end of his tenure.</p>
+          <p>Deveshwar took the top job. But unlike Haksar, he inherited a company in a precarious situation.</p>
+          <p class="doc-frame__note">V5.4 — <span class="doc-frame__highlight">Chart</span> — ITC's share price decline from roughly Rs 750 in FY93 to Rs 253 in FY95, with annotations showing the BAT dispute</p>
+        </div>
+      </div>
+      <div class="story-image"><img src="images/project/04.png" alt="Intermission // ITC — image 04" onerror="this.remove()"></div>
+    </div>
+
+    <!-- Explorations -->
+    <h2 class="section-title story-heading story-heading--explorations">EXPLORATIONS</h2>
+    <div class="story-columns">
+      <div>
+        <p class="story-text__lede">We were targeting people interested in the company and its story like business enthusiasts, entrepreneurs, historians, and finance academics.</p>
+      </div>
+      <div>
+        <p class="story-text__body">My process for landing on the right visualisation is to try out a range of approaches rather than committing early. Some data points naturally suit a bar or line graph; others need a completely different treatment. I think the most important part of information design isn't the data itself, but <em>how</em> the information is revealed to the reader.</p>
+        <p class="story-text__body">For this episode, the brief was to make dense business information relatable — through shapes and forms viewers instinctively recognise — while layering in enough narrative texture to keep it distinctly "ITC."</p>
+        <p class="story-text__body">That framing led to some of the more interesting concepts we explored, including a cigarette-tax visual, a "logo farm," and a visualisation inspired by ITC's e-Choupal initiative.</p>
+      </div>
+    </div>
+
+    <div class="story-callout story-callout--dark">
+      <p class="story-text__lede">I used <span class="accent-purple"><svg class="callout-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><defs><linearGradient id="geminiGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4c8df6"/><stop offset="55%" stop-color="#a07df0"/><stop offset="100%" stop-color="#e2698c"/></linearGradient></defs><path d="M12 0C12 6.63 6.63 12 0 12C6.63 12 12 17.37 12 24C12 17.37 17.37 12 24 12C17.37 12 12 6.63 12 0Z" fill="url(#geminiGrad)"/></svg>Google Gemini</span> to rapidly generate single-file HTML prototypes — self-contained explorations built with libraries like GSAP and eCharts.</p>
+      <p class="story-text__body">Since each prototype is scoped to <span class="hl">eCharts framework,</span> the exploration itself is shaped by what its <span class="hl">library contains.</span> After several rounds of iterations of designs and discussion with my editor and researcher, we narrow down to a final set of visualisations and move into adapting them to the site's style guide.</p>
+    </div>
+
+    <div class="story-image-row">
+      <div class="story-image-caption-group">
+        <div class="story-image"><img src="images/project/05.png" alt="Intermission // ITC — image 05" onerror="this.remove()"></div>
+        <p class="story-image-label">Prompt</p>
+      </div>
+      <div class="story-image-caption-group">
+        <div class="story-image"><img src="images/project/06.png" alt="Intermission // ITC — image 06" onerror="this.remove()"></div>
+        <p class="story-image-label">Result</p>
+      </div>
+    </div>
+
+    <div class="story-text-block">
+      <p class="story-text__body">The prompt on the left is a condensed version of the actual brief handed to Gemini — the relevant script excerpt, the data points to feature, and a short note on tone and reference. The result on the right is the raw single-file HTML it generates: functional immediately, but built entirely on Gemini's own visual judgement rather than the site's design system — which is exactly the gap the next stage closes.</p>
+    </div>
+
+    <!-- Design System: heading sits above, left-aligned with the text
+         column below it; the image tucks up slightly under the
+         heading's right side (matches Intermission/ITC reference). -->
+    <h2 class="section-title story-heading story-heading--design-system">DESIGN SYSTEM</h2>
+    <div class="story-block story-block--flush-top story-block--align-end">
+      <div class="story-text">
+        <p class="story-text__lede">The site's visual language is owned by our visual team.</p>
+        <p class="story-text__body">The team consists of a product designer and an art director, who maintain a consistent five-colour palette and a full design system covering typography, sizing, and spacing.</p>
+      </div>
+      <div class="story-image story-image--rise story-image--parallax"><img src="images/project/07.png" alt="Intermission // ITC — image 07" onerror="this.remove()"></div>
+    </div>
+
+    <div class="story-callout story-callout--warm">
+      <div class="story-block story-block--flush">
+        <div class="story-text">
+          <p class="story-text__lede"><span class="accent-orange"><svg class="callout-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="7"/><line x1="12" y1="17" x2="12" y2="22"/><line x1="2" y1="12" x2="7" y2="12"/><line x1="17" y1="12" x2="22" y2="12"/><line x1="4.9" y1="4.9" x2="8.3" y2="8.3"/><line x1="15.7" y1="15.7" x2="19.1" y2="19.1"/><line x1="19.1" y1="4.9" x2="15.7" y2="8.3"/><line x1="8.3" y1="15.7" x2="4.9" y2="19.1"/></g></svg>Claude Code</span> helps encapsulate all the single HTMLs created by Google Gemini into a single file with all the interactive artefacts.</p>
+          <p class="story-text__body">After three episodes of Intermission, I've built up a <span class="inline-code">prompt.md</span> file that encodes this design system and our visual guidelines. It's evolved over time based on feedback on my visualisations and how well they fit the site's context, and it now contains a set of standardised variables I reuse across projects.</p>
+          <p class="story-text__body">I use Claude Code, working on a local clone of the repository, to help set up the codebase architecture <span class="hl">establishing clear, identifiable labels and global variables</span> so changes stay consistent throughout.</p>
+          <p class="story-text__body">This stage also involves <span class="hl">breaking the single-file HTML prototypes</span> apart into their component styles, scripts, and sections within the main <span class="inline-code">index.html</span>. I tag each prototype with identifiers like <span class="inline-code">QW4K1-DataViz</span>, which makes it much easier to reference specific pieces when I'm working with Claude on revisions.</p>
+          <p class="story-text__body">Together, the <span class="inline-code">prompt.md</span> system and Claude Code meaningfully cut down the time it takes to turn a single-HTML prototype into a production-ready piece that fits the site's context and brand.</p>
+        </div>
+        <div class="story-image"><img src="images/project/08.png" alt="Intermission // ITC — image 08" onerror="this.remove()"></div>
+      </div>
+    </div>
+
+    <!-- Q&A heading overlaps the bottom of the image row before it -->
+    <div class="story-overlap">
+      <div class="story-image-row">
+        <div class="story-image"><img src="images/project/09.png" alt="Intermission // ITC — image 09" onerror="this.remove()"></div>
+        <div class="story-image"><img src="images/project/10.png" alt="Intermission // ITC — image 10" onerror="this.remove()"></div>
+      </div>
+      <h2 class="section-title story-heading story-overlap__heading story-heading--qa">Q&amp;A</h2>
+    </div>
+
+    <div class="story-text-block">
+      <p class="story-text__lede">This is also the first point in the workflow where the whole team sees everything together — images, illustrations, and data visualisations in situ — which surfaces a lot of feedback on alignment, colour, and even the underlying data.</p>
+    </div>
+    <div class="story-columns">
+      <div>
+        <p class="story-text__body">QA is largely an iterative process grounded in the live context of the site.</p>
+        <p class="story-text__body">Responsiveness is a major part of this stage. We test primarily across two device classes — iPhone and iPad — and portrait phone layouts almost always need a distinct design approach from desktop, which is why that testing happens earlier, at the single-HTML prototype stage.</p>
+        <p class="story-text__body">iPad is less predictable. Depending on the visualisation, either the web or mobile version can end up working better — there's no fixed rule. The biggest challenge on iPad is usually font sizing and alignment; when maximum heights are set correctly, the web version tends to hold up better, though that's not a hard-and-fast rule either.</p>
+      </div>
+      <div class="story-image-row story-image-row--flush">
+        <div class="story-image-caption-group">
+          <div class="story-image story-image--mobile"><img src="images/project/11.png" alt="Intermission // ITC — image 11" onerror="this.remove()"></div>
+          <p class="story-image-label">iPhone 12</p>
+        </div>
+        <div class="story-image-caption-group">
+          <div class="story-image story-image--ipad"><img src="images/project/12.png" alt="Intermission // ITC — image 12" onerror="this.remove()"></div>
+          <p class="story-image-label">iPad Mini</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Integration: heading overlaps the image's top-right corner
+         (right-aligned, opposite of Design System's left-aligned
+         one); all the text sits in the 3rd of 3 flex columns, with
+         the closing statement stacked below the body paragraphs
+         (not beside them) with extra breathing room. -->
+    <div class="story-overlap">
+      <h2 class="section-title story-heading story-overlap__heading story-heading--integration">INTEGRATION</h2>
+      <div class="story-image story-image--full story-image--parallax"><img src="images/project/13.gif" alt="Intermission // ITC — image 13" onerror="this.remove()"></div>
+    </div>
+
+    <div class="story-columns">
+      <div class="story-columns__spacer" aria-hidden="true"></div>
+      <div class="story-columns__spacer" aria-hidden="true"></div>
+      <div>
+        <p class="story-text__lede">We used GitHub for version control, which kept our work transparent and kept us both accountable.</p>
+        <p class="story-text__body">A solid communication and integration channel between designer and developer is essential to a project like this.</p>
+        <p class="story-text__body">To keep the project modular and let us work in parallel without conflicts, we namespaced all my code under <span class="inline-code">QW4K1-</span> and worked on a separate branch. This let us avoid code collisions while still giving us the flexibility to draw on functionality the other had already built.</p>
+        <p class="story-text__lede story-text__lede--spaced">The completed data visualisations went live on The Ken's website on 17th August. You can explore the full episode here: <a href="#">Intermission/ITC</a></p>
+      </div>
+    </div>
+
+    <div class="story-image-row">
+      <div class="story-image"><img src="images/project/14.png" alt="Intermission // ITC — image 14" onerror="this.remove()"></div>
+      <div class="story-image"><img src="images/project/15.png" alt="Intermission // ITC — image 15" onerror="this.remove()"></div>
+    </div>
+
+    <!-- Live QW4K prototypes from prototypes/ITC/, embedded via iframe -->
+    <h2 class="section-title story-heading story-heading--prototypes">PROTOTYPES</h2>
+    <div class="story-text-block">
+      <p class="story-text__lede">The visualisations as they actually shipped, live and interactive below.</p>
+    </div>
+    <div class="itc-prototypes-grid">
+      <div class="itc-prototype itc-prototype--echoupal">
+        <iframe src="prototypes/ITC/e-choupal.html" title="e-Choupal mandi price map - interactive chart" loading="lazy"></iframe>
+      </div>
+      <div class="itc-prototype itc-prototype--smoke75">
+        <iframe src="prototypes/ITC/smoke75.html" title="Cigarette taxation vs. other markets - interactive chart" loading="lazy"></iframe>
+      </div>
+      <div class="itc-prototype itc-prototype--logofarm">
+        <iframe src="prototypes/ITC/logofarm-treemap.html" title="The brands of ITC Limited - logo farm treemap" loading="lazy"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NEXT PROJECT PAGER (no BACK - this is project #1) ============ -->
+  <section class="section case-study-pager">
+    <div class="case-study-pager-previews">
+      <a href="undersea-cables.html" class="case-study-pager-preview case-study-pager-preview--next">
+        <div class="story-overlap">
+          <span class="section-title case-study-pager__label story-overlap__heading next-header">NEXT</span>
+          <div class="story-image"><img src="images/undersea-cables/00-cover.png" alt="Undersea Cables cover" onerror="this.remove()"></div>
+        </div>
+        <p class="case-study-pager-preview__lede">Undersea Cables: Meta's new India cable, and the fragile network holding up the country's internet.</p>
+        <div class="meta-list">
+          <span>09/04/2026</span>
+          <span>The-Ken/Intermission</span>
+          <span>eCharts, GSAP, OpenStreetMap, Leaflet, CSS, JavaScript, Figma, GitHub, Google Gemini, Claude Code</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <section class="section contact-section">
+    <div class="contact-details">
+      <a class="contact-details__line" href="tel:+919874608128">+91 98746 08128</a>
+      <a class="contact-details__line" href="mailto:anujdebnath246@gmail.com">anujdebnath246@gmail.com</a>
+    </div>
+
+    <div class="contact-social-row">
+      <a class="link-arrow" href="https://www.instagram.com/codegarden.space/" target="_blank" rel="noopener">Instagram &#8599;</a>
+      <a class="link-arrow" href="https://medium.com/@radioactivesugar" target="_blank" rel="noopener">Medium &#8599;</a>
+    </div>
+
+    <div class="footer-columns">
+      <ul class="footer-nav">
+        <li><a class="footer-nav__link" href="aboutme.html">About Me</a></li>
+        <li><a class="footer-nav__link" href="index.html#works">Works</a></li>
+      </ul>
+
+      <address class="footer-address">
+        Address:<br>
+        Bengaluru,<br>
+        India
+      </address>
+    </div>
+
+    <div class="footer-links-row">
+      <a class="footer-links-row__link" href="https://radioactive-sugar.itch.io/" target="_blank" rel="noopener">[ itch.io ]</a>
+      <a class="footer-links-row__link" href="https://www.behance.net/anujdebnat6978" target="_blank" rel="noopener">[ Behance ]</a>
+      <a class="footer-links-row__link" href="https://www.linkedin.com/in/anuj-debnath-150407163/" target="_blank" rel="noopener">[ LinkedIn ]</a>
+    </div>
+
+    <h2 class="footer-wordmark" id="footer-wordmark">ANUJ DEBNATH</h2>
+  </section>
+
+  <div class="footer-bottom">
+    <span class="footer-bottom__location" id="footerClock">INDIA: (GMT+5:30) --:--</span>
+    <span class="footer-bottom__credit">Design &amp; Development &mdash; Anuj Debnath</span>
+    <span class="footer-bottom__copyright">2026 All Rights Reserved. Anuj Debnath. Any reproduction, distribution, or use of the materials without permission is prohibited.</span>
+  </div>
+
+  <!-- Custom "expand" cursor shown over the BACK/NEXT pager previews -->
+  <div class="custom-cursor" id="customCursor" aria-hidden="true">
+    <svg viewBox="0 0 24 24">
+      <line x1="7" y1="17" x2="17" y2="7"></line>
+      <polyline points="8 7 17 7 17 16"></polyline>
+    </svg>
+  </div>
+
+  <script src="js/common.js"></script>
+  <script src="js/story.js"></script>
+  <script src="js/case-study.js"></script>
+</body>
+</html>

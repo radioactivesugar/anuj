@@ -1,0 +1,99 @@
+/* =========================================================
+   CASE STUDY - ALTERNATE LAYOUT
+   Shared by the "different rhythm" case-study pages
+   (undersea-cables.html, lightrock.html, revenue-growth.html):
+   DATA/DESIGN headings instead of SCRIPT/EXPLORATIONS/DESIGN SYSTEM,
+   paragraphs stacked directly over their own image instead of beside
+   it. Built on top of css/story.css + css/case-study.css; these are
+   the numbers unique to this page family only.
+   ========================================================= */
+
+/* This family's hero titles (UNDERSEA CABLES / INVESTMENT CHART /
+   REVENUE GROWTH) are longer than INTERMISSION - at the shared
+   clamp's max size (case-study.css) they overflow the viewport
+   width. Pin a smaller max for all of them here. */
+#case-study-title {
+  font-size: clamp(2rem, 5.5vw, 4rem);
+}
+
+/* Wider spacer than story.css's default .story-columns__spacer
+   (24%) - the DATA/DESIGN sections in this family push their text
+   column further right, leaving a bigger empty gap on the left.
+   Selector matches story.css's own .story-columns > .story-columns__spacer
+   specificity so this override actually wins. */
+.story-columns > .story-columns__spacer--wide {
+  flex: 0 0 45%;
+}
+
+/* A lede/image pair stacked in a single column (as opposed to side
+   by side) - used where the image illustrates the paragraph
+   directly above it rather than sitting beside it. */
+.story-stack-image {
+  margin-top: 2rem;
+}
+
+/* Live interactive prototype (prototypes/<folder>/index.html),
+   embedded via iframe at the very end of the story - each of these
+   3 pages closes with "the final visualisation was embedded into
+   the story via an iframe", so this IS that iframe, not a mockup
+   placeholder. Full width of whatever column it sits in - these
+   prototypes are fluid/fill-the-frame by default, so a narrower
+   centered cap just left empty space either side of them. */
+.story-iframe-wrapper {
+  width: 100%;
+  margin: 3rem 0 6rem;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+}
+
+.story-iframe {
+  width: 100%;
+  height: 820px;
+  border: none;
+  display: block;
+}
+
+/* undersea-cables.html only: that prototype hugs its own content
+   height (#container's height: fit-content) instead of filling
+   whatever it's given, so the shared 820px default left dead space
+   below it - measured ~710px at this column's width. */
+.story-iframe.story-iframe--fit {
+  height: 730px;
+}
+
+/* lightrock.html only: that prototype's content has a fixed height
+   (~1255px) independent of width, so the shared 820px default
+   forced an internal scrollbar - stretch enough to clear it. */
+.story-iframe.story-iframe--tall {
+  height: 1290px;
+}
+
+/* lightrock.html / revenue-growth.html only: the closing lede +
+   iframe, left-aligned flush with the DESIGN heading above (instead
+   of tucked into the 45%-indented column the two chart-explanation
+   blocks above it use) and about 20% wider than that column now
+   that it isn't sharing the row with a spacer. */
+.story-iframe-block {
+  width: 62.6%;
+  max-width: 100%;
+  margin: 3rem 0 6rem;
+}
+
+.story-iframe-block .story-iframe-wrapper {
+  margin: 1.5rem 0 0;
+}
+
+@media (max-width: 900px) {
+  .story-columns > .story-columns__spacer--wide {
+    display: none;
+  }
+
+  .story-iframe-wrapper {
+    max-width: 100%;
+  }
+
+  .story-iframe {
+    height: 640px;
+  }
+}

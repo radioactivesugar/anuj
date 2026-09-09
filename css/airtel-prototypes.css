@@ -1,0 +1,53 @@
+/* =========================================================
+   AIRTEL PROTOTYPES GRID (airtel.html only)
+   The 3 live QW4K charts from prototypes/airtel/ (africaMap, arpu3,
+   subscriber2), embedded via iframe at the end of the story - one
+   full-width row per visualisation, same pattern as
+   css/itc-prototypes.css (project.html). Each iframe's height is
+   matched to that specific chart's own natural content height
+   (measured directly), except africaMap - that prototype sizes
+   itself to 90vh of whatever height its iframe is given (no
+   independent natural height), so it just gets a generous fixed
+   height instead.
+   ========================================================= */
+
+.airtel-prototypes-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  margin: 3rem 0 6rem;
+}
+
+.airtel-prototype {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+}
+
+.airtel-prototype iframe {
+  width: 100%;
+  border: none;
+  display: block;
+}
+
+.airtel-prototype--africa-map iframe {
+  height: 820px;
+}
+
+.airtel-prototype--arpu iframe {
+  height: 790px;
+}
+
+.airtel-prototype--subscribers iframe {
+  height: 820px;
+}
+
+@media (max-width: 900px) {
+  .airtel-prototype--africa-map iframe {
+    height: 650px;
+  }
+
+  .airtel-prototype--arpu iframe {
+    height: 850px;
+  }
+}

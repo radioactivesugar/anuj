@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    CASE STUDY PAGE: Intermission // Revenue Growth
+    Built on the shared case-study design system: css/style.css +
+    css/story.css + css/case-study.css + css/case-study-alt.css (the
+    shared "alternate layout" family also used by undersea-cables.html
+    and lightrock.html), plus js/common.js, js/story.js,
+    js/case-study.js.
+    Series order: project.html -> undersea-cables.html -> airtel.html -> lightrock.html -> revenue-growth.html (last - no NEXT)
+  -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intermission // Revenue Growth - Anuj Debnath</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/story.css">
+  <link rel="stylesheet" href="css/contact.css">
+  <link rel="stylesheet" href="css/case-study.css">
+  <link rel="stylesheet" href="css/case-study-alt.css">
+  <link rel="stylesheet" href="css/revenue-growth.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+</head>
+<body>
+
+  <!-- ============ SITE HEADER ============ -->
+  <header class="site-header">
+    <a href="index.html" class="site-header__brand">Anuj<br>Debnath</a>
+    <nav class="site-nav">
+      <a class="site-nav__link" href="index.html">home</a>
+      <a class="site-nav__link" href="aboutme.html">about me</a>
+      <a class="site-nav__link" href="index.html#works">works</a>
+      <a class="site-nav__link" href="index.html#connect">connect</a>
+    </nav>
+  </header>
+
+  <!-- ============ CASE STUDY HERO ============ -->
+  <section id="case-study-hero" class="section">
+    <div class="case-study-hero">
+      <div class="case-study-hero__image" id="caseStudyHeroImage"><img src="images/revenue-growth/00-cover.png" alt="Revenue Growth (NBFC) cover" onerror="this.remove()"></div>
+
+      <div class="case-study-hero__content">
+        <h1 class="section-title case-study-hero__title" id="case-study-title">REVENUE GROWTH</h1>
+        <p class="story-text__lede case-study-hero__subtitle">At RBI-licensed NBFCs, 600% annual interest is board-approved, "reasonable," and perfectly legal.</p>
+      </div>
+
+      <div class="meta-list case-study-hero__meta">
+        <span>09/04/2026</span>
+        <span>Duration: 1 Week</span>
+        <span>Writer: Mrunmayee Kulkarni</span>
+        <span>Information Design, Web Development</span>
+        <span>eCharts, iFrame, CSS, JavaScript, Figma, GitHub, Google Gemini, Claude Code</span>
+        <span>Live link: <a href="https://the-ken.com/story_morning_email/at-rbi-licensed-nbfcs-600-annual-interest-is-board-approved-reasonable-and-perfectly-legal/" target="_blank" rel="noopener">Intermission/Revenue Growth</a></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STORY CONTENT ============ -->
+  <section class="section case-study-story">
+
+    <!-- Intro -->
+    <div class="story-block">
+      <div class="story-text">
+        <p class="story-text__lede">"The very first application came back sanctioned by an RBI-licensed NBFC, at an annualised interest rate of 886%."</p>
+        <p class="story-text__body">The story examined a cluster of Non-Banking Financial Companies (NBFCs) running high-APR personal loan products, whose revenues rose sharply through FY25 — and asked what that rapid growth said about the lending practices behind it.</p>
+      </div>
+      <div class="story-image"><img src="images/revenue-growth/01.png" alt="Revenue Growth (NBFC) — image 01" onerror="this.remove()"></div>
+    </div>
+
+    <!-- Data -->
+    <h2 class="section-title story-heading story-heading--data">DATA</h2>
+    <div class="story-text-block">
+      <p class="story-text__lede">The data provided was broken down into 2 layers of information to make it digestible for the readers. Click a button on the sheet below to highlight where each layer lives.</p>
+    </div>
+
+    <div class="sheet-frame" id="revenueGrowthSheet">
+      <div class="sheet-frame__titlebar">
+        <svg class="sheet-frame__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect x="2" y="2" width="20" height="20" rx="3" fill="#1D6F42"/>
+          <path d="M7 7L17 17M17 7L7 17" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="sheet-frame__filename">02.csv</span>
+        <span class="sheet-frame__note">RBI-registered NBFCs running high-APR personal loan products, ranked by FY25 revenue growth</span>
+      </div>
+      <div class="sheet-frame__toolbar">
+        <div class="sheet-frame__layer-group">
+          <span class="sheet-frame__layer-tag sheet-frame__layer-tag--primary">Primary Layer<span class="sheet-frame__layer-tag-sub">this information will be legible without any interaction</span></span>
+          <div class="sheet-frame__button-row">
+            <button type="button" class="sheet-btn sheet-btn--primary" data-layer="primary" data-columns="fy24rev,fy25rev" aria-pressed="false" title="The shift in company valuation/revenue">Revenue Shift</button>
+            <button type="button" class="sheet-btn sheet-btn--primary" data-layer="primary" data-columns="multiple" aria-pressed="false" title="Comparative scale of growth across companies">Growth Scale</button>
+            <button type="button" class="sheet-btn sheet-btn--primary" data-layer="primary" data-columns="increase" aria-pressed="false" title="The overall magnitude of the trend">Magnitude</button>
+          </div>
+        </div>
+        <div class="sheet-frame__layer-group">
+          <span class="sheet-frame__layer-tag sheet-frame__layer-tag--secondary">Secondary Layer<span class="sheet-frame__layer-tag-sub">this information will be visible on the chart with a click or hover</span></span>
+          <div class="sheet-frame__button-row">
+            <button type="button" class="sheet-btn sheet-btn--secondary" data-layer="secondary" data-columns="company" aria-pressed="false" title="Company Name">Company Name</button>
+            <button type="button" class="sheet-btn sheet-btn--secondary" data-layer="secondary" data-columns="fy24rev,fy25rev" aria-pressed="false" title="Actual revenue figures">Revenue Figures</button>
+            <button type="button" class="sheet-btn sheet-btn--secondary" data-layer="secondary" data-columns="multiple,increase" aria-pressed="false" title="Translation of the growth multiple">Growth Multiple</button>
+            <button type="button" class="sheet-btn sheet-btn--secondary" data-layer="secondary" data-columns="yoe" aria-pressed="false" title="Year of establishment">Year Established</button>
+          </div>
+        </div>
+      </div>
+      <div class="sheet-frame__scroll">
+        <table class="sheet-frame__table">
+          <caption class="sheet-frame__note" style="caption-side: bottom; text-align: left; padding: 0.6rem;">Source: RBI Registered NBFC List, company financial filings</caption>
+          <thead>
+            <tr class="sheet-frame__col-headers">
+              <th class="sheet-frame__row-num" aria-hidden="true"></th>
+              <th scope="col">A</th>
+              <th scope="col">B</th>
+              <th scope="col">C</th>
+              <th scope="col">D</th>
+              <th scope="col">E</th>
+              <th scope="col">F</th>
+              <th scope="col">G</th>
+              <th scope="col">H</th>
+              <th scope="col">I</th>
+              <th scope="col">J</th>
+              <th scope="col">K</th>
+            </tr>
+            <tr class="sheet-frame__field-row">
+              <th class="sheet-frame__row-num" scope="row">1</th>
+              <th data-col="slno" scope="col">Sl. No.</th>
+              <th data-col="company" scope="col">NBFC (Regulated Entity)</th>
+              <th data-col="websites" scope="col">Loan Websites</th>
+              <th data-col="fy24rev" scope="col">FY24 Revenue</th>
+              <th data-col="fy25rev" scope="col">FY25 Revenue</th>
+              <th data-col="increase" scope="col">Increase</th>
+              <th data-col="multiple" scope="col">Growth as Multiple</th>
+              <th data-col="fy24profit" scope="col">FY24 Profit</th>
+              <th data-col="fy25profit" scope="col">FY25 Profit</th>
+              <th data-col="profitincrease" scope="col">Increase</th>
+              <th data-col="yoe" scope="col">YoE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">2</th>
+              <td data-col="slno">1</td>
+              <td data-col="company">Agrim Fincap</td>
+              <td data-col="websites">Rupyalelo, Speedo loan</td>
+              <td data-col="fy24rev">₹0.2 Cr</td>
+              <td data-col="fy25rev">₹2.7 Cr</td>
+              <td data-col="increase">1245%</td>
+              <td data-col="multiple">13</td>
+              <td data-col="fy24profit">₹0.0193 Cr</td>
+              <td data-col="fy25profit">₹0.4 Cr</td>
+              <td data-col="profitincrease">2228%</td>
+              <td data-col="yoe">1995</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">3</th>
+              <td data-col="slno">2</td>
+              <td data-col="company">Ava Finance</td>
+              <td data-col="websites">Kamakshi Money</td>
+              <td data-col="fy24rev">₹0.2 Cr</td>
+              <td data-col="fy25rev">₹3.5 Cr</td>
+              <td data-col="increase">2084%</td>
+              <td data-col="multiple">22</td>
+              <td data-col="fy24profit">₹0.03 Cr</td>
+              <td data-col="fy25profit">₹0.4 Cr</td>
+              <td data-col="profitincrease">1233%</td>
+              <td data-col="yoe">1995</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">4</th>
+              <td data-col="slno">3</td>
+              <td data-col="company">Junoon Capital</td>
+              <td data-col="websites">Paisa Udhar, Insta Paise</td>
+              <td data-col="fy24rev">₹2.9 Cr</td>
+              <td data-col="fy25rev">₹11.5 Cr</td>
+              <td data-col="increase">297%</td>
+              <td data-col="multiple">4</td>
+              <td data-col="fy24profit">₹0.1227 Cr</td>
+              <td data-col="fy25profit">₹0.7 Cr</td>
+              <td data-col="profitincrease">460%</td>
+              <td data-col="yoe">1996</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">5</th>
+              <td data-col="slno">4</td>
+              <td data-col="company">Niskha Finvest</td>
+              <td data-col="websites">CashPe</td>
+              <td data-col="fy24rev">₹2.5 Cr</td>
+              <td data-col="fy25rev">₹4.7 Cr</td>
+              <td data-col="increase">88%</td>
+              <td data-col="multiple">2</td>
+              <td data-col="fy24profit">₹0.276 Cr</td>
+              <td data-col="fy25profit">₹0.5 Cr</td>
+              <td data-col="profitincrease">85%</td>
+              <td data-col="yoe">1994</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">6</th>
+              <td data-col="slno">5</td>
+              <td data-col="company">Achiievers Finance India</td>
+              <td data-col="websites">Jhatpat loan</td>
+              <td data-col="fy24rev">₹14.7 Cr</td>
+              <td data-col="fy25rev">₹25.4 Cr</td>
+              <td data-col="increase">72%</td>
+              <td data-col="multiple">2</td>
+              <td data-col="fy24profit">₹1.53 Cr</td>
+              <td data-col="fy25profit">₹3.0 Cr</td>
+              <td data-col="profitincrease">94%</td>
+              <td data-col="yoe">1996</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">7</th>
+              <td data-col="slno">6</td>
+              <td data-col="company">SURYA SHAKTI VYAPAAR</td>
+              <td data-col="websites">Easyrupeeloan, ClapCredit</td>
+              <td data-col="fy24rev">₹1.0 Cr</td>
+              <td data-col="fy25rev">₹4.6 Cr</td>
+              <td data-col="increase">358%</td>
+              <td data-col="multiple">5</td>
+              <td data-col="fy24profit">₹0.003 Cr</td>
+              <td data-col="fy25profit">₹0.0 Cr</td>
+              <td data-col="profitincrease">900%</td>
+              <td data-col="yoe">1995</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">8</th>
+              <td data-col="slno">7</td>
+              <td data-col="company">AGF Finlease</td>
+              <td data-col="websites">Cashkredit, Loanforcare, Next big loan, Wepay Loan</td>
+              <td data-col="fy24rev">₹5.0 Cr</td>
+              <td data-col="fy25rev">₹22.6 Cr</td>
+              <td data-col="increase">356%</td>
+              <td data-col="multiple">5</td>
+              <td data-col="fy24profit">₹0.13573 Cr</td>
+              <td data-col="fy25profit">₹0.4 Cr</td>
+              <td data-col="profitincrease">221%</td>
+              <td data-col="yoe">1996</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">9</th>
+              <td data-col="slno">8</td>
+              <td data-col="company">Aman Fincap</td>
+              <td data-col="websites">Duniya Finance, Squidloan, Paisa on salary, Tejas loan, LoanZap</td>
+              <td data-col="fy24rev">₹1.2 Cr</td>
+              <td data-col="fy25rev">₹0.8 Cr</td>
+              <td data-col="increase">-30%</td>
+              <td data-col="multiple">1</td>
+              <td data-col="fy24profit">₹0.0636 Cr</td>
+              <td data-col="fy25profit">₹0.0 Cr</td>
+              <td data-col="profitincrease">-77%</td>
+              <td data-col="yoe">1996</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">10</th>
+              <td data-col="slno">9</td>
+              <td data-col="company">Ampire Finance</td>
+              <td data-col="websites">F1 Speed loan, FastPaise, SnapPaisa, Salaryadda, Salarysetu</td>
+              <td data-col="fy24rev">₹0.4 Cr</td>
+              <td data-col="fy25rev">₹2.2 Cr</td>
+              <td data-col="increase">477%</td>
+              <td data-col="multiple">6</td>
+              <td data-col="fy24profit">₹0.05 Cr</td>
+              <td data-col="fy25profit">₹0.3 Cr</td>
+              <td data-col="profitincrease">562%</td>
+              <td data-col="yoe">1981</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">11</th>
+              <td data-col="slno">10</td>
+              <td data-col="company">Acolyte Finance</td>
+              <td data-col="websites">Borrwera, Credxpress</td>
+              <td data-col="fy24rev">₹0.2 Cr</td>
+              <td data-col="fy25rev">₹11.3 Cr</td>
+              <td data-col="increase">7416%</td>
+              <td data-col="multiple">75</td>
+              <td data-col="fy24profit">₹-0.048 Cr</td>
+              <td data-col="fy25profit">₹1.0 Cr</td>
+              <td data-col="profitincrease">2267%</td>
+              <td data-col="yoe">1988</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">12</th>
+              <td data-col="slno">11</td>
+              <td data-col="company">Ayaan Finserve</td>
+              <td data-col="websites">Dhanvriddhi</td>
+              <td data-col="fy24rev">₹3.5 Cr</td>
+              <td data-col="fy25rev">₹7.9 Cr</td>
+              <td data-col="increase">127%</td>
+              <td data-col="multiple">2</td>
+              <td data-col="fy24profit">₹0.6113 Cr</td>
+              <td data-col="fy25profit">₹0.6 Cr</td>
+              <td data-col="profitincrease">5%</td>
+              <td data-col="yoe">1982</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">13</th>
+              <td data-col="slno">12</td>
+              <td data-col="company">Comero Leasing & Financials</td>
+              <td data-col="websites">Xpressloan</td>
+              <td data-col="fy24rev">₹1.1 Cr</td>
+              <td data-col="fy25rev">₹6.4 Cr</td>
+              <td data-col="increase">478%</td>
+              <td data-col="multiple">6</td>
+              <td data-col="fy24profit">₹0.3515 Cr</td>
+              <td data-col="fy25profit">₹0.4 Cr</td>
+              <td data-col="profitincrease">7%</td>
+              <td data-col="yoe">1992</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">14</th>
+              <td data-col="slno">13</td>
+              <td data-col="company">Naman Finlease</td>
+              <td data-col="websites">Qua loan, Zeptofinance</td>
+              <td data-col="fy24rev">₹1.6 Cr</td>
+              <td data-col="fy25rev">₹6.0 Cr</td>
+              <td data-col="increase">281%</td>
+              <td data-col="multiple">4</td>
+              <td data-col="fy24profit">₹0.295 Cr</td>
+              <td data-col="fy25profit">₹0.3 Cr</td>
+              <td data-col="profitincrease">-12%</td>
+              <td data-col="yoe">1997</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">15</th>
+              <td data-col="slno">14</td>
+              <td data-col="company">Dev-Aashish Capital</td>
+              <td data-col="websites">Rupee112</td>
+              <td data-col="fy24rev">₹0.0 Cr</td>
+              <td data-col="fy25rev">₹80.9 Cr</td>
+              <td data-col="increase">475782%</td>
+              <td data-col="multiple">4759</td>
+              <td data-col="fy24profit">₹0.0006 Cr</td>
+              <td data-col="fy25profit">₹2.7 Cr</td>
+              <td data-col="profitincrease">441567%</td>
+              <td data-col="yoe">1995</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">16</th>
+              <td data-col="slno">15</td>
+              <td data-col="company">Devmuni Leasing & Finance</td>
+              <td data-col="websites">Bharatloan</td>
+              <td data-col="fy24rev">₹32.9 Cr</td>
+              <td data-col="fy25rev">₹74.7 Cr</td>
+              <td data-col="increase">127%</td>
+              <td data-col="multiple">2</td>
+              <td data-col="fy24profit">₹0.62 Cr</td>
+              <td data-col="fy25profit">₹3.2 Cr</td>
+              <td data-col="profitincrease">416%</td>
+              <td data-col="yoe">1995</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">17</th>
+              <td data-col="slno">16</td>
+              <td data-col="company">Digner Finlease & Investment</td>
+              <td data-col="websites">Creditpey, Kreditsure</td>
+              <td data-col="fy24rev">₹0.1 Cr</td>
+              <td data-col="fy25rev">₹2.4 Cr</td>
+              <td data-col="increase">2036%</td>
+              <td data-col="multiple">21</td>
+              <td data-col="fy24profit">₹0.07 Cr</td>
+              <td data-col="fy25profit">₹-0.1 Cr</td>
+              <td data-col="profitincrease">-229%</td>
+              <td data-col="yoe">1995</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">18</th>
+              <td data-col="slno">17</td>
+              <td data-col="company">Everlight Holding</td>
+              <td data-col="websites">Everpay</td>
+              <td data-col="fy24rev">₹0.1 Cr</td>
+              <td data-col="fy25rev">₹0.2 Cr</td>
+              <td data-col="increase">72%</td>
+              <td data-col="multiple">2</td>
+              <td data-col="fy24profit">₹0.04 Cr</td>
+              <td data-col="fy25profit">₹0.1 Cr</td>
+              <td data-col="profitincrease">210%</td>
+              <td data-col="yoe">1989</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">19</th>
+              <td data-col="slno">18</td>
+              <td data-col="company">Girdhar Finlease</td>
+              <td data-col="websites">30 Days loan</td>
+              <td data-col="fy24rev">₹8.0 Cr</td>
+              <td data-col="fy25rev">₹14.2 Cr</td>
+              <td data-col="increase">79%</td>
+              <td data-col="multiple">2</td>
+              <td data-col="fy24profit">₹0.85 Cr</td>
+              <td data-col="fy25profit">₹1.1 Cr</td>
+              <td data-col="profitincrease">25%</td>
+              <td data-col="yoe">1983</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">20</th>
+              <td data-col="slno">19</td>
+              <td data-col="company">Goodskill Securities And Services</td>
+              <td data-col="websites">Every Day Loan, Lonepey</td>
+              <td data-col="fy24rev">₹36.8 Cr</td>
+              <td data-col="fy25rev">₹47.9 Cr</td>
+              <td data-col="increase">30%</td>
+              <td data-col="multiple">1</td>
+              <td data-col="fy24profit">₹1.11 Cr</td>
+              <td data-col="fy25profit">₹1.4 Cr</td>
+              <td data-col="profitincrease">23%</td>
+              <td data-col="yoe">1990</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">21</th>
+              <td data-col="slno">20</td>
+              <td data-col="company">Kasar Credit & Capital</td>
+              <td data-col="websites">Salary on time</td>
+              <td data-col="fy24rev">₹0.0 Cr</td>
+              <td data-col="fy25rev">₹33.3 Cr</td>
+              <td data-col="increase">332500%</td>
+              <td data-col="multiple">3326</td>
+              <td data-col="fy24profit">₹0.001 Cr</td>
+              <td data-col="fy25profit">₹0.6 Cr</td>
+              <td data-col="profitincrease">55700%</td>
+              <td data-col="yoe">1995</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">22</th>
+              <td data-col="slno">21</td>
+              <td data-col="company">Loan2Grow Fincap</td>
+              <td data-col="websites">Jhatpat cash</td>
+              <td data-col="fy24rev">₹0.4 Cr</td>
+              <td data-col="fy25rev">₹0.4 Cr</td>
+              <td data-col="increase">7%</td>
+              <td data-col="multiple">1</td>
+              <td data-col="fy24profit">₹0.073 Cr</td>
+              <td data-col="fy25profit">₹0.0 Cr</td>
+              <td data-col="profitincrease">-38%</td>
+              <td data-col="yoe">2020</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">23</th>
+              <td data-col="slno">22</td>
+              <td data-col="company">Tycoon Credit & Portfolio</td>
+              <td data-col="websites">Loan Hub</td>
+              <td data-col="fy24rev">₹0.7 Cr</td>
+              <td data-col="fy25rev">₹16.2 Cr</td>
+              <td data-col="increase">2359%</td>
+              <td data-col="multiple">25</td>
+              <td data-col="fy24profit">₹0.26 Cr</td>
+              <td data-col="fy25profit">₹0.6 Cr</td>
+              <td data-col="profitincrease">123%</td>
+              <td data-col="yoe">1992</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">24</th>
+              <td data-col="slno">23</td>
+              <td data-col="company">Solomon Capital</td>
+              <td data-col="websites">Bharat loan, Rupee112</td>
+              <td data-col="fy24rev">₹0.2 Cr</td>
+              <td data-col="fy25rev">₹104.9 Cr</td>
+              <td data-col="increase">47591%</td>
+              <td data-col="multiple">477</td>
+              <td data-col="fy24profit">₹-0.16 Cr</td>
+              <td data-col="fy25profit">₹2.9 Cr</td>
+              <td data-col="profitincrease">1894%</td>
+              <td data-col="yoe">2014</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">25</th>
+              <td data-col="slno">24</td>
+              <td data-col="company">Woodland Securities</td>
+              <td data-col="websites">Creditwalle</td>
+              <td data-col="fy24rev">₹0.4 Cr</td>
+              <td data-col="fy25rev">₹7.3 Cr</td>
+              <td data-col="increase">1593%</td>
+              <td data-col="multiple">17</td>
+              <td data-col="fy24profit">₹0.08 Cr</td>
+              <td data-col="fy25profit">₹0.5 Cr</td>
+              <td data-col="profitincrease">485%</td>
+              <td data-col="yoe">1992</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">26</th>
+              <td data-col="slno">25</td>
+              <td data-col="company">R.K. Bansal Finance</td>
+              <td data-col="websites">Ramfincorp</td>
+              <td data-col="fy24rev">₹19.1 Cr</td>
+              <td data-col="fy25rev">₹528.0 Cr</td>
+              <td data-col="increase">2664%</td>
+              <td data-col="multiple">28</td>
+              <td data-col="fy24profit">₹4.86 Cr</td>
+              <td data-col="fy25profit">₹54.4 Cr</td>
+              <td data-col="profitincrease">1019%</td>
+              <td data-col="yoe">1984</td>
+            </tr>
+            <tr class="sheet-frame__total-row">
+              <th class="sheet-frame__row-num" scope="row">27</th>
+              <td data-col="slno">Total</td>
+              <td data-col="company">Median</td>
+              <td data-col="websites"></td>
+              <td data-col="fy24rev"></td>
+              <td data-col="fy25rev"></td>
+              <td data-col="increase">357.71%</td>
+              <td data-col="multiple">4.6</td>
+              <td data-col="fy24profit"></td>
+              <td data-col="fy25profit"></td>
+              <td data-col="profitincrease">220.64%</td>
+              <td data-col="yoe"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Design -->
+    <h2 class="section-title story-heading story-heading--design">DESIGN</h2>
+    <div class="story-image story-image--full story-image--rise"><img src="images/revenue-growth/03.png" alt="Revenue Growth (NBFC) — image 03" onerror="this.remove()"></div>
+
+    <div class="story-columns">
+      <div class="story-columns__spacer story-columns__spacer--wide" aria-hidden="true"></div>
+      <div>
+        <p class="story-text__lede">The result is a packed bubble chart, titled Class of FY25, clustering NBFCs whose high-APR personal loan revenues grew sharply over the past year:</p>
+        <p class="story-text__body"><strong>Bubble size</strong> maps to how many times a company's revenue multiplied between FY24 and FY25</p>
+        <p class="story-text__body"><strong>Bubble colour</strong> distinguishes profitable companies (a green gradient, scaling with growth multiple) from loss-making ones (flat orange/red)</p>
+        <div class="story-image story-stack-image"><img src="images/revenue-growth/04.png" alt="Revenue Growth (NBFC) — image 04" onerror="this.remove()"></div>
+      </div>
+    </div>
+
+    <div class="story-columns">
+      <div class="story-columns__spacer story-columns__spacer--wide" aria-hidden="true"></div>
+      <div>
+        <p class="story-text__lede">Hover state — surfaces company-level detail</p>
+        <p class="story-text__body">The revenue in FY24 and FY25, growth multiple, year of establishment, and the loan brands operating under each NBFC.</p>
+        <div class="story-image story-stack-image"><img src="images/revenue-growth/05.png" alt="Revenue Growth (NBFC) — image 05" onerror="this.remove()"></div>
+        <p class="story-text__body">A minimum size cap was applied to the bubbles. Without it, companies with 1–2x growth would be visually negligible next to outliers growing 6,000x+. The cap was a deliberate accessibility trade-off — sacrificing strict proportionality so that every company in the dataset remains visible and comparable.</p>
+      </div>
+    </div>
+
+    <div class="story-iframe-block">
+      <p class="story-text__lede">The final visualisation was embedded into <a href="https://the-ken.com/story_morning_email/at-rbi-licensed-nbfcs-600-annual-interest-is-board-approved-reasonable-and-perfectly-legal/" target="_blank" rel="noopener">the story</a> via an iframe, and published on 16th April.</p>
+      <div class="story-iframe-wrapper">
+        <iframe class="story-iframe" src="prototypes/nbfc_rbi/index.html" title="Revenue Growth - interactive visualisation" loading="lazy"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BACK PROJECT PAGER (no NEXT - this is the last episode) ============ -->
+  <section class="section case-study-pager">
+    <div class="case-study-pager-previews">
+      <a href="lightrock.html" class="case-study-pager-preview case-study-pager-preview--back">
+        <div class="story-overlap">
+          <span class="section-title case-study-pager__label story-overlap__heading back-header">BACK</span>
+          <div class="story-image"><img src="images/lightrock/00-cover.png" alt="Investment Chart (Lightrock) cover" onerror="this.remove()"></div>
+        </div>
+        <p class="case-study-pager-preview__lede">Investment Chart: a royal family's billion-dollar bet on Indian startups, without a winner.</p>
+        <div class="meta-list">
+          <span>09/04/2026</span>
+          <span>The-Ken/Intermission</span>
+          <span>eCharts, iFrame, CSS, JavaScript, Figma, GitHub, Google Gemini</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <section class="section contact-section">
+    <div class="contact-details">
+      <a class="contact-details__line" href="tel:+919874608128">+91 98746 08128</a>
+      <a class="contact-details__line" href="mailto:anujdebnath246@gmail.com">anujdebnath246@gmail.com</a>
+    </div>
+
+    <div class="contact-social-row">
+      <a class="link-arrow" href="https://www.instagram.com/codegarden.space/" target="_blank" rel="noopener">Instagram &#8599;</a>
+      <a class="link-arrow" href="https://medium.com/@radioactivesugar" target="_blank" rel="noopener">Medium &#8599;</a>
+    </div>
+
+    <div class="footer-columns">
+      <ul class="footer-nav">
+        <li><a class="footer-nav__link" href="aboutme.html">About Me</a></li>
+        <li><a class="footer-nav__link" href="index.html#works">Works</a></li>
+      </ul>
+
+      <address class="footer-address">
+        Address:<br>
+        Bengaluru,<br>
+        India
+      </address>
+    </div>
+
+    <div class="footer-links-row">
+      <a class="footer-links-row__link" href="https://radioactive-sugar.itch.io/" target="_blank" rel="noopener">[ itch.io ]</a>
+      <a class="footer-links-row__link" href="https://www.behance.net/anujdebnat6978" target="_blank" rel="noopener">[ Behance ]</a>
+      <a class="footer-links-row__link" href="https://www.linkedin.com/in/anuj-debnath-150407163/" target="_blank" rel="noopener">[ LinkedIn ]</a>
+    </div>
+
+    <h2 class="footer-wordmark" id="footer-wordmark">ANUJ DEBNATH</h2>
+  </section>
+
+  <div class="footer-bottom">
+    <span class="footer-bottom__location" id="footerClock">INDIA: (GMT+5:30) --:--</span>
+    <span class="footer-bottom__credit">Design &amp; Development &mdash; Anuj Debnath</span>
+    <span class="footer-bottom__copyright">2026 All Rights Reserved. Anuj Debnath. Any reproduction, distribution, or use of the materials without permission is prohibited.</span>
+  </div>
+
+  <!-- Custom "expand" cursor shown over the BACK/NEXT pager previews -->
+  <div class="custom-cursor" id="customCursor" aria-hidden="true">
+    <svg viewBox="0 0 24 24">
+      <line x1="7" y1="17" x2="17" y2="7"></line>
+      <polyline points="8 7 17 7 17 16"></polyline>
+    </svg>
+  </div>
+
+  <script src="js/common.js"></script>
+  <script src="js/story.js"></script>
+  <script src="js/case-study.js"></script>
+  <script src="js/revenue-growth.js"></script>
+</body>
+</html>

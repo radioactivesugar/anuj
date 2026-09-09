@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>NBFC Clustered Graph (Packed)</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+        <style>
+            @font-face {
+                font-family: "Jazmin Alt";
+                src: url("JazminAlt-Bold.otf");
+                font-weight: bold;
+            }
+            @font-face {
+                font-family: "GT America";
+                src: url("GT-America-Standard-Light.ttf");
+                font-weight: 300;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body::before {
+                content: "";
+                position: fixed;
+                inset: 0;
+                pointer-events: none;
+                background-color: #f6f2f1;
+                mix-blend-mode: multiply;
+                z-index: 0;
+            }
+
+            body {
+                background: #f6f2f2;
+                font-family: "GT America", "Segoe UI", sans-serif;
+                padding: 12px 20px 8px;
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            #header-section {
+                text-align: center;
+                padding-bottom: 20px;
+                border-bottom: 1px solid #e0e0e0;
+                z-index: 10;
+            }
+            #header-section h1 {
+                font-family: "Jazmin Alt", serif;
+                font-size: 38px;
+                color: #2b2a2a;
+                margin-top: 12px;
+                font-weight: 900;
+                letter-spacing: -0.5px;
+            }
+            #header-section .subheader {
+                font-size: 32px;
+                color: #555;
+                max-width: 900px;
+                margin: 0 auto 15px;
+                line-height: 1.5;
+            }
+
+            .inline-legend-row {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                font-size: 16px;
+                color: #444444bd;
+                align-items: center;
+                justify-content: center;
+            }
+            .legend-items {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                flex-wrap: wrap;
+            }
+            .legend-circle-positive {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background: linear-gradient(90deg, #b4f0cd, #194b2d);
+                display: inline-block;
+            }
+            .legend-circle-negative {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background-color: #e48d73;
+                display: inline-block;
+            }
+
+            #chart-area {
+                flex: 1 1 auto;
+                position: relative;
+                min-height: 250px;
+            }
+            #chart-container {
+                width: 100%;
+                height: 100%;
+            }
+
+            #footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px 0;
+                border-top: 1px solid #e0e0e0;
+                font-size: 16px;
+                color: #777;
+                width: 100%;
+                z-index: 10;
+            }
+            .footer-logo {
+                height: 16px;
+                object-fit: contain;
+            }
+
+            @media (max-width: 767px) {
+                body {
+                    padding: 6px 10px 4px;
+                }
+                #header-section {
+                    padding-bottom: 8px;
+                }
+                #header-section h1 {
+                    margin-bottom: 2px;
+                }
+                #header-section .subheader {
+                    margin-bottom: 6px;
+                    font-size: 18px;
+                    padding-bottom: 12px;
+                }
+                #footer {
+                    flex-direction: column;
+                    gap: 6px;
+                    text-align: center;
+                    padding: 22px 0 9px 0;
+                }
+
+                .legend-explainer {
+                    font-size: 0.9rem;
+                }
+
+                .legend-items {
+                    justify-content: center;
+                }
+            }
+
+            @media (min-width: 768px) and (max-width: 1024px) {
+                #header-section .subheader {
+                    margin-bottom: 6px;
+                    font-size: 20px;
+                    padding: 0 40px 12px 40px;
+                    padding-bottom: 12px;
+                }
+
+                .legend-explainer {
+                    font-size: 1rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div id="header-section">
+            <h1>Class of FY25</h1>
+            <p class="subheader">
+                NBFCs running high-APR personal loans saw their revenues
+                skyrocket through FY25
+            </p>
+            <div class="inline-legend-row">
+                <span class="legend-text">
+                    Each bubble is one NBFC, sized by how many times its revenue
+                    multiplied between FY24 and FY25
+                </span>
+                <div class="legend-items">
+                    <span class="legend-circle-positive"></span> profitable
+                    growth <span class="legend-circle-negative"></span> loss
+                    making
+                    <i>(Hover bubbles to view company details)</i>
+                </div>
+            </div>
+        </div>
+
+        <div id="chart-area">
+            <div id="chart-container"></div>
+        </div>
+        <div id="footer">
+            <div><img src="logo.png" class="footer-logo" alt="The Ken" /></div>
+            <div>Graphic by Anuj, 6 Jul '26</div>
+            <div>Source: MCA Filings</div>
+        </div>
+
+        <script>
+            const chartDom = document.getElementById("chart-container");
+            const myChart = echarts.init(chartDom);
+
+            const rawData = [
+                {
+                    name: "Agrim Fincap",
+                    subs: ["Rupyalelo", "Speedo loan"],
+                    rev24: 0.2,
+                    rev25: 2.7,
+                    growthMult: 13,
+                    yoe: 1995,
+                },
+                {
+                    name: "Ava Finance",
+                    subs: ["Kamakshi Money"],
+                    rev24: 0.2,
+                    rev25: 3.5,
+                    growthMult: 22,
+                    yoe: 1995,
+                },
+                {
+                    name: "Junoon Capital",
+                    subs: ["Paisa Udhar", "Insta Paise"],
+                    rev24: 2.9,
+                    rev25: 11.5,
+                    growthMult: 4,
+                    yoe: 1996,
+                },
+                {
+                    name: "Niskha Finvest",
+                    subs: ["CashPe"],
+                    rev24: 2.5,
+                    rev25: 4.7,
+                    growthMult: 2,
+                    yoe: 1994,
+                },
+                {
+                    name: "Achiievers Finance India",
+                    subs: ["Jhatpat loan"],
+                    rev24: 14.7,
+                    rev25: 25.4,
+                    growthMult: 2,
+                    yoe: 1996,
+                },
+                {
+                    name: "SURYA SHAKTI VYAPAAR",
+                    subs: ["Easyrupeeloan", "ClapCredit"],
+                    rev24: 1.0,
+                    rev25: 4.6,
+                    growthMult: 5,
+                    yoe: 1995,
+                },
+                {
+                    name: "AGF Finlease",
+                    subs: [
+                        "Cashkredit",
+                        "Loanforcare",
+                        "Next big loan",
+                        "Wepay Loan",
+                    ],
+                    rev24: 5.0,
+                    rev25: 22.6,
+                    growthMult: 5,
+                    yoe: 1996,
+                },
+                {
+                    name: "Aman Fincap",
+                    subs: [
+                        "Duniya Finance",
+                        "Squidloan",
+                        "Paisa on salary",
+                        "Tejas loan",
+                        "LoanZap",
+                    ],
+                    rev24: 1.2,
+                    rev25: 0.8,
+                    growthMult: 1,
+                    yoe: 1996,
+                },
+                {
+                    name: "Ampire Finance",
+                    subs: [
+                        "F1 Speed loan",
+                        "FastPaise",
+                        "SnapPaisa",
+                        "Salaryadda",
+                        "Salarysetu",
+                    ],
+                    rev24: 0.4,
+                    rev25: 2.2,
+                    growthMult: 6,
+                    yoe: 1981,
+                },
+                {
+                    name: "Acolyte Finance",
+                    subs: ["Borrwera", "Credxpress"],
+                    rev24: 0.2,
+                    rev25: 11.3,
+                    growthMult: 75,
+                    yoe: 1994,
+                },
+                {
+                    name: "Ayaan Finserve",
+                    subs: ["Dhanvriddhi"],
+                    rev24: 3.5,
+                    rev25: 7.9,
+                    growthMult: 2,
+                    yoe: 1982,
+                },
+                {
+                    name: "Comero Leasing & Financials",
+                    subs: ["Xpressloan"],
+                    rev24: 1.1,
+                    rev25: 6.4,
+                    growthMult: 6,
+                    yoe: 1992,
+                },
+                {
+                    name: "Naman Finlease",
+                    subs: ["Qua loan", "Zeptofinance"],
+                    rev24: 1.6,
+                    rev25: 6.0,
+                    growthMult: 4,
+                    yoe: 1997,
+                },
+                {
+                    name: "Dev-Aashish Capital",
+                    subs: ["Rupee112"],
+                    rev24: 0.017,
+                    rev25: 80.9,
+                    growthMult: 4759,
+                    yoe: 1995,
+                },
+                {
+                    name: "Devmuni Leasing & Finance",
+                    subs: ["Bharatloan"],
+                    rev24: 32.9,
+                    rev25: 74.7,
+                    growthMult: 2,
+                    yoe: 1995,
+                },
+                {
+                    name: "Digner Finlease & Investment",
+                    subs: ["Creditpey", "Kreditsure"],
+                    rev24: 0.1,
+                    rev25: 2.4,
+                    growthMult: 21,
+                    yoe: 1995,
+                },
+                {
+                    name: "Everlight Holding",
+                    subs: ["Everpay"],
+                    rev24: 0.1,
+                    rev25: 0.2,
+                    growthMult: 2,
+                    yoe: 1989,
+                },
+                {
+                    name: "Girdhar Finlease",
+                    subs: ["30 Days loan"],
+                    rev24: 8.0,
+                    rev25: 14.2,
+                    growthMult: 2,
+                    yoe: 1983,
+                },
+                {
+                    name: "Goodskill Securities And Services",
+                    subs: ["Every Day Loan", "Lonepey"],
+                    rev24: 36.8,
+                    rev25: 47.9,
+                    growthMult: 1,
+                    yoe: 1990,
+                },
+                {
+                    name: "Kasar Credit & Capital",
+                    subs: ["Salary on time"],
+                    rev24: 0.01,
+                    rev25: 33.3,
+                    growthMult: 3326,
+                    yoe: 1995,
+                },
+                {
+                    name: "Loan2Grow Fincap",
+                    subs: ["Jhatpat cash"],
+                    rev24: 0.4,
+                    rev25: 0.4,
+                    growthMult: 1,
+                    yoe: 2020,
+                },
+                {
+                    name: "Tycoon Credit & Portfolio",
+                    subs: ["Loan Hub"],
+                    rev24: 0.7,
+                    rev25: 16.2,
+                    growthMult: 25,
+                    yoe: 1992,
+                },
+                {
+                    name: "Solomon Capital",
+                    subs: ["Bharat loan", "Rupee112 (Solomon)"],
+                    rev24: 0.2,
+                    rev25: 104.9,
+                    growthMult: 477,
+                    yoe: 2014,
+                },
+                {
+                    name: "Woodland Securities",
+                    subs: ["Creditwalle"],
+                    rev24: 0.4,
+                    rev25: 7.3,
+                    growthMult: 17,
+                    yoe: 1992,
+                },
+                {
+                    name: "R.K. Bansal Finance",
+                    subs: ["Ramfincorp"],
+                    rev24: 19.1,
+                    rev25: 528.0,
+                    growthMult: 28,
+                    yoe: 1984,
+                },
+            ];
+
+            const TERRACOTTA_RED = "#e48d73";
+            const lossMakingList = [
+                "Aman Fincap",
+                "Naman Finlease",
+                "Digner Finlease & Investment",
+                "Loan2Grow Fincap",
+            ];
+
+            function getDeviceProfile() {
+                const width = window.innerWidth;
+                if (width < 768) return "mobile";
+                if (width <= 1000) return "ipad";
+                return "desktop";
+            }
+
+            function getPositiveColor(multiple) {
+                const maxExpectedMult = 4758;
+                const ratio = Math.min(
+                    1,
+                    Math.max(
+                        0,
+                        Math.log1p(multiple) / Math.log1p(maxExpectedMult),
+                    ),
+                );
+                const r = Math.round(180 - ratio * (180 - 25));
+                const g = Math.round(240 - ratio * (240 - 75));
+                const b = Math.round(205 - ratio * (205 - 45));
+                return `rgb(${r}, ${g}, ${b})`;
+            }
+
+            function calculateParentSize(multiple) {
+                const profile = getDeviceProfile();
+                let multiplier = 36;
+                let minSize = 60;
+
+                if (profile === "mobile") {
+                    multiplier = 14;
+                    minSize = 50;
+                }
+
+                let baseSize = Math.log1p(multiple) * multiplier;
+                if (baseSize < minSize) baseSize = minSize;
+                return baseSize;
+            }
+
+            let globalNodes = [];
+
+            function buildGraphData() {
+                const simNodes = [];
+                const profile = getDeviceProfile();
+
+                rawData.forEach((item, index) => {
+                    const isLossMaking = lossMakingList.includes(item.name);
+                    const groupColor = isLossMaking
+                        ? TERRACOTTA_RED
+                        : getPositiveColor(item.growthMult);
+                    const parentSize = calculateParentSize(item.growthMult);
+                    const sharedMetaData = {
+                        parentName: item.name,
+                        growthMult: item.growthMult,
+                        subsList: item.subs,
+                        yoe: item.yoe,
+                        rev24: item.rev24,
+                        rev25: item.rev25,
+                    };
+
+                    simNodes.push({
+                        id: item.name,
+                        name: item.name,
+                        radius: parentSize / 2,
+                        symbolSize: parentSize,
+                        category: index,
+                        isParent: true,
+                        color: groupColor,
+                        customData: sharedMetaData,
+                    });
+                });
+
+                const simulation = d3
+                    .forceSimulation(simNodes)
+                    .force("x", d3.forceX(0).strength(0.2))
+                    .force("y", d3.forceY(0).strength(0.2))
+                    .force(
+                        "collide",
+                        d3
+                            .forceCollide()
+                            .radius((d) => d.radius + 3)
+                            .strength(1)
+                            .iterations(15),
+                    )
+                    .stop();
+
+                for (let i = 0; i < 600; i++) simulation.tick();
+
+                globalNodes = simNodes.map((n) => {
+                    return {
+                        name: n.name,
+                        x: n.x,
+                        y: n.y,
+                        symbolSize: n.symbolSize,
+                        category: n.category,
+                        itemStyle: {
+                            color: n.color,
+                            opacity: 0.95,
+                        },
+                        label: {
+                            show: true,
+                            position: "inside",
+                            color: "#ffffff",
+                            fontSize: Math.max(
+                                profile === "mobile" ? 9 : 11,
+                                Math.min(
+                                    profile === "mobile" ? 12 : 15,
+                                    n.symbolSize / 5,
+                                ),
+                            ),
+                            fontWeight: "bold",
+                            overflow: "break",
+                            lineOverflow: "truncate",
+                            width: n.symbolSize * 0.85,
+                            formatter: (p) => {
+                                return `${p.data.customData.growthMult}x`;
+                            },
+                        },
+                        customData: n.customData,
+                    };
+                });
+
+                return { nodes: globalNodes, links: [] };
+            }
+
+            function getChartOption() {
+                const graphData = buildGraphData();
+                const profile = getDeviceProfile();
+
+                let responsiveZoom = 1;
+                if (profile === "mobile") responsiveZoom = 1;
+
+                return {
+                    tooltip: {
+                        trigger: "item",
+                        backgroundColor: "rgba(246, 242, 242, 0.95)",
+                        borderColor: "#194b2d",
+                        borderWidth: 1.5,
+                        padding: 0,
+                        confine: true,
+                        appendTo: "body",
+                        extraCssText:
+                            "border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 9999999 !important; position: fixed !important; pointer-events: none;",
+                        textStyle: {
+                            fontFamily: "GT America, Segoe UI, sans-serif",
+                        },
+                        position: function (point, params, dom, rect, size) {
+                            const mouseX = point[0];
+                            const mouseY = point[1];
+                            const tooltipWidth = size.contentSize[0];
+                            const tooltipHeight = size.contentSize[1];
+                            const viewWidth = window.innerWidth;
+                            const viewHeight = window.innerHeight;
+
+                            let finalX = mouseX + 15;
+                            let finalY = mouseY - tooltipHeight / 2;
+
+                            if (finalX + tooltipWidth > viewWidth)
+                                finalX = mouseX - tooltipWidth - 15;
+                            if (finalX < 0) finalX = 10;
+                            if (finalY + tooltipHeight > viewHeight)
+                                finalY = viewHeight - tooltipHeight - 10;
+                            if (finalY < 0) finalY = 10;
+
+                            return [finalX, finalY];
+                        },
+                        formatter: function (params) {
+                            if (!params.data || !params.data.customData)
+                                return "";
+                            const data = params.data.customData;
+                            const isLossMaking = lossMakingList.includes(
+                                data.parentName,
+                            );
+                            const accentColor = "#194b2d";
+
+                            const cardWidth =
+                                profile === "mobile" ? "250px" : "320px";
+                            const titleSize =
+                                profile === "mobile" ? "16px" : "19px";
+                            const valueSize =
+                                profile === "mobile" ? "17px" : "20px";
+                            const bodySize =
+                                profile === "mobile" ? "12px" : "14px";
+                            const metaSize =
+                                profile === "mobile" ? "11px" : "13px";
+                            const minColWidth =
+                                profile === "mobile" ? "75px" : "95px";
+
+                            let channelsHtml = "";
+                            if (data.subsList && data.subsList.length > 0) {
+                                channelsHtml = `<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px ${profile === "mobile" ? "8px" : "16px"}; font-family: 'GT America', sans-serif; font-weight: normal; color: #44;> `;
+                                data.subsList.forEach((sub) => {
+                                    channelsHtml += `<div style="font-size: ${metaSize}; color: #444; word-wrap: break-word; word-break: break-all;">${sub}</div>`;
+                                });
+                                channelsHtml += "</div>";
+                            } else {
+                                channelsHtml = `<div style="font-size: ${metaSize}; color: #777; font-family: 'GT America', sans-serif;">None</div>`;
+                            }
+
+                            const growthString = `<b>Revenue</b> grew <span style="font-weight: normal; color: ${accentColor};">~${data.growthMult}x</span> times`;
+
+                            return `
+                                <div style="width: ${cardWidth}; padding: ${profile === "mobile" ? "12px 14px" : "16px 18px"}; line-height: 1.4; box-sizing: border-box; font-family: 'GT America', sans-serif; font-weight: normal; color: #333;">
+                                    <div style="font-size: ${titleSize}; font-weight: bold; color: #111; letter-spacing: -0.3px; margin-bottom: 2px; white-space: normal; word-wrap: break-word;">${data.parentName}</div>
+                                    <div style="font-size: ${metaSize}; color: #666; margin-bottom: 8px;">Est. ${data.yoe}</div>
+                                    <hr style="border: none; border-top: 1px solid #e0e0e0; margin-bottom: 10px"/>
+                                    <div style="font-size: ${bodySize}; color: #444; margin-bottom: 10px;">${growthString}</div>
+                                    <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; font-family: 'GT America', sans-serif;">
+                                        <div style="display: flex; flex-direction: column; align-items: center; min-width: ${minColWidth};">
+                                            <span style="font-size: ${valueSize}; font-weight: bold; color: #222;">Rs. ${data.rev24}cr</span>
+                                            <span style="font-size: ${metaSize}; color: #666; margin-top: 2px;">(FY24)</span>
+                                        </div>
+                                        <div style="font-size: ${valueSize}; color: #aaa; padding-top: 2px;">&rarr;</div>
+                                        <div style="display: flex; flex-direction: column; align-items: center; min-width: ${minColWidth};">
+                                            <span style="font-size: ${valueSize}; font-weight: bold; color: #222;">Rs. ${data.rev25}cr</span>
+                                            <span style="font-size: ${metaSize}; color: #666; margin-top: 2px;">(FY25)</span>
+                                        </div>
+                                    </div>
+                                    <hr style="border: none; border-top: 1px solid #e0e0e0; margin-bottom: 10px"/>
+                                    <div style="font-size: ${bodySize}; color: #444; margin-bottom: 6px; font-weight: bold;">Loan Websites</div>
+                                    ${channelsHtml}
+                                </div>`;
+                        },
+                    },
+                    animationDuration: 1200,
+                    animationEasingUpdate: "quinticInOut",
+                    series: [
+                        {
+                            type: "graph",
+                            layout: "none",
+                            center: ["0%", "0%"],
+                            zoom: responsiveZoom,
+                            data: graphData.nodes,
+                            links: [],
+                            roam: false,
+                            focusNodeAdjacency: false,
+                            emphasis: { disabled: true },
+                            lineStyle: { width: 0, curveness: 0 },
+                        },
+                    ],
+                };
+            }
+
+            myChart.setOption(getChartOption());
+
+            myChart.on("mouseover", "series", function (params) {
+                if (!params.data || typeof params.data.category === "undefined")
+                    return;
+
+                const targetCategory = params.data.category;
+                const updatedNodes = globalNodes.map((node) => {
+                    const isSameNode = node.category === targetCategory;
+                    return {
+                        ...node,
+                        itemStyle: {
+                            ...node.itemStyle,
+                            opacity: isSameNode ? 0.95 : 0.15,
+                        },
+                        label: {
+                            ...node.label,
+                            color: isSameNode
+                                ? "#ffffff"
+                                : "rgba(255, 255, 255, 0.2)",
+                        },
+                    };
+                });
+                myChart.setOption({ series: [{ data: updatedNodes }] });
+            });
+
+            myChart.on("mouseout", "series", function () {
+                myChart.setOption({ series: [{ data: globalNodes }] });
+            });
+
+            window.addEventListener("resize", () => {
+                myChart.setOption(getChartOption());
+                myChart.resize();
+            });
+        </script>
+    </body>
+</html>

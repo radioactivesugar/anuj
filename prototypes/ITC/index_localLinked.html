@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>ITC</title>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+        <link rel="stylesheet" href="styles/globals.css" />
+
+        <!-- module CSS files go here -->
+        <link rel="stylesheet" href="styles/shareholding.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+        <link rel="stylesheet" href="styles/mandiMap.css" />
+        <link rel="stylesheet" href="styles/atta.css" />
+        <link rel="stylesheet" href="styles/comparison.css" />
+        <link rel="stylesheet" href="styles/market_cap.css" />
+        <link rel="stylesheet" href="styles/stocks.css" />
+        <link rel="stylesheet" href="styles/smoke.css" />
+        <link rel="stylesheet" href="styles/smoke75.css" />
+        <link rel="stylesheet" href="styles/timeline.css" />
+        <link rel="stylesheet" href="styles/government.css" />
+        <link rel="stylesheet" href="styles/logofarm.css" />
+        <link rel="stylesheet" href="styles/cigarette.css" />
+        <link rel="stylesheet" href="styles/hotels.css" />
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    </head>
+    <body>
+
+        <!-- sections go here -->
+
+        <div class="QW4K-spacer"></div>
+
+        <!--v3.2-->
+        <section class="QW4K1-chart-section">
+          <div class="QW4K1-chart-frame">
+            <div class="QW4K1-chart-container">
+              <div class="QW4K1-chart-header">
+                <div class="QW4K1-chart-header-text">
+                  <h2 class="QW4K1-chart-title">BAT’s shareholding in ITC declined over the decades,<br /><span class="QW4K1-chart-subtitle"> from 100% to 23% today</span></h2>
+                </div>
+                <div class="QW4K1-legend" id="QW4K1-legend"></div>
+              </div>
+              <!-- ECharts DOM element -->
+              <div id="QW4K1-main-chart"></div>
+            </div>
+          </div>
+        </section>
+
+        <div class="QW4K-spacer"></div>
+
+        <!--v7.2-->
+        <section class="QW4K2-mandi-section QW4K2-dither-effect">
+          <div class="QW4K2-window">
+            <div class="QW4K2-title-bar">
+              <div class="QW4K2-title-text" id="QW4K2-win-title">e-choupal was a revolutionary technology for farmers. This is re-imagined representation of the old website.</div>
+              <div class="QW4K2-window-controls"><button>_</button><button>&#9633;</button><button>X</button></div>
+            </div>
+
+            <div class="QW4K2-menu-bar">
+              <div class="QW4K2-left-menus"><span>File</span><span>Edit</span><span>View</span><span>Favorites</span><span>Help</span></div>
+              <div>
+                <span style="font-weight:bold;font-size:11px;">Language / &#2349;&#2366;&#2359;&#2366;: </span>
+                <select class="QW4K2-lang-select-box" id="QW4K2-langToggle">
+                  <option value="en" selected>English</option>
+                  <option value="hi">&#2361;&#2367;&#2344;&#2381;&#2342;&#2368; (Hindi)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="QW4K2-choupal-header">
+              <div class="QW4K2-ticker"><marquee scrollamount="3" id="QW4K2-marquee-ticker"></marquee></div>
+              <div class="QW4K2-brand-main">
+                <div class="QW4K2-logo-placeholder">ITC Limited<br>Agri Business</div>
+                <div class="QW4K2-choupal-title" id="QW4K2-brand-title">&#2312;-&#2330;&#2380;&#2346;&#2366;&#2354;</div>
+                <div style="font-size:24px;">&#127806;&#128187;</div>
+              </div>
+              <div class="QW4K2-crop-nav" id="QW4K2-crop-links"></div>
+              <div class="QW4K2-crop-hint" id="QW4K2-crop-hint-top">Select a crop above too</div>
+            </div>
+
+            <div class="QW4K2-workspace">
+              <!-- LEFT SIDEBAR : COMMODITIES -->
+              <div class="QW4K2-sidebar">
+                <div class="QW4K2-sidebar-title" id="QW4K2-side-title"></div>
+                <div class="QW4K2-state-select">
+                  <span id="QW4K2-state-label"></span>
+                  <select id="QW4K2-stateSel">
+                    <option value="Madhya Pradesh" selected>Madhya Pradesh</option>
+                  </select>
+                </div>
+                <div class="QW4K2-crop-hint" id="QW4K2-crop-hint-left">Select a crop from this list too</div>
+                <ul class="QW4K2-commodity-list" id="QW4K2-commodity-list"></ul>
+                <div class="QW4K2-side-code" id="QW4K2-side-code"></div>
+                <div class="QW4K2-side-note" id="QW4K2-side-note"></div>
+              </div>
+
+              <!-- CENTER : MAP HERO -->
+              <div class="QW4K2-content-area">
+                <div class="QW4K2-desc"><b id="QW4K2-desc-text"></b></div>
+                <div class="QW4K2-map-frame">
+                  <div class="QW4K2-map-caption">
+                    <span id="QW4K2-map-title"></span>
+                    <span id="QW4K2-map-stat"></span>
+                  </div>
+                  <div id="QW4K2-map"></div>
+                  <div id="QW4K2-map-hint" class="QW4K2-map-hint">
+                    <div class="QW4K2-pop-h">Select a district</div>
+                    <div class="QW4K2-pop-sub">Modal price will appear here</div>
+                    <hr class="QW4K2-pop-rule">
+                    <div class="QW4K2-map-hint-cta">Click the map to interact</div>
+                  </div>
+                </div>
+                <div class="QW4K2-table-wrap">
+                  <table class="QW4K2-mandi-table">
+                    <thead><tr id="QW4K2-table-headers"></tr></thead>
+                    <tbody id="QW4K2-table-body"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="QW4K-spacer"></div>
+
+        <!--v8.2-->
+        <section class="QW4K3-atta-section">
+          <div class="QW4K3-driver" id="QW4K3-driver">
+            <div class="QW4K3-pin" id="QW4K3-pin">
+              <div class="QW4K3-rhead">
+                <div class="QW4K3-rtitle">
+                  <h2>Aashirvaad defines packaged atta</h2>
+                </div>
+                <div class="QW4K3-legend">
+                  <span><i style="background:var(--color-primary)"></i>Aashirvaad</span>
+                  <span><i style="background:var(--color-muted)"></i>Rest of market</span>
+                </div>
+              </div>
+
+              <div class="QW4K3-stage">
+                <div class="QW4K3-left">
+                  <div class="QW4K3-panel" data-step="0">
+                    <div class="QW4K3-year">2015</div>
+                    <div class="QW4K3-body">The organised wheat-flour segment was worth only about Rs 3,500 crore — a sliver of India's Rs 30,000 crore atta market. With few branded rivals, Aashirvaad held roughly 75% and owned most of it.</div>
+                  </div>
+                  <div class="QW4K3-panel" data-step="1">
+                    <div class="QW4K3-year">2018</div>
+                    <div class="QW4K3-body">As packaged atta caught on, the branded market expanded fast and fragmented. New entrants took slices, so Aashirvaad's share fell to about 28% even as its sales climbed past Rs 4,200 crore.</div>
+                  </div>
+                  <div class="QW4K3-panel" data-step="2">
+                    <div class="QW4K3-year">2026</div>
+                    <div class="QW4K3-body">In a now-mature, much larger branded market, Aashirvaad pulled back to clear leadership at over 45%. </div>
+                  </div>
+                </div>
+
+                <div class="QW4K3-right">
+                  <div id="QW4K3-chart"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="QW4K-spacer"></div>
+
+        <!--v8.5-->
+        <section class="QW4K4-comparison-section">
+          <div class="QW4K4-driver" id="QW4K4-driver">
+            <div class="QW4K4-pin" id="QW4K4-pin">
+              <header class="QW4K4-topbar">
+                <div>
+                  <h1 class="QW4K4-chart-title">ITC's consumer brands are household names</h1>
+                </div>
+                <div class="QW4K4-scroll-hint">Scroll &darr;</div>
+              </header>
+
+              <div class="QW4K4-stage">
+                <div class="QW4K4-chart-grid">
+                  <div class="QW4K4-chart-wrap" id="QW4K4-chart1-wrap">
+                    <div class="QW4K4-chart-label">Biscuits</div>
+                    <div class="QW4K4-chart-legend" id="QW4K4-legend1"></div>
+                    <div id="QW4K4-chart1" class="QW4K4-chart-el"></div>
+                  </div>
+                  <div class="QW4K4-chart-wrap" id="QW4K4-chart2-wrap">
+                    <div class="QW4K4-chart-label">Chips &amp; Snacks</div>
+                    <div class="QW4K4-chart-legend" id="QW4K4-legend2"></div>
+                    <div id="QW4K4-chart2" class="QW4K4-chart-el"></div>
+                  </div>
+                  <div class="QW4K4-chart-wrap" id="QW4K4-chart3-wrap">
+                    <div class="QW4K4-chart-label">Instant Noodles</div>
+                    <div class="QW4K4-chart-legend" id="QW4K4-legend3"></div>
+                    <div id="QW4K4-chart3" class="QW4K4-chart-el"></div>
+                  </div>
+                </div>
+
+                <div class="QW4K4-narrative-layer">
+                  <div class="QW4K4-narrative-card" data-step="0">
+                    <h2 class="QW4K4-narrative-title">Sunfeast was launched in 2003</h2>
+                  </div>
+                  <div class="QW4K4-narrative-card" data-step="1">
+                    <h2 class="QW4K4-narrative-title">Bingo! was launched in 2007</h2>
+                  </div>
+                  <div class="QW4K4-narrative-card" data-step="2">
+                    <h2 class="QW4K4-narrative-title">Yippee! was launched in 2010</h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="QW4K-spacer"></div>
+
+        <!--v8.6-->
+        <section class="QW4K5-chart-section">
+          <div class="QW4K5-chart-frame">
+            <div class="QW4K5-chart-container">
+              <div class="QW4K5-chart-header">
+                <h1 class="QW4K5-chart-title">A steady rise in ITC's market capitalisation</h1>
+                <div class="QW4K5-legend">
+                  <span class="QW4K5-legend-line"></span>Market Capitalisation (Rs. Lakh Crore)
+                </div>
+              </div>
+
+              <!-- ECharts DOM element -->
+              <div id="QW4K5-main-chart"></div>
+            </div>
+          </div>
+        </section>
+
+        <div class="QW4K-spacer"></div>
+
+        <!--v9.3-->
+        <section class="QW4K6-scroll-wrapper">
+          <div class="QW4K6-sticky-content QW4K6-airtel-comparison-container">
+            <div class="QW4K6-layout">
+              <div class="QW4K6-left-panel">
+                <div class="QW4K6-site-header">
+                  <h1>How has ITC fared against the Nifty 50?</h1>
+                </div>
+
+                <div class="QW4K6-stock-value-legend">
+                  <div class="QW4K6-legend-item-stock">
+                    <span class="QW4K6-legend-line" style="background: var(--color-primary)"></span>ITC
+                  </div>
+                  <div class="QW4K6-legend-item-stock">
+                    <span class="QW4K6-legend-dash" style="border-color: var(--color-muted)"></span>Nifty 50
+                  </div>
+                </div>
+
+                <div class="QW4K6-text-area" id="QW4K6-text-area">
+                  <div class="QW4K6-text-block" id="QW4K6-text-0">
+                    <p class="QW4K6-year-label">2012</p>
+                    <h3>Revenue milestone</h3>
+                    <p>FMCG business crosses Rs 5,000 crore in revenue.</p>
+                  </div>
+                  <div class="QW4K6-text-block" id="QW4K6-text-1">
+                    <p class="QW4K6-year-label">2013</p>
+                    <h3>Profitability achieved</h3>
+                    <p>FMCG turns profitable.</p>
+                  </div>
+                  <div class="QW4K6-text-block" id="QW4K6-text-2">
+                    <p class="QW4K6-year-label">2017</p>
+                    <h3>Revenue doubled</h3>
+                    <p>FMCG business crosses Rs 10,000 crore in revenue.</p>
+                  </div>
+                  <div class="QW4K6-text-block" id="QW4K6-text-3">
+                    <p class="QW4K6-year-label">2019</p>
+                    <h3>Leadership Transition</h3>
+                    <p>Deveshwar passes away and Sanjiv Puri is appointed as chairman.</p>
+                  </div>
+                  <div class="QW4K6-text-block" id="QW4K6-text-4">
+                    <p class="QW4K6-year-label">2022</p>
+                    <h3>Divestment</h3>
+                    <p>Exited the lifestyle retailing business.</p>
+                  </div>
+                  <div class="QW4K6-text-block" id="QW4K6-text-5">
+                    <p class="QW4K6-year-label">2025</p>
+                    <h3>Demerger</h3>
+                    <p>Demerger of hotel business effective 1 January.</p>
+                  </div>
+                  <div class="QW4K6-text-block" id="QW4K6-text-6">
+                    <p class="QW4K6-year-label">2026</p>
+                    <h3>Tax hike</h3>
+                    <p>The government raised cigarette taxes in Feb by 20% to 55% depending on size.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="QW4K6-right-panel">
+                <div id="QW4K6-main-chart"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="QW4K-spacer"></div>
+
+        <!--v10.1-->
+        <!--<section class="QW4K7-chart-section">
+          <div class="QW4K7-chart-frame">
+            <div class="QW4K7-chart-container">
+              <div class="QW4K7-header-grid">
+                <div class="QW4K7-title-group">
+                  <h1 class="QW4K7-chart-title">The evolution of cigarette sales revenue and taxation</h1>
+                  <p class="QW4K7-chart-subtitle">Even if prices go higher, ITC's gross revenue in the cigarette segment still goes up</p>
+                </div>
+                <div id="QW4K7-custom-legend"></div>
+              </div>
+
+              <div id="QW4K7-main-chart"></div>
+            </div>
+          </div>
+        </section>-->
+
+        <!--<div class="QW4K-spacer"></div>-->
+
+        <!--v10.1c-->
+        <section class="QW4K75-chart-section">
+          <div class="QW4K75-chart-frame">
+            <div class="QW4K75-chart-container">
+              <div class="QW4K75-header-grid">
+                <div class="QW4K75-title-group">
+                  <h1 class="QW4K75-chart-title">India taxes cigarettes far more heavily than other major markets</h1>
+                  <p class="QW4K75-chart-subtitle">Tax per 2000 Cigarettes as a % of Per Capita GDP</p>
+                </div>
+                <!-- Header Legend Node -->
+                <div class="QW4K75-legend"><span class="QW4K75-legend-cig"></span>Tax rate (%)</div>
+              </div>
+
+              <!-- ECharts DOM element -->
+              <div id="QW4K75-main-chart"></div>
+
+              <div class="QW4K75-footer-note">Tax data – WHO Global Health Observatory</div>
+            </div>
+          </div>
+        </section>
+
+        <div class="QW4K-spacer"></div>
+
+        <!--v11-->
+        <section class="QW4K8-timeline-section">
+            <header class="QW4K8-timeline-header">
+                <div class="QW4K8-timeline-header-left">
+                    <h1 class="QW4K8-chart-title">
+                        The Timeline of ITC
+                    </h1>
+                    <p class="QW4K8-chart-subtitle">
+                        From industrial roots to a telecom giant.
+                    </p>
+                </div>
+            </header>
+
+            <div class="QW4K8-desktop-only">
+                <div class="QW4K8-timeline-scroll-wrapper">
+                    <div id="QW4K8-main-chart"></div>
+                </div>
+            </div>
+
+            <div class="QW4K8-mobile-only">
+                <div class="QW4K8-vertical-timeline" id="QW4K8-mobile-list"></div>
+            </div>
+        </section>
+
+        <div class="QW4K-spacer"></div>
+
+        <!--v10.2-->
+        <section class="QW4K9-government-section">
+          <div class="QW4K9-app-layout">
+
+            <!-- Editorial Section -->
+            <div class="QW4K9-editorial-panel">
+              <h1 class="QW4K9-chart-title">The relationship between ITC and government-linked entities.</h1>
+              <p class="QW4K9-chart-subtitle">Govt levy taxes and increase taxes regularly in budget to discourage cigarette consumption.</p>
+              <p class="QW4K9-chart-subtitle">At the same time, govt through insurance companies and other instututions is a shareholder of ITC and directly benefits from cigarette consumption through the dividends coming out of cigarette profits</p>
+            </div>
+
+            <!-- Interactive Graphic Grid Area -->
+            <!-- Circular-flow diagram: consumer pays ITC for cigarettes and
+                 pays government tax on them; ITC pays dividends both to its
+                 own shareholders (looping back to the consumer/public) and,
+                 via government-linked institutional holders, to government
+                 investors — the conflict of interest the copy above names. -->
+            <div class="QW4K9-diagram-viewport">
+              <picture>
+                <source media="(max-width: 768px)" srcset="logos/governemt_mobile.png">
+                <img class="QW4K9-flow-image" src="logos/governemt.png" alt="Circular-flow diagram: consumers pay ITC for cigarettes and pay cigarette tax to the government; ITC pays dividends to its own shareholders (the consumer/public) and, via government-linked institutional investors, to the government.">
+              </picture>
+            </div>
+          </div>
+        </section>
+
+        <div class="QW4K-spacer"></div>
+
+        <!--v10.3-->
+        <section class="QW4K10-logofarm-section">
+
+          <div class="QW4K10-content-wrap">
+            <header class="QW4K10-header">
+              <div class="QW4K10-header-text">
+                <h1>The brands of ITC Limited</h1>
+              </div>
+              <div class="QW4K10-legend">
+                <div class="QW4K10-legend-item"><div class="QW4K10-legend-badge" style="background:#4d7c0f"></div>Foods</div>
+                <div class="QW4K10-legend-item"><div class="QW4K10-legend-badge" style="background:#65a30d"></div>Personal Care</div>
+                <div class="QW4K10-legend-item"><div class="QW4K10-legend-badge" style="background:#ca8a04"></div>Hotels</div>
+                <div class="QW4K10-legend-item"><div class="QW4K10-legend-badge" style="background:#a3a337"></div>Tobacco</div>
+                <div class="QW4K10-legend-item"><div class="QW4K10-legend-badge" style="background:#3f6212"></div>Others</div>
+              </div>
+            </header>
+
+            <div class="QW4K10-treemap-container">
+              <div class="QW4K10-industry-sector" id="QW4K10-sector-foods">
+                <div class="QW4K10-sector-title">FMCG: Foods</div>
+                <div class="QW4K10-brands-canvas" id="QW4K10-canvas-foods"></div>
+              </div>
+              <div class="QW4K10-industry-sector" id="QW4K10-sector-tobacco">
+                <div class="QW4K10-sector-title">Cigarettes &amp; Tobacco</div>
+                <div class="QW4K10-brands-canvas" id="QW4K10-canvas-tobacco"></div>
+              </div>
+              <div class="QW4K10-industry-sector" id="QW4K10-sector-personal">
+                <div class="QW4K10-sector-title">FMCG: Personal Care</div>
+                <div class="QW4K10-brands-canvas" id="QW4K10-canvas-personal"></div>
+              </div>
+              <div class="QW4K10-industry-sector" id="QW4K10-sector-hotels">
+                <div class="QW4K10-sector-title">Hotels &amp; Hospitality (ITC Hotels Ltd)</div>
+                <div class="QW4K10-brands-canvas" id="QW4K10-canvas-hotels"></div>
+              </div>
+              <div class="QW4K10-industry-sector" id="QW4K10-sector-others">
+                <div class="QW4K10-sector-title">Agri, Paper &amp; Safety</div>
+                <div class="QW4K10-brands-canvas" id="QW4K10-canvas-others"></div>
+              </div>
+            </div>
+
+            <div class="QW4K10-footer-note">Note: ITC's Hotels business was demerged into ITC Hotels Limited, effective 1 January 2025 (separately listed 29 January 2025; ITC Ltd holds ~40%). The brands above now sit under ITC Hotels Ltd, not ITC Limited directly.</div>
+          </div>
+
+          <div class="QW4K10-brand-tooltip" id="QW4K10-brand-tooltip"></div>
+        </section>
+
+        <div class="QW4K-spacer"></div>
+
+        <!--v10.4-->
+        <section class="QW4K11-chart-section">
+          <div class="QW4K11-chart-frame">
+            <div class="QW4K11-chart-container">
+              <div class="QW4K11-chart-header">
+                <div class="QW4K11-chart-header-text">
+                  <h2 class="QW4K11-chart-title">Still a smokes company</h2>
+                  <p class="QW4K11-chart-subtitle">Cigarettes account for less than half of ITC's annual revenue, but bring in 79% of profit</p>
+                </div>
+                <div class="QW4K11-legend" id="QW4K11-legend"></div>
+              </div>
+              <div class="QW4K11-charts-split">
+                <div class="QW4K11-chart-col">
+                  <h3 class="QW4K11-chart-col-title">Revenue</h3>
+                  <div id="QW4K11-revenue-chart" class="QW4K11-chart-el"></div>
+                </div>
+                <div class="QW4K11-chart-col">
+                  <h3 class="QW4K11-chart-col-title">Profit</h3>
+                  <div id="QW4K11-profit-chart" class="QW4K11-chart-el"></div>
+                </div>
+              </div>
+              <div class="QW4K11-footer-note">Note: ITC's Hotels business was demerged into ITC Hotels Limited, effective January 2025. From FY26 onward, Hotels no longer appears as a standalone segment in ITC's consolidated results.</div>
+            </div>
+          </div>
+        </section>
+
+        <div class="QW4K-spacer"></div>
+
+        <!--v9.1-->
+        <section class="QW4K12-hotels-section">
+          <div class="QW4K12-chart-frame">
+            <div class="QW4K12-dashboard-container">
+
+              <div class="QW4K12-left-panel">
+
+                <div class="QW4K12-donut" role="img" aria-label="Portfolio mix: 45% Owned, 55% Managed">
+                  <span class="QW4K12-donut-value QW4K12-donut-value-owned">45%</span>
+                  <span class="QW4K12-donut-value QW4K12-donut-value-managed">55%</span>
+                </div>
+
+                <div class="QW4K12-brand-tooltip QW4K12-tooltip-itc">
+                  <div class="QW4K12-tt-logo-wrap"><img class="QW4K12-tt-logo" src="logos/ITC.png" alt="ITC Hotels"></div>
+                  <div class="QW4K12-tooltip-title">ITC Hotels</div>
+                  <div class="QW4K12-tt-meta">Est. 1975</div>
+                  <div class="QW4K12-tt-meta">~17+ Signature Properties</div>
+                </div>
+
+                <div class="QW4K12-brand-tooltip QW4K12-tooltip-fortune">
+                  <div class="QW4K12-tt-logo-wrap"><img class="QW4K12-tt-logo" src="logos/FH.png" alt="Fortune"></div>
+                  <div class="QW4K12-tooltip-title">Fortune Hotels</div>
+                  <div class="QW4K12-tt-meta">Est. 1995</div>
+                  <div class="QW4K12-tt-meta">~55+ Operational Hotels</div>
+                </div>
+
+                <div class="QW4K12-brand-tooltip QW4K12-tooltip-welcomhotel">
+                  <div class="QW4K12-tt-logo-wrap"><img class="QW4K12-tt-logo" src="logos/WH.png" alt="WelcomHotel"></div>
+                  <div class="QW4K12-tooltip-title">Welcomhotel</div>
+                  <div class="QW4K12-tt-meta">Est. 1975</div>
+                  <div class="QW4K12-tt-meta">~25+ Hotels</div>
+                </div>
+
+                <div class="QW4K12-brand-tooltip QW4K12-tooltip-storii">
+                  <div class="QW4K12-tt-logo-wrap"><img class="QW4K12-tt-logo" src="logos/ST.png" alt="Storii"></div>
+                  <div class="QW4K12-tooltip-title">Storii by ITC</div>
+                  <div class="QW4K12-tt-meta">Est. 2022</div>
+                  <div class="QW4K12-tt-meta">Boutique Tier</div>
+                </div>
+
+                <div class="QW4K12-brand-tooltip QW4K12-tooltip-heritage">
+                  <div class="QW4K12-tt-logo-wrap"><img class="QW4K12-tt-logo" src="logos/WHg.png" alt="Welcomheritage"></div>
+                  <div class="QW4K12-tooltip-title">Welcomheritage</div>
+                  <div class="QW4K12-tt-meta">Est. 1997</div>
+                  <div class="QW4K12-tt-meta">~40+ Heritage Properties</div>
+                </div>
+
+                <div class="QW4K12-donut-legend">
+                  <div class="QW4K12-legend-item">
+                    <div class="QW4K12-legend-color QW4K12-legend-color-owned"></div>
+                    <div class="QW4K12-legend-text">Owned</div>
+                  </div>
+                  <div class="QW4K12-legend-item">
+                    <div class="QW4K12-legend-color QW4K12-legend-color-managed"></div>
+                    <div class="QW4K12-legend-text">Managed</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="QW4K12-right-panel">
+                <h1 class="QW4K12-chart-title">Pivot to asset-light model</h1>
+                <p class="QW4K12-chart-subtitle">ITC built the business by owning its hotels, but subsequently pivoted to asset light model, i.e., managing properties instead of blocking capital in real estate</p>
+
+                <h2 class="QW4K12-legend-heading">Our Brands</h2>
+                <div class="QW4K12-logo-grid">
+
+                  <div class="QW4K12-logo-grid-item QW4K12-wrapper-itc">
+                    <div class="QW4K12-floating-logo"><img src="logos/ITC.png" alt="ITC Hotels"></div>
+                  </div>
+
+                  <div class="QW4K12-logo-grid-item QW4K12-wrapper-fortune">
+                    <div class="QW4K12-floating-logo"><img src="logos/FH.png" alt="Fortune"></div>
+                  </div>
+
+                  <div class="QW4K12-logo-grid-item QW4K12-wrapper-welcomhotel">
+                    <div class="QW4K12-floating-logo"><img src="logos/WH.png" alt="WelcomHotel"></div>
+                  </div>
+
+                  <div class="QW4K12-logo-grid-item QW4K12-wrapper-storii">
+                    <div class="QW4K12-floating-logo"><img src="logos/ST.png" alt="Storii"></div>
+                  </div>
+
+                  <div class="QW4K12-logo-grid-item QW4K12-wrapper-heritage">
+                    <div class="QW4K12-floating-logo"><img src="logos/WHg.png" alt="Welcomheritage"></div>
+                  </div>
+
+                </div>
+
+                <p class="QW4K12-caption">Click on the logo to see detail</p>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <div class="QW4K-spacer"></div>
+
+        <!-- module JS files go here -->
+        <script src="scripts/shareholding.js"></script>
+        <script src="scripts/mandiMap_geo.js"></script>
+        <script src="scripts/mandiMap.js"></script>
+        <script src="scripts/atta.js"></script>
+        <script src="scripts/comparison.js"></script>
+        <script src="scripts/market_cap.js"></script>
+        <script src="scripts/stocks.js"></script>
+        <script src="scripts/smoke.js"></script>
+        <script src="scripts/smoke75.js"></script>
+        <script src="scripts/timeline.js"></script>
+        <script src="scripts/government.js"></script>
+        <script src="scripts/logofarm.js"></script>
+        <script src="scripts/cigarette.js"></script>
+        <script src="scripts/hotels.js"></script>
+
+    </body>
+</html>

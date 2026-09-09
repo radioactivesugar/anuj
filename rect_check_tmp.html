@@ -1,0 +1,23 @@
+<!doctype html><html><head><title>pending</title><script>
+function go(){
+  var params = new URLSearchParams(location.search);
+  var src = params.get('src');
+  var sels = params.get('sels').split('|');
+  var ifr = document.getElementById('f');
+  ifr.style.width='1280px'; ifr.style.height='3000px';
+  ifr.src = src;
+  ifr.onload = function(){
+    setTimeout(function(){
+      var d = ifr.contentDocument;
+      var out = [];
+      sels.forEach(function(s){
+        var el = d.querySelector(s);
+        if(!el){ out.push(s+'=NONE'); return; }
+        var r = el.getBoundingClientRect();
+        out.push(s+'='+Math.round(r.top)+','+Math.round(r.left)+','+Math.round(r.width)+','+Math.round(r.height));
+      });
+      document.title = out.join(';');
+    }, 1500);
+  };
+}
+</script></head><body onload="go()"><iframe id="f" style="border:0;"></iframe></body></html>

@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Brands of ITC Limited</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <style>
+    :root {
+      --type-heading: 36px;
+      --type-legend: 14px;
+      --font-display: Georgia, "Times New Roman", serif;
+      --font-body: "Archivo", sans-serif;
+      --color-bg: #f2f1ef;
+      --color-text: #1a1a32;
+      --color-muted: #6b6b80;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 24px 15px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      background-color: var(--color-bg);
+    }
+
+/* styles/logofarm.css — QW4K10 */
+
+.QW4K10-logofarm-section, .QW4K10-logofarm-section * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body);
+}
+
+.QW4K10-logofarm-section {
+  /* Field/water/soil colors are the "farmland" data illustration itself (which
+     sector a brand sits in) and are kept as authored — only the outer chrome
+     (section background) is tokenized. Borders stay the original farmland brown. */
+  --industry-gap: #7dd3fc;
+  --field-border: #88582f;
+  --field-outline: #895226;
+
+  background-color: transparent;
+  height: 730px;
+  width: 100%;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.QW4K10-content-wrap {
+  width: 100%;
+  max-width: 1200px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.QW4K10-header {
+  flex: 0 0 auto;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid rgba(0,0,0,0.1);
+  padding-bottom: 1.5rem;
+  margin-bottom: 2.25rem;
+}
+
+.QW4K10-header h1 {
+  font-family: var(--font-display);
+  font-size: var(--type-heading);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.QW4K10-header-subtitle {
+  font-family: var(--font-body);
+  font-size: var(--type-legend);
+  font-weight: 400;
+  color: var(--color-text-muted, rgba(0,0,0,0.55));
+  margin-top: 0.35rem;
+}
+
+.QW4K10-legend {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.QW4K10-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-body);
+  font-size: var(--type-legend);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.QW4K10-legend-badge {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+.QW4K10-footer-note {
+  flex: 0 0 auto;
+  margin-top: 10px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--color-muted);
+  text-align: left;
+}
+
+.QW4K10-treemap-container {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+  gap: 10px;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  padding: 10px;
+  position: relative;
+  border: 4px solid var(--field-border);
+  border-radius: 4px;
+  box-shadow: 0 40px 80px -20px rgba(30, 50, 20, 0.22),
+              0 20px 50px -30px rgba(30, 50, 20, 0.15);
+  /* Water: layered light-blue gradients that drift to feel like moving water
+     (ported from water waves.html) — a diagonal sheen sweep, a color sweep,
+     two crossing ripple-line layers at different angles/speeds, and a static
+     bottom vignette for depth. */
+  background-color: var(--industry-gap);
+  background-image:
+      linear-gradient(120deg, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0) 30%, rgba(255,255,255,0.55) 55%, rgba(255,255,255,0) 80%),
+      linear-gradient(60deg, rgba(14,165,233,0.6) 0%, rgba(125,211,252,0) 40%, rgba(56,189,248,0.55) 70%, rgba(125,211,252,0) 100%),
+      repeating-linear-gradient(65deg, rgba(255,255,255,0.3) 0px, rgba(255,255,255,0.3) 2px, transparent 2px, transparent 10px),
+      repeating-linear-gradient(115deg, rgba(2,132,199,0.22) 0px, rgba(2,132,199,0.22) 2px, transparent 2px, transparent 14px),
+      linear-gradient(to bottom, rgba(3,105,161,0) 45%, rgba(3,105,161,0.35) 78%, rgba(7,89,133,0.6) 100%);
+  background-size: 260% 260%, 200% 200%, 60px 60px, 80px 80px, 100% 100%;
+  background-blend-mode: screen, normal, overlay, overlay, normal;
+  animation: QW4K10-waterFlow 12s linear infinite;
+}
+
+@keyframes QW4K10-waterFlow {
+  0%   { background-position: 0% 50%, 0% 0%, 0 0, 0 0, 0 0; }
+  50%  { background-position: 100% 50%, 100% 100%, 60px 30px, -80px 40px, 0 0; }
+  100% { background-position: 0% 50%, 0% 0%, 120px 60px, -160px 80px, 0 0; }
+}
+
+/* A sector = a region of farmland */
+.QW4K10-industry-sector {
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  z-index: 2;
+  box-shadow:
+      4px 4px 10px rgba(7, 30, 50, 0.45),
+      2px 2px 4px rgba(7, 30, 50, 0.35);
+}
+
+.QW4K10-sector-title {
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  position: absolute;
+  top: 0.6rem;
+  left: 0.7rem;
+  z-index: 30;
+  pointer-events: none;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.55);
+}
+
+.QW4K10-brands-canvas {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Each brand = a field plot */
+.QW4K10-brand-node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  overflow: hidden;
+  border: 2.5px solid var(--field-outline);
+  will-change: transform, filter;
+}
+
+/* Texture stack: crop rows + soft mottling, sits under the label */
+.QW4K10-brand-node::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+      /* fine ploughed crop rows */
+      repeating-linear-gradient(
+          var(--furrow-angle, 60deg),
+          rgba(255,255,255,0.07) 0px,
+          rgba(255,255,255,0.07) 1px,
+          rgba(0,0,0,0.06) 1px,
+          rgba(0,0,0,0.06) 4px),
+      /* cross furrows for a woven field feel */
+      repeating-linear-gradient(
+          calc(var(--furrow-angle, 60deg) + 90deg),
+          rgba(0,0,0,0.03) 0px,
+          rgba(0,0,0,0.03) 1px,
+          transparent 1px,
+          transparent 9px),
+      /* soft irregular patches of light/dark soil */
+      radial-gradient(ellipse 60% 45% at 25% 30%, rgba(255,255,255,0.16), transparent 60%),
+      radial-gradient(ellipse 55% 50% at 78% 72%, rgba(0,0,0,0.14), transparent 62%),
+      radial-gradient(ellipse 40% 35% at 60% 20%, rgba(0,0,0,0.08), transparent 60%);
+}
+
+/* Fine speckled grain over everything — the visible texture of the soil itself */
+.QW4K10-brand-node::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.7;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 100px 100px;
+}
+
+.QW4K10-brand-node .QW4K10-plot-label {
+  position: relative;
+  z-index: 3;
+  padding: 2px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Logo placeholder — replace files in the /logos folder with real PNGs.
+   No background, no border: just the raw logo image, sized to itself. */
+.QW4K10-brand-logo {
+  object-fit: contain;
+  margin-bottom: 3px;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.35));
+}
+/* When a logo PNG is missing, hide the broken image and fall back to the text icon */
+.QW4K10-brand-logo.QW4K10-logo-missing { display: none; }
+.QW4K10-brand-logo:not(.QW4K10-logo-missing) + .QW4K10-brand-icon { display: none; }
+
+.QW4K10-brand-icon {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* Floating brand tooltip */
+.QW4K10-brand-tooltip {
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  min-width: 160px;
+  max-width: 240px;
+  padding: 10px 12px;
+  background: rgba(20, 33, 12, 0.94);
+  color: #f2f7e8;
+  border: 1px solid rgba(166, 124, 82, 0.7);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  font-size: 0.72rem;
+  line-height: 1.35;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.QW4K10-brand-tooltip .QW4K10-tt-logo-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+.QW4K10-brand-tooltip .QW4K10-tt-logo {
+  width: 84px;
+  height: 84px;
+  object-fit: contain;
+}
+.QW4K10-brand-tooltip .QW4K10-tt-name {
+  font-size: 0.85rem;
+  font-weight: 800;
+  margin-bottom: 5px;
+  color: #fff;
+  text-align: center;
+}
+.QW4K10-brand-tooltip .QW4K10-tt-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.QW4K10-brand-tooltip .QW4K10-tt-label {
+  color: #a8c07a;
+  font-weight: 600;
+}
+.QW4K10-brand-tooltip .QW4K10-tt-val {
+  text-align: right;
+  font-weight: 600;
+}
+
+/* Sector footprint on the 12x12 grid */
+#QW4K10-sector-foods    { grid-column: span 5; grid-row: span 6; }
+#QW4K10-sector-tobacco  { grid-column: span 7; grid-row: span 7; }
+#QW4K10-sector-personal { grid-column: span 5; grid-row: span 6; }
+#QW4K10-sector-hotels   { grid-column: span 4; grid-row: span 5; }
+#QW4K10-sector-others   { grid-column: span 3; grid-row: span 5; }
+
+@media (max-width: 1023px) {
+  .QW4K10-logofarm-section { height: 600px; }
+}
+
+@media (max-width: 768px) {
+  /* more height so the farm's sectors have more vertical room to spread
+     into, instead of being squeezed flatter than the desktop/tablet sizes */
+  .QW4K10-logofarm-section { height: 850px; padding: 1rem; }
+  .QW4K10-header h1 { font-size: var(--type-heading); }
+  /* right-aligned (so a wrapped second line still meets the right edge
+     instead of trailing off from the legend box's left edge) and pulled
+     down to the header's bottom edge, next to the separator */
+  .QW4K10-legend {
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-self: flex-end;
+  }
+}
+  </style>
+</head>
+<body>
+
+        <section class="QW4K10-logofarm-section">
+
+          <div class="QW4K10-content-wrap">
+            <header class="QW4K10-header">
+              <div class="QW4K10-header-text">
+                <h1>The brands of ITC Limited</h1>
+                <p class="QW4K10-header-subtitle">Click on the logos to see details.</p>
+              </div>
+              <div class="QW4K10-legend">
+                <div class="QW4K10-legend-item"><div class="QW4K10-legend-badge" style="background:#4d7c0f"></div>Foods</div>
+                <div class="QW4K10-legend-item"><div class="QW4K10-legend-badge" style="background:#65a30d"></div>Personal Care</div>
+                <div class="QW4K10-legend-item"><div class="QW4K10-legend-badge" style="background:#ca8a04"></div>Hotels</div>
+                <div class="QW4K10-legend-item"><div class="QW4K10-legend-badge" style="background:#a3a337"></div>Tobacco</div>
+                <div class="QW4K10-legend-item"><div class="QW4K10-legend-badge" style="background:#3f6212"></div>Others</div>
+              </div>
+            </header>
+
+            <div class="QW4K10-treemap-container">
+              <div class="QW4K10-industry-sector" id="QW4K10-sector-foods">
+                <div class="QW4K10-sector-title">FMCG: Foods</div>
+                <div class="QW4K10-brands-canvas" id="QW4K10-canvas-foods"></div>
+              </div>
+              <div class="QW4K10-industry-sector" id="QW4K10-sector-tobacco">
+                <div class="QW4K10-sector-title">Cigarettes &amp; Tobacco</div>
+                <div class="QW4K10-brands-canvas" id="QW4K10-canvas-tobacco"></div>
+              </div>
+              <div class="QW4K10-industry-sector" id="QW4K10-sector-personal">
+                <div class="QW4K10-sector-title">FMCG: Personal Care</div>
+                <div class="QW4K10-brands-canvas" id="QW4K10-canvas-personal"></div>
+              </div>
+              <div class="QW4K10-industry-sector" id="QW4K10-sector-hotels">
+                <div class="QW4K10-sector-title">Hotels &amp; Hospitality (ITC Hotels Ltd)</div>
+                <div class="QW4K10-brands-canvas" id="QW4K10-canvas-hotels"></div>
+              </div>
+              <div class="QW4K10-industry-sector" id="QW4K10-sector-others">
+                <div class="QW4K10-sector-title">Agri, Paper &amp; Safety</div>
+                <div class="QW4K10-brands-canvas" id="QW4K10-canvas-others"></div>
+              </div>
+            </div>
+
+            <div class="QW4K10-footer-note">Note: ITC's Hotels business was demerged into ITC Hotels Limited, effective 1 January 2025 (separately listed 29 January 2025; ITC Ltd holds ~40%). The brands above now sit under ITC Hotels Ltd, not ITC Limited directly.</div>
+          </div>
+
+          <div class="QW4K10-brand-tooltip" id="QW4K10-brand-tooltip"></div>
+        </section>
+
+
+  <script>
+// scripts/logofarm.js — QW4K10
+
+// Server (index.html) loads this script from /ITC/scripts/logofarm.js; local
+// (index_localLinked.html) loads it via a relative path. Derive the logos
+// folder path from how this very script was loaded so both work unmodified.
+const QW4K10_LOGO_BASE = (function () {
+    const src = document.currentScript && document.currentScript.getAttribute('src');
+    return src && src.indexOf('/ITC/') === 0 ? '/ITC/logos/' : 'logos/';
+})();
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const portfolioData = [
+        { name: "Aashirvaad", sector: "foods", logo: "AV", size: 75, founded: 2002, category: "Staples & Atta" },
+        { name: "Sunfeast", sector: "foods", logo: "SF", size: 70, founded: 2003, category: "Biscuits & Cookies" },
+        { name: "Bingo!", sector: "foods", logo: "BN!", size: 68, founded: 2007, category: "Snacks & Chips" },
+        { name: "Sunfeast YiPPee!", sector: "foods", logo: "YP!", size: 65, founded: 2010, category: "Instant Noodles" },
+        { name: "B Natural", sector: "foods", logo: "BN", size: 62, founded: 2015, category: "Juices & Beverages" },
+        { name: "Fabelle", sector: "foods", logo: "FB", size: 62, founded: 2016, category: "Premium Chocolate" },
+        { name: "Sunbean", sector: "foods", logo: "SB", size: 58, founded: 2016, category: "Gourmet Coffee" },
+        { name: "ITC Master Chef", sector: "foods", logo: "MC", size: 58, founded: 2017, category: "Frozen & Ready Meals" },
+        { name: "Candyman", sector: "foods", logo: "CM", size: 55, founded: 2002, category: "Confectionery" },
+        { name: "mint-o", sector: "foods", logo: "MO", size: 55, founded: 2002, category: "Mints & Candy" },
+        { name: "Sunrise Pure", sector: "foods", logo: "SR", size: 60, founded: 2020, category: "Spices & Masala" },
+        { name: "Farmland", sector: "foods", logo: "FL", size: 58, founded: 2017, category: "Fresh & Frozen Produce" },
+        { name: "Kitchens of India", sector: "foods", logo: "KOI", size: 56, founded: 2001, category: "Ready-to-Eat Gourmet" },
+        { name: "24 Mantra Organic", sector: "foods", logo: "24mantra", size: 56, founded: 2025, category: "Organic Foods" },
+        { name: "Yoga Bar", sector: "foods", logo: "YB", size: 56, founded: 2023, category: "Health & Nutrition Bars" },
+
+        { name: "Gold Flake", sector: "tobacco", logo: "GF", size: 70, founded: "1960s", category: "Premium Cigarettes" },
+        { name: "Classic", sector: "tobacco", logo: "CL", size: 68, founded: 1979, category: "Premium Cigarettes" },
+        { name: "Insignia", sector: "tobacco", logo: "IN", size: 64, founded: "1998–2003", category: "Super-Premium Cigarettes" },
+        { name: "Wills Navy Cut", sector: "tobacco", logo: "WL", size: 64, founded: 1963, category: "Cigarettes" },
+        { name: "Players", sector: "tobacco", logo: "PL", size: 58, founded: 2005, category: "Cigarettes" },
+        { name: "India Kings", sector: "tobacco", logo: "IK", size: 62, founded: "~1998", category: "Premium Cigarettes" },
+        { name: "American Club", sector: "tobacco", logo: "AC", size: 60, founded: 1997, category: "Cigarettes" },
+        { name: "Flake", sector: "tobacco", logo: "FK", size: 56, founded: 1987, category: "Cigarettes" },
+        { name: "Silk Cut", sector: "tobacco", logo: "SC", size: 54, founded: 1964, category: "Cigarettes" },
+        { name: "Duke & Royal", sector: "tobacco", logo: "DK", size: 54, founded: 2000, category: "Cigarettes" },
+
+        { name: "Fiama", sector: "personal", logo: "FM", size: 68, founded: 2007, category: "Bath & Shower" },
+        { name: "Vivel", sector: "personal", logo: "VV", size: 66, founded: 2008, category: "Soaps & Skincare" },
+        { name: "Engage", sector: "personal", logo: "EG", size: 66, founded: 2013, category: "Deodorants & Fragrance" },
+        { name: "Savlon", sector: "personal", logo: "SV", size: 68, founded: 2015, category: "Hygiene & Antiseptic" },
+        { name: "Charmis", sector: "personal", logo: "CH", size: 58, founded: 2017, category: "Skincare & Creams" },
+        { name: "Dermafique", sector: "personal", logo: "DF", size: 60, founded: 2018, category: "Premium Skincare" },
+        { name: "Nimyle", sector: "personal", logo: "NM", size: 56, founded: 2018, category: "Home Cleaning" },
+        { name: "Nimwash", sector: "personal", logo: "NW", size: 56, founded: 2020, category: "Fruit & Veg Wash" },
+        { name: "EDW Essenza", sector: "personal", logo: "EE", size: 62, founded: 2005, category: "Premium Fragrance" },
+
+        { name: "ITC Hotels", sector: "hotels", logo: "ITC", size: 72, founded: 1975, category: "Luxury Hotels" },
+        { name: "Welcomhotel", sector: "hotels", logo: "WH", size: 66, founded: "~1978", category: "Upscale Hotels" },
+        { name: "Fortune Hotels", sector: "hotels", logo: "FH", size: 62, founded: 1995, category: "Mid-market Hotels" },
+        { name: "Mementos", sector: "hotels", logo: "MM", size: 58, founded: 2021, category: "Luxury Resorts" },
+        { name: "Storii", sector: "hotels", logo: "ST", size: 58, founded: 2021, category: "Boutique Hotels" },
+        { name: "WelcomHeritage", sector: "hotels", logo: "WHg", size: 56, founded: 1997, category: "Heritage Hotels" },
+
+        { name: "Classmate", sector: "others", logo: "CMS", size: 68, founded: 2003, category: "Stationery & Notebooks" },
+        { name: "Paperkraft", sector: "others", logo: "PK", size: 64, founded: 2002, category: "Premium Stationery" },
+        { name: "Mangaldeep", sector: "others", logo: "MD", size: 62, founded: 2003, category: "Agarbatti & Incense" },
+        { name: "Homelites", sector: "others", logo: "HL", size: 55, founded: 2005, category: "Safety Matches" },
+        { name: "AIM", sector: "others", logo: "AM", size: 55, founded: 2002, category: "Safety Matches" }
+    ];
+
+    // Field-tone palettes per sector: a spread of greens & golds like real farmland
+    const fieldPalettes = {
+        foods:    ["#4d7c0f", "#3f6212", "#65a30d", "#84cc16", "#a3b18a", "#556b2f", "#6b8e23"],
+        tobacco:  ["#a3a337", "#8a8a2a", "#bfa83a", "#9c9a48", "#c2b280", "#7d7d33", "#b5a642"],
+        personal: ["#65a30d", "#4d7c0f", "#77b52a", "#3f6212", "#8fbc5a", "#5c8a1e", "#6ea82f"],
+        hotels:   ["#ca8a04", "#a16207", "#d4a017", "#b8860b", "#c9a227", "#9a7b0a", "#dbb42c"],
+        others:   ["#3f6212", "#2f4f1e", "#4d7c0f", "#365314", "#5a7d2a", "#33691e", "#456a1a"]
+    };
+
+    // Squarified treemap: turns brand sizes into gap-free rectangular plots
+    function squarify(items, x, y, w, h) {
+        const total = items.reduce((s, it) => s + it.size, 0);
+        const scale = (w * h) / total;
+        const scaled = items.map(it => ({ ...it, area: it.size * scale }));
+        const rects = [];
+
+        function worst(row, len) {
+            const sum = row.reduce((s, r) => s + r.area, 0);
+            const max = Math.max(...row.map(r => r.area));
+            const min = Math.min(...row.map(r => r.area));
+            return Math.max((len * len * max) / (sum * sum), (sum * sum) / (len * len * min));
+        }
+
+        function layoutRow(row, len, horizontal, ox, oy) {
+            const sum = row.reduce((s, r) => s + r.area, 0);
+            const thick = sum / len;
+            let offset = 0;
+            row.forEach(r => {
+                const cell = r.area / thick;
+                if (horizontal) {
+                    rects.push({ ...r, x: ox, y: oy + offset, w: thick, h: cell });
+                } else {
+                    rects.push({ ...r, x: ox + offset, y: oy, w: cell, h: thick });
+                }
+                offset += cell;
+            });
+            return thick;
+        }
+
+        let cx = x, cy = y, cw = w, ch = h;
+        let remaining = scaled.slice();
+        let row = [];
+
+        while (remaining.length) {
+            const horizontal = cw >= ch;
+            const len = horizontal ? ch : cw;
+            const candidate = row.concat(remaining[0]);
+            if (row.length === 0 || worst(candidate, len) <= worst(row, len)) {
+                row = candidate;
+                remaining.shift();
+                if (remaining.length === 0) layoutRow(row, len, horizontal, cx, cy);
+            } else {
+                const thick = layoutRow(row, len, horizontal, cx, cy);
+                if (horizontal) { cx += thick; cw -= thick; }
+                else { cy += thick; ch -= thick; }
+                row = [];
+            }
+        }
+        return rects;
+    }
+
+    // ---- Tooltip ----
+    const tooltipEl = document.getElementById('QW4K10-brand-tooltip');
+    function showTooltip(r) {
+        const src2x = `${QW4K10_LOGO_BASE}${r.logo}@2x.png`;
+        tooltipEl.innerHTML = `
+            <div class="QW4K10-tt-logo-wrap" style="display:none">
+                <img class="QW4K10-tt-logo" alt="${r.name} logo"
+                     onload="this.parentElement.style.display='flex'">
+            </div>
+            <div class="QW4K10-tt-name">${r.name}</div>
+            <div class="QW4K10-tt-row"><span class="QW4K10-tt-label">Founded</span><span class="QW4K10-tt-val">${r.founded || '—'}</span></div>
+            <div class="QW4K10-tt-row"><span class="QW4K10-tt-label">Category</span><span class="QW4K10-tt-val">${r.category || '—'}</span></div>`;
+        // set src after wiring onload so the wrap reveals only when an image actually loads;
+        // try hi-res first, fall back to standard, stay hidden if neither exists
+        const ttImg = tooltipEl.querySelector('.QW4K10-tt-logo');
+        if (ttImg) {
+            ttImg.onerror = () => {
+                if (ttImg.src.indexOf('@2x') !== -1) {
+                    ttImg.onerror = null;
+                    ttImg.src = `${QW4K10_LOGO_BASE}${r.logo}.png`;
+                }
+            };
+            ttImg.src = src2x;
+        }
+        tooltipEl.style.opacity = '1';
+    }
+    function moveTooltip(e) {
+        const pad = 16;
+        let x = e.clientX + pad;
+        let y = e.clientY + pad;
+        const tw = tooltipEl.offsetWidth;
+        const th = tooltipEl.offsetHeight;
+        if (x + tw > window.innerWidth - 8)  x = e.clientX - tw - pad;
+        if (y + th > window.innerHeight - 8) y = e.clientY - th - pad;
+        tooltipEl.style.left = `${x}px`;
+        tooltipEl.style.top = `${y}px`;
+    }
+    function hideTooltip() { tooltipEl.style.opacity = '0'; }
+
+    function buildSector(canvasId, items, palette, animate) {
+        const container = document.getElementById(canvasId);
+        container.innerHTML = '';
+        const W = container.offsetWidth;
+        const H = container.offsetHeight;
+        if (!W || !H || items.length === 0) return;
+
+        const rects = squarify(items, 0, 0, W, H);
+
+        rects.forEach((r, idx) => {
+            const node = document.createElement('div');
+            node.className = 'QW4K10-brand-node';
+            const baseColor = palette[idx % palette.length];
+            node.style.background = baseColor;
+            node.style.setProperty('--furrow-angle', `${(idx * 37) % 180}deg`);
+
+            const showLogo = r.w > 40 && r.h > 40;
+            // Logo size scales with plot but stays within bounds
+            const logoSize = Math.max(20, Math.min(52, Math.min(r.w, r.h) * 0.4));
+            const logoImg = showLogo
+                ? `<img class="QW4K10-brand-logo" src="${QW4K10_LOGO_BASE}${r.logo}.png"
+                        alt="${r.name} logo"
+                        style="width:${logoSize}px;height:${logoSize}px"
+                        onerror="this.classList.add('QW4K10-logo-missing')">`
+                : '';
+
+            node.innerHTML = `<div class="QW4K10-plot-label">${logoImg}<div class="QW4K10-brand-icon">${r.logo}</div></div>`;
+
+            container.appendChild(node);
+
+            gsap.set(node, {
+                x: r.x, y: r.y, width: r.w, height: r.h,
+                scale: animate ? 0.4 : 1,
+                opacity: animate ? 0 : 1,
+                transformOrigin: "center center"
+            });
+
+            if (animate) {
+                gsap.to(node, {
+                    scale: 1, opacity: 1,
+                    duration: 0.5, delay: idx * 0.025,
+                    ease: "power2.out"
+                });
+            }
+
+            // Highlight this field plot on hover; dim the rest; show tooltip
+            node.addEventListener('mouseenter', () => {
+                gsap.to(node, {
+                    scale: 1.12,
+                    zIndex: 40,
+                    boxShadow: "0 14px 32px rgba(20,40,5,0.5)",
+                    duration: 0.25
+                });
+                // dim neighbours subtly with a dark overlay feel, not by brightening the target
+                container.querySelectorAll('.QW4K10-brand-node').forEach(o => {
+                    if (o !== node) gsap.to(o, { filter: "brightness(0.6)", duration: 0.25 });
+                });
+                showTooltip(r);
+            });
+            node.addEventListener('mousemove', moveTooltip);
+            node.addEventListener('mouseleave', () => {
+                container.querySelectorAll('.QW4K10-brand-node').forEach(o => {
+                    gsap.to(o, { filter: "brightness(1)", scale: 1, zIndex: 1, boxShadow: "none", duration: 0.25 });
+                });
+                hideTooltip();
+            });
+        });
+    }
+
+    const sectors = ["foods", "tobacco", "personal", "hotels", "others"];
+
+    function layoutAll(animate) {
+        sectors.forEach(sec => {
+            const items = portfolioData.filter(it => it.sector === sec);
+            buildSector(`QW4K10-canvas-${sec}`, items, fieldPalettes[sec], animate);
+        });
+    }
+
+    window.addEventListener('load', () => {
+        layoutAll(true);
+    });
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            layoutAll(false);
+        }, 150);
+    });
+
+});
+  </script>
+</body>
+</html>

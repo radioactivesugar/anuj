@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    CASE STUDY PAGE: Intermission // Airtel
+    Built on the shared case-study design system: css/style.css +
+    css/story.css + css/case-study.css (+ js/common.js, js/story.js,
+    js/case-study.js), plus css/airtel.css for the one thing
+    unique to this page. See also project.html, and the "alternate
+    layout" family - undersea-cables.html, lightrock.html,
+    revenue-growth.html.
+    Series order: project.html -> undersea-cables.html -> airtel.html -> lightrock.html -> revenue-growth.html
+  -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intermission // Airtel - Anuj Debnath</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/story.css">
+  <link rel="stylesheet" href="css/contact.css">
+  <link rel="stylesheet" href="css/case-study.css">
+  <link rel="stylesheet" href="css/airtel.css">
+  <link rel="stylesheet" href="css/airtel-prototypes.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+</head>
+<body>
+
+  <!-- ============ SITE HEADER ============ -->
+  <header class="site-header">
+    <a href="index.html" class="site-header__brand">Anuj<br>Debnath</a>
+    <nav class="site-nav">
+      <a class="site-nav__link" href="index.html">home</a>
+      <a class="site-nav__link" href="aboutme.html">about me</a>
+      <a class="site-nav__link" href="index.html#works">works</a>
+      <a class="site-nav__link" href="index.html#connect">connect</a>
+    </nav>
+  </header>
+
+  <!-- ============ CASE STUDY HERO ============ -->
+  <section id="case-study-hero" class="section">
+    <div class="case-study-hero">
+      <div class="case-study-hero__image" id="caseStudyHeroImage"><img src="images/airtel/00-cover.png" alt="Intermission // Airtel cover" onerror="this.remove()"></div>
+
+      <div class="case-study-hero__content">
+        <h1 class="section-title case-study-hero__title" id="case-study-title">INTERMISSION</h1>
+        <p class="story-text__lede case-study-hero__subtitle">Airtel: A Bank in All But Name.</p>
+      </div>
+
+      <div class="meta-list case-study-hero__meta">
+        <span>17/09/2026</span>
+        <span>Duration: 3 Week</span>
+        <span>Information Design, Web Development</span>
+        <span>eCharts, GSAP, CSS, JavaScript, Figma, GitHub, Google Gemini, Claude Code</span>
+        <span>Live link: <a href="https://the-ken.com/intermission/the-unkillable-network-bharti-airtel/" target="_blank" rel="noopener">Intermission/Airtel</a></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STORY CONTENT ============ -->
+  <section class="section case-study-story">
+
+    <!-- Intro -->
+    <div class="story-block">
+      <div class="story-text">
+        <p class="story-text__lede">Intermission is a podcast series with dedicated companion websites, each episode tracing the history and legacy of a well-known Indian brand.</p>
+        <p class="story-text__body">Episode 2 covers Airtel, the Indian lending giant — the story of a family business split, and how one branch of it, built around Sanjiv Bajaj, grew into a financial-services behemoth with money flowing into nearly every sector of Indian consumer credit.</p>
+        <p class="story-text__body">This was the most visualisation-heavy episode of the series to date, with datasets ranging from market capitalisation to stock price history. This document walks through my process for sourcing the data, conceiving the visuals, and shipping them to the companion site.</p>
+      </div>
+      <div class="story-image"><img src="images/airtel/01.png" alt="Intermission // Airtel — image 01" onerror="this.remove()"></div>
+    </div>
+
+    <!-- Script -->
+    <h2 class="section-title story-heading story-heading--script">SCRIPT</h2>
+    <div class="story-text-block">
+      <p class="story-text__lede">The process started with the script but needed additional data.</p>
+    </div>
+    <div class="story-columns">
+      <div>
+        <p class="story-text__body">Given the scale of data this episode demanded, I took on part of the research task myself — specifically, extracting data from platforms that didn't offer direct APIs or AI-accessible exports.</p>
+      </div>
+      <div>
+        <p class="story-text__body">For this, I built a web scraper using Playwright in JavaScript. One example: pulling Airtel's historical stock prices from Yahoo Finance. The historical price table on Yahoo Finance shared a common label — in this case, <span class="inline-code">ep2-47h7</span> — that tagged every value in the chart. I used that label as a hook to pull the full dataset programmatically.</p>
+        <p class="story-text__body">From there, the data needed shaping: formatting it down to the closing price for January of each year, and rebasing both Airtel's stock price and the Nifty 50 index so the two could be plotted and compared on the same scale.</p>
+      </div>
+    </div>
+
+    <div class="story-image-row">
+      <div class="doc-frame">
+        <div class="doc-frame__titlebar">
+          <svg class="doc-frame__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M5 2h9l5 5v15a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z" fill="#4285F4"/>
+            <path d="M14 2v5h5" fill="#a9c6fb"/>
+          </svg>
+          <span class="doc-frame__filename">Intermission — Episode 2 — Airtel — Script</span>
+        </div>
+        <div class="doc-frame__page">
+          <p>The partition of India in 1947 changed everything. Hindu and Sikh refugees from West Punjab poured into Ludhiana. They turned residential alleyways into makeshift factories. The entrepreneurial spirit buzzed with life in the city. It became known as the Manchester of India by the 1960s.</p>
+          <p class="doc-frame__note">V2.3 — <span class="doc-frame__highlight">Map</span> — Map of Punjab showing Ludhiana's location relative to Delhi and Lahore, Grand Trunk Road, railways</p>
+        </div>
+      </div>
+      <div class="story-image-caption-group">
+        <div class="story-image"><img src="images/airtel/02.png" alt="Intermission // Airtel — image 02" onerror="this.remove()"></div>
+        <p class="story-image-label story-image-label--left">Reference Image</p>
+      </div>
+    </div>
+
+    <!-- Explorations (no Gemini callout on this episode - straight
+         from text into the two named visual explorations below) -->
+    <h2 class="section-title story-heading story-heading--explorations">EXPLORATIONS</h2>
+    <div class="story-columns">
+      <div>
+        <p class="story-text__lede">We were targeting people interested in the company and its story like business enthusiasts, entrepreneurs, historians, and finance academics.</p>
+      </div>
+      <div>
+        <p class="story-text__body">As with previous episodes, I explored a range of visualisation concepts using Google Gemini and the eCharts library. This time, I also pushed into less conventional formats — including a family tree, a structure that's often treated as a cliché in this kind of storytelling but felt essential given how central the Bajaj family split is to the episode's narrative.</p>
+        <p class="story-text__body">The core challenge throughout was making dense, repetitive data at scale approachable for readers who aren't used to navigating interactive charts. The family tree was one answer to that; a couple of other unconventional formats followed the same logic.</p>
+      </div>
+    </div>
+
+    <div class="story-image-row">
+      <div class="story-image-caption-group">
+        <div class="story-image"><img src="images/airtel/03.png" alt="Intermission // Airtel — image 03" onerror="this.remove()"></div>
+        <p class="story-image-label story-image-label--left">Family Tree</p>
+      </div>
+      <div class="story-image-caption-group">
+        <div class="story-image"><img src="images/airtel/04.png" alt="Intermission // Airtel — image 04" onerror="this.remove()"></div>
+        <p class="story-image-label">Stocks Chart</p>
+      </div>
+    </div>
+
+    <div class="story-text-block">
+      <p class="story-text__body">The family tree let readers trace the Bajaj lineage and the 2015 split at a glance, without wading through paragraphs of succession history, while the stocks chart set that same story against the market's read on it — plotting how each listed entity performed once it stood on its own.</p>
+    </div>
+
+    <!-- Design System -->
+    <h2 class="section-title story-heading story-heading--design-system">DESIGN SYSTEM</h2>
+    <div class="story-block story-block--flush-top story-block--align-end">
+      <div class="story-text">
+        <p class="story-text__lede">The site's visual language is owned by our visual team.</p>
+        <p class="story-text__body">The team consists of a product designer and an art director, who maintain a consistent five-colour palette and a full design system covering typography, sizing, and spacing.</p>
+      </div>
+      <div class="story-image story-image--rise story-image--parallax"><img src="images/airtel/05.png" alt="Intermission // Airtel — image 05" onerror="this.remove()"></div>
+    </div>
+
+    <div class="story-callout story-callout--warm">
+      <div class="story-block story-block--flush">
+        <div class="story-text">
+          <p class="story-text__lede"><span class="accent-orange"><svg class="callout-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="7"/><line x1="12" y1="17" x2="12" y2="22"/><line x1="2" y1="12" x2="7" y2="12"/><line x1="17" y1="12" x2="22" y2="12"/><line x1="4.9" y1="4.9" x2="8.3" y2="8.3"/><line x1="15.7" y1="15.7" x2="19.1" y2="19.1"/><line x1="19.1" y1="4.9" x2="15.7" y2="8.3"/><line x1="8.3" y1="15.7" x2="4.9" y2="19.1"/></g></svg>Claude Code</span> helps encapsulate all the single HTMLs created by Google Gemini into a single file with all the interactive artefacts.</p>
+          <p class="story-text__body">Once a design was finalised — after several rounds of discussion with the editor and researcher — I moved into adding detail and interaction: visual cues like shape changes and animated borders that made the static concepts feel alive.</p>
+          <p class="story-text__body">A key part of this stage was building a <span class="hl">"plug and play"</span> system for the developer building the site. Since the visualisations I built were meant to double as the code package itself, they needed an architecture that would drop cleanly into the main site. That meant breaking each single HTML file into three parts: <span class="inline-code">style.css</span>, <span class="inline-code">script.js</span>, and a <span class="inline-code">&lt;section&gt;</span> block for the main <span class="inline-code">index.html</span>.</p>
+          <p class="story-text__body">This let the developer integrate each visualisation natively — no iframes — simply by placing the <span class="inline-code">&lt;section&gt;...&lt;/section&gt;</span> inside the main file and referencing the other two files. It gave us a clean, parallel workflow: we could both work on the site at the same time without stepping on each other's code.</p>
+        </div>
+        <div class="story-image"><img src="images/airtel/06.png" alt="Intermission // Airtel — image 06" onerror="this.remove()"></div>
+      </div>
+    </div>
+
+    <!-- Q&A heading overlaps the bottom of the image row before it -->
+    <div class="story-overlap">
+      <div class="story-image-row">
+        <div class="story-image"><img src="images/airtel/09.png" alt="Intermission // Airtel — image 09" onerror="this.remove()"></div>
+        <div class="story-image"><img src="images/airtel/10.png" alt="Intermission // Airtel — image 10" onerror="this.remove()"></div>
+      </div>
+      <h2 class="section-title story-heading story-overlap__heading story-heading--qa">Q&amp;A</h2>
+    </div>
+
+    <div class="story-columns">
+      <div>
+        <p class="story-text__lede">We used a Vercel server to push visualisations in real time, which let the wider team — across other functions — view and review the work as it evolved. We also used Ruttle to collect and track feedback.</p>
+        <p class="story-text__body">QA is largely an iterative process grounded in the live context of the site.</p>
+        <p class="story-text__body">Responsiveness was another crucial piece of QA on a project like this. We tested across screen sizes, but focused mainly on two — iPhone and iPad. Portrait phone layouts consistently need a different design approach from desktop, so that testing happens earlier, at the single-HTML prototype stage.</p>
+        <p class="story-text__body">iPad is less predictable. Depending on the visualisation, either the web or mobile version can end up working better — there's no fixed rule. The biggest challenge on iPad is usually font sizing and alignment; when maximum heights are set correctly, the web version tends to hold up better, though that's not a hard-and-fast rule.</p>
+      </div>
+      <div class="story-image-row story-image-row--flush">
+        <div class="story-image-caption-group">
+          <div class="story-image story-image--mobile"><img src="images/airtel/11.png" alt="Intermission // Airtel — image 11" onerror="this.remove()"></div>
+          <p class="story-image-label">iPhone 12</p>
+        </div>
+        <div class="story-image-caption-group">
+          <div class="story-image story-image--ipad"><img src="images/airtel/12.png" alt="Intermission // Airtel — image 12" onerror="this.remove()"></div>
+          <p class="story-image-label">iPad Mini</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Integration -->
+    <div class="story-overlap">
+      <h2 class="section-title story-heading story-overlap__heading story-heading--integration">INTEGRATION</h2>
+      <div class="story-image story-image--full story-image--parallax"><img src="images/airtel/13.gif" alt="Intermission // Airtel — image 13" onerror="this.remove()"></div>
+    </div>
+
+    <div class="story-columns">
+      <div class="story-columns__spacer" aria-hidden="true"></div>
+      <div class="story-columns__spacer" aria-hidden="true"></div>
+      <div>
+        <p class="story-text__lede">We used GitHub for version control, which kept our work transparent and kept us both accountable.</p>
+        <p class="story-text__body">A solid communication and integration channel between designer and developer is essential to a project like this.</p>
+        <p class="story-text__body">To keep the project modular and let us work in parallel without conflicts, we namespaced all my code under <span class="inline-code">QW4K2-</span> and worked on a separate branch. This let us avoid code collisions while still giving us the flexibility to draw on functionality the other had already built.</p>
+        <p class="story-text__lede story-text__lede--spaced">The completed data visualisations went live on The Ken's website on 17th August. You can explore the full episode here: <a href="https://the-ken.com/intermission/the-unkillable-network-bharti-airtel/" target="_blank" rel="noopener">Intermission/Airtel</a></p>
+      </div>
+    </div>
+
+    <div class="story-image-row">
+      <div class="story-image"><img src="images/airtel/14.png" alt="Intermission // Airtel — image 14" onerror="this.remove()"></div>
+      <div class="story-image"><img src="images/airtel/15.png" alt="Intermission // Airtel — image 15" onerror="this.remove()"></div>
+    </div>
+
+    <!-- Live QW4K prototypes from prototypes/airtel/, embedded via iframe -->
+    <h2 class="section-title story-heading story-heading--prototypes">PROTOTYPES</h2>
+    <div class="story-text-block">
+      <p class="story-text__lede">The visualisations as they actually shipped, live and interactive below.</p>
+    </div>
+    <div class="airtel-prototypes-grid">
+      <div class="airtel-prototype airtel-prototype--africa-map">
+        <iframe src="prototypes/airtel/africaMap.html" title="Airtel Africa operating footprint - interactive map" loading="lazy"></iframe>
+      </div>
+      <div class="airtel-prototype airtel-prototype--arpu">
+        <iframe src="prototypes/airtel/arpu3.html" title="Airtel quarterly net profit - interactive chart" loading="lazy"></iframe>
+      </div>
+      <div class="airtel-prototype airtel-prototype--subscribers">
+        <iframe src="prototypes/airtel/subscriber2.html" title="Subscriber growth over the years - interactive chart" loading="lazy"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BACK / NEXT PROJECT PAGER ============ -->
+  <section class="section case-study-pager">
+    <div class="case-study-pager-previews">
+      <a href="undersea-cables.html" class="case-study-pager-preview case-study-pager-preview--back">
+        <div class="story-overlap">
+          <span class="section-title case-study-pager__label story-overlap__heading back-header">BACK</span>
+          <div class="story-image"><img src="images/undersea-cables/00-cover.png" alt="Undersea Cables cover" onerror="this.remove()"></div>
+        </div>
+        <p class="case-study-pager-preview__lede">Undersea Cables: Meta's new India cable, and the fragile network holding up the country's internet.</p>
+        <div class="meta-list">
+          <span>09/04/2026</span>
+          <span>The-Ken/Intermission</span>
+          <span>eCharts, GSAP, OpenStreetMap, Leaflet, CSS, JavaScript, Figma, GitHub, Google Gemini, Claude Code</span>
+        </div>
+      </a>
+
+      <a href="lightrock.html" class="case-study-pager-preview case-study-pager-preview--next">
+        <div class="story-overlap">
+          <span class="section-title case-study-pager__label story-overlap__heading next-header">NEXT</span>
+          <div class="story-image"><img src="images/lightrock/00-cover.png" alt="Investment Chart (Lightrock) cover" onerror="this.remove()"></div>
+        </div>
+        <p class="case-study-pager-preview__lede">Investment Chart: a royal family's billion-dollar bet on Indian startups, without a winner.</p>
+        <div class="meta-list">
+          <span>09/04/2026</span>
+          <span>The-Ken/Intermission</span>
+          <span>eCharts, iFrame, CSS, JavaScript, Figma, GitHub, Google Gemini</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <section class="section contact-section">
+    <div class="contact-details">
+      <a class="contact-details__line" href="tel:+919874608128">+91 98746 08128</a>
+      <a class="contact-details__line" href="mailto:anujdebnath246@gmail.com">anujdebnath246@gmail.com</a>
+    </div>
+
+    <div class="contact-social-row">
+      <a class="link-arrow" href="https://www.instagram.com/codegarden.space/" target="_blank" rel="noopener">Instagram &#8599;</a>
+      <a class="link-arrow" href="https://medium.com/@radioactivesugar" target="_blank" rel="noopener">Medium &#8599;</a>
+    </div>
+
+    <div class="footer-columns">
+      <ul class="footer-nav">
+        <li><a class="footer-nav__link" href="aboutme.html">About Me</a></li>
+        <li><a class="footer-nav__link" href="index.html#works">Works</a></li>
+      </ul>
+
+      <address class="footer-address">
+        Address:<br>
+        Bengaluru,<br>
+        India
+      </address>
+    </div>
+
+    <div class="footer-links-row">
+      <a class="footer-links-row__link" href="https://radioactive-sugar.itch.io/" target="_blank" rel="noopener">[ itch.io ]</a>
+      <a class="footer-links-row__link" href="https://www.behance.net/anujdebnat6978" target="_blank" rel="noopener">[ Behance ]</a>
+      <a class="footer-links-row__link" href="https://www.linkedin.com/in/anuj-debnath-150407163/" target="_blank" rel="noopener">[ LinkedIn ]</a>
+    </div>
+
+    <h2 class="footer-wordmark" id="footer-wordmark">ANUJ DEBNATH</h2>
+  </section>
+
+  <div class="footer-bottom">
+    <span class="footer-bottom__location" id="footerClock">INDIA: (GMT+5:30) --:--</span>
+    <span class="footer-bottom__credit">Design &amp; Development &mdash; Anuj Debnath</span>
+    <span class="footer-bottom__copyright">2026 All Rights Reserved. Anuj Debnath. Any reproduction, distribution, or use of the materials without permission is prohibited.</span>
+  </div>
+
+  <!-- Custom "expand" cursor shown over the BACK/NEXT pager previews -->
+  <div class="custom-cursor" id="customCursor" aria-hidden="true">
+    <svg viewBox="0 0 24 24">
+      <line x1="7" y1="17" x2="17" y2="7"></line>
+      <polyline points="8 7 17 7 17 16"></polyline>
+    </svg>
+  </div>
+
+  <script src="js/common.js"></script>
+  <script src="js/story.js"></script>
+  <script src="js/case-study.js"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+/* styles/globals.css
+   Shared tokens for the QW4K chart modules (shareholding.css,
+   smoke75.css, cigarette.css) - the --font-*/--type-*/--color-*
+   variables they all read, plus a small reset. cigarette.js and
+   smoke75.js also read --color-text/--color-muted/--color-bg
+   directly via getComputedStyle, so these must be real custom
+   properties, not just literal values inside the module CSS. */
+
+:root {
+  --font-display: 'Archivo', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-body: 'Archivo', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --type-heading: 1.6rem;
+  --type-subheading: 1rem;
+  --type-legend: 0.85rem;
+  --color-bg: #f2f1ef;
+  --color-text: #1a1a32;
+  --color-muted: #6b6b80;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  font-family: var(--font-body);
+  color: var(--color-text);
+}

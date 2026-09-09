@@ -1,0 +1,577 @@
+/* =========================================================
+   ABOUT PAGE  (aboutme.html)
+   The intro hero + everything below it (pull quote, disciplines,
+   process, tools, closing) are page-specific; the shared story
+   blocks in css/story.css handle the rest (headings, story-text,
+   the one showcase image). See prompt.md for the design system this
+   is built from.
+   ========================================================= */
+
+.about-intro {
+  padding-top: 2rem;
+}
+
+/* Three tracks rather than two - the middle one is left empty on
+   purpose (nothing is ever placed in it) so the image and text are
+   separated by a full column's width of dead space, not just the
+   grid's own row/column gap. It's sized narrower than the text track
+   (1fr vs 2fr) so that dedicated gap column doesn't eat into the
+   text's own share of the row. */
+.about-intro__grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 28%) 160px 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+/* Left image block, reuses hero.css's mask-reveal image pattern */
+.about-intro__image-wrapper {
+  position: relative;
+  width: 100%;
+  grid-column: 1;
+}
+
+.about-intro__image-card-bg {
+  position: absolute;
+  top: 30px;
+  left: -20px;
+  width: calc(100% + 40px);
+  height: 100%;
+  background-color: #ebebeb;
+  z-index: 1;
+}
+
+.about-intro__image-wrapper .hero-image-mask {
+  height: 420px;
+}
+
+/* Name + intro copy - sits in the grid's third track (the second is
+   left empty as the image/text separator above) and is capped short
+   of that track's own full width so it still reads as a tighter
+   block rather than stretching edge to edge. */
+.about-intro__content {
+  padding-top: 1.5rem;
+  grid-column: 3;
+  max-width: 100%;
+}
+
+.about-intro__title {
+  justify-content: flex-start;
+  font-size: clamp(2.75rem, 9vw, 6rem);
+  margin-bottom: 2rem;
+}
+
+/* ---------- Pull quote ----------
+   A visual break between the intro and the rest of the page - reuses
+   .story-text__lede's word-by-word scroll reveal (js/story.js already
+   selects every .story-text__lede on the page), just restyled bigger
+   and left-aligned to the intro title above it. Loads after story.css
+   so this wins the (equal-specificity) cascade against the base rule. */
+.about-pull-quote {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
+/* Mirrors .about-intro__grid's own two-column split so the quote's
+   left edge lands in the same spot as "ANUJ" above it (the second
+   column) at any viewport width, rather than the section's raw
+   padding edge - the intro's image column eats a variable share of
+   the row (minmax(240px, 28%)), so only tracking that same grid
+   keeps the two edges lined up as it resizes. */
+.about-pull-quote__grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 28%) 1fr;
+  gap: 3.5rem;
+}
+
+.pull-quote {
+  grid-column: 1 / -1;
+  font-family: var(--font-heading);
+  font-size: clamp(1.75rem, 4.2vw, 3rem);
+  line-height: 1.3;
+  text-align: center;
+  max-width: 780px;
+  margin: 0 auto;
+  /* Starting color for the scroll-linked fill in js/about.js - words
+     scrub from this muted tone up to full --text-color as the quote
+     passes through the viewport. Word opacity is scrubbed the same way
+     (js/about.js), replacing story.js's default one-shot word reveal
+     for this paragraph specifically. */
+  color: var(--card-border);
+}
+
+/* ---------- Mid-page heading placement ----------
+   .story-heading itself carries no margin on purpose (css/story.css) -
+   each instance sets its own, same pattern as project.html's
+   --script/--explorations/etc. */
+.story-heading--skills {
+  margin: 5rem 0 2.5rem;
+}
+
+/* Extra top margin vs. --skills - the tools marquee right above it
+   (its own 4rem bottom margin, css/about.css) reads as a footnote
+   tucked under Disciplines, so without more room here PROCESS felt
+   like it was crowding straight into it instead of starting its own
+   section. */
+.story-heading--process {
+  margin: 8rem 0 2.5rem;
+}
+
+/* ---------- Disciplines ----------
+   Text on the left, the filters + tools panel on the right - same
+   side-by-side rhythm as .story-block elsewhere on the site, just
+   with the filter/tool panel standing in for the image slot the old
+   hover-card grid used to occupy. */
+.disciplines-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5rem;
+  margin: 0 0 4rem;
+}
+
+.disciplines-row .story-text-block {
+  flex: 1 1 42%;
+  min-width: 260px;
+  margin: 0;
+}
+
+.discipline-panel {
+  flex: 1 1 320px;
+  min-width: 280px;
+}
+
+/* ---------- Disciplines filters ----------
+   The four disciplines that used to be shape-shifting cards are now
+   plain toggle buttons - picking one highlights (via .tool-tag.is-match
+   below) which tools in the row underneath actually serve that
+   discipline, rather than each discipline showing its own isolated
+   card. Colors match the site's category palette (prompt.md §2/§7),
+   same mapping the old cards used. */
+.discipline-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0 0 2rem;
+}
+
+/* Frosted glass rather than a flat white fill - a translucent,
+   blurred surface with a faint inset highlight along the top edge
+   (the classic glassmorphism "sheen") so the page's own gradient
+   shows through instead of sitting on an opaque card. Still reads as
+   pressable via the same lift/press/glow states as before, just
+   rendered on glass instead of paper. */
+.discipline-filter {
+  font: inherit;
+  font-family: var(--font-caption);
+  font-size: 0.8rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  color: var(--line-color);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.discipline-filter:hover {
+  background: rgba(255, 255, 255, 0.5);
+  border-color: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.7);
+  transform: translateY(-2px);
+}
+
+.discipline-filter:active {
+  transform: translateY(0) scale(0.96);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+.discipline-filter:focus-visible {
+  outline: 2px solid var(--line-color);
+  outline-offset: 2px;
+}
+
+/* Active discipline keeps the glass - tinted and a touch more opaque
+   rather than switching to a flat solid fill - the colored glow
+   below still carries the "selected" signal. */
+.discipline-filter--graphic.is-active { background: rgba(43, 147, 72, 0.55); border-color: rgba(43, 147, 72, 0.7); color: #fff; box-shadow: 0 6px 20px rgba(43, 147, 72, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.4); }
+.discipline-filter--information.is-active { background: rgba(224, 93, 93, 0.55); border-color: rgba(224, 93, 93, 0.7); color: #fff; box-shadow: 0 6px 20px rgba(224, 93, 93, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.4); }
+.discipline-filter--game.is-active { background: rgba(227, 160, 8, 0.55); border-color: rgba(227, 160, 8, 0.7); color: #fff; box-shadow: 0 6px 20px rgba(227, 160, 8, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.4); }
+.discipline-filter--industrial.is-active { background: rgba(136, 136, 136, 0.55); border-color: rgba(136, 136, 136, 0.7); color: #fff; box-shadow: 0 6px 20px rgba(136, 136, 136, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.4); }
+
+.discipline-filter.is-active:hover {
+  transform: translateY(-2px);
+}
+
+/* ---------- Process ----------
+   Six steps on one connecting line, each number punched through it -
+   same "axis line through markers" idea as the Archive timeline
+   elsewhere on the site, in a simpler static form. */
+.process-flow {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  list-style: none;
+  /* Bottom margin bumped past .story-image--full's own 6rem top
+     margin (css/story.css) - adjacent margins collapse to the larger
+     one, so matching it left the "recent work" image crowding
+     straight into the process steps above. */
+  margin: 3rem 0 10rem;
+  padding: 0;
+}
+
+.process-flow::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--card-border);
+  z-index: 0;
+}
+
+.process-step {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  text-align: center;
+}
+
+.process-step__index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-bottom: 1.1rem;
+  border-radius: 50%;
+  /* Matches the page background so the connector line above visually
+     stops at each circle instead of running straight through it. */
+  background: var(--bg-color);
+  border: 1px solid var(--line-color);
+  font-family: var(--font-caption);
+  font-size: 0.7rem;
+  color: var(--line-color);
+}
+
+.process-step__label {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.process-step__desc {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+  max-width: 165px;
+  margin: 0 auto;
+}
+
+/* ---------- Tools ----------
+   A static, wrapping row rather than a scrolling one - each tag
+   carries a data-disciplines list (aboutme.html) naming which
+   discipline(s) it serves, so picking a filter above can highlight
+   the matching subset in place (js/about.js) instead of the row just
+   auto-scrolling past. */
+/* Nudged down to land roughly level with the text column's second
+   paragraph ("Across all of it...") rather than the first, so the
+   panel doesn't read as front-loaded next to the lede. */
+.about-tools__label {
+  text-align: left;
+  margin: 2.65rem 0 1.5rem;
+}
+
+.tools-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Same glass recipe and squared-off radius as .discipline-filter
+   above, so the tools row reads as the same family of surfaces as
+   the filters sitting right above it - just without the pointer/
+   hover-lift affordance, since these tags aren't clickable. */
+.tool-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  padding: 0.55rem 1.15rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  font-family: var(--font-caption);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  transition: opacity 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+}
+
+.tool-tag__logo {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: var(--line-color);
+}
+
+/* While a filter is active, everything dims except the tools that
+   list that discipline in their data-disciplines attribute - the
+   active discipline's own category color (matching .discipline-filter
+   above) marks the matches instead of a generic highlight. */
+.tools-row.has-active-filter .tool-tag {
+  opacity: 0.35;
+}
+
+.tools-row.has-active-filter .tool-tag.is-match {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+.tools-row[data-active="graphic"] .tool-tag.is-match { border-color: var(--color-graphic-design); }
+.tools-row[data-active="information"] .tool-tag.is-match { border-color: var(--color-visual-journalism); }
+.tools-row[data-active="game"] .tool-tag.is-match { border-color: var(--color-game-design); }
+.tools-row[data-active="industrial"] .tool-tag.is-match { border-color: var(--dot-color); }
+
+/* ---------- Closing ---------- */
+.about-closing {
+  text-align: center;
+  max-width: 620px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.about-closing__links {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+/* The only place a .story-image-label wraps a link (the showcase
+   caption below) - same caption type, just picking up the standard
+   link hover treatment. */
+.story-image-label a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.story-image-label a:hover {
+  opacity: 0.7;
+}
+
+@media (max-width: 900px) {
+  .about-intro__grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .about-intro__image-wrapper .hero-image-mask {
+    height: 320px;
+  }
+
+  .about-intro__image-wrapper {
+    grid-column: auto;
+  }
+
+  .about-intro__content {
+    grid-column: auto;
+    max-width: none;
+  }
+
+  /* Matches .about-intro__grid collapsing to one column above - the
+     quote's own grid must collapse the same way or grid-column: 2
+     has no second column left to sit in. */
+  .about-pull-quote__grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .disciplines-row {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .process-flow {
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .process-flow::before {
+    /* A single horizontal line makes no sense once the steps stack -
+       a vertical one down the row of circles instead. */
+    top: 0;
+    bottom: 0;
+    left: 14px;
+    right: auto;
+    width: 1px;
+    height: auto;
+  }
+
+  .process-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+    text-align: left;
+  }
+
+  .process-step__index {
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+
+  .process-step__desc {
+    max-width: none;
+    margin: 0;
+  }
+}
+
+/* ---------- "Recent work" cursor ----------
+   White circle + diagonal "expand" arrow standing in for the native
+   pointer while hovering the ITC link (see js/about.js) - same
+   follow-the-mouse pattern and icon badge as .custom-cursor
+   (css/case-study.css) rather than a plain filled dot. */
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 68px;
+  height: 68px;
+  margin: -34px 0 0 -34px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.cursor-dot svg {
+  width: 22px;
+  height: 22px;
+  stroke: var(--line-color);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cursor-dot.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ---------- Resume modal ----------
+   resume.html is a standalone, fixed-size print page (210mm x 297mm,
+   793x1123px at 96dpi) - the iframe always renders it at that true
+   size and js/about.js scales the whole thing down with a CSS
+   transform to fit the viewport, rather than fighting the page's own
+   mm-based layout with responsive CSS. */
+.resume-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.resume-modal.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.resume-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.resume-modal__panel {
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(12px);
+  transition: transform 0.25s ease;
+}
+
+.resume-modal.is-open .resume-modal__panel {
+  transform: translateY(0);
+}
+
+.resume-modal__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1.5rem;
+  padding: 0.75rem 1.1rem;
+  border-bottom: 1px solid var(--card-border);
+  flex-shrink: 0;
+}
+
+.resume-modal__download {
+  font-family: var(--font-caption);
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-color);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.resume-modal__download:hover {
+  opacity: 0.6;
+}
+
+.resume-modal__close {
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: none;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.resume-modal__close:hover {
+  opacity: 0.6;
+}
+
+.resume-modal__frame-wrap {
+  overflow: hidden;
+}
+
+.resume-modal__frame {
+  display: block;
+  width: 793px;
+  height: 1123px;
+  border: 0;
+  transform-origin: top left;
+}

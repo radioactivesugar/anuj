@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anuj Debnath - Portfolio</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/hero.css">
+  <link rel="stylesheet" href="/css/work.css">
+  <link rel="stylesheet" href="/css/contact.css">
+
+  <!-- GSAP + ECharts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head>
+<body>
+
+  <!-- ============ SITE HEADER ============ -->
+  <header class="site-header">
+    <a href="/index.html" class="site-header__brand">Anuj<br>Debnath</a>
+    <nav class="site-nav">
+      <a class="site-nav__link" href="/index.html">home</a>
+      <a class="site-nav__link" href="/aboutme.html">about me</a>
+      <a class="site-nav__link" href="#works">works</a>
+      <a class="site-nav__link" href="#connect">connect</a>
+    </nav>
+  </header>
+
+  <!-- ============ HERO SECTION ============ -->
+  <section id="about" class="section hero-section">
+
+    <div class="hero-title-wrapper">
+      <h1 class="section-title hero-title" id="hero-title">DESIGNER</h1>
+      <div class="section-subtitle hero-subtitle">BASED IN INDI<span id="heroSubtitleLastLetter">A</span></div>
+    </div>
+
+    <div class="hero-content-grid">
+      <!-- Image block - the interactive skill nodes that used to sit
+           beside this are gone; the Archive timeline below (moved up
+           from the WORK section) takes over as the hero's main
+           interactive content instead. -->
+      <div class="hero-image-wrapper">
+        <div class="hero-image-card-bg"></div>
+        <div class="hero-image-mask" id="heroImageMask">
+          <div class="hero-image-placeholder"><img src="images/index/00-cover.png" alt="Homepage hero" onerror="this.remove()"></div>
+        </div>
+        <div class="hero-image-caption">
+          <h3>Visual Data Journalist</h3>
+          <p>at The Ken</p>
+        </div>
+      </div>
+
+      <!-- Project preview - static (not cursor-following); js/main.js
+           swaps in the hovered timeline marker's own image + title/
+           description on mouseover/mouseout of a bubble below, fading
+           back to this default prompt copy otherwise. Frame sits to
+           the left of the text column (not stacked above it) - see
+           css/hero.css .hero-preview. -->
+      <div class="hero-preview" id="heroPreview">
+        <div class="hero-preview__frame" id="heroPreviewFrame">
+          <img class="hero-preview__image" id="heroPreviewImage" alt="">
+        </div>
+        <div class="hero-preview__text">
+          <p class="hero-preview__title" id="heroPreviewTitle">Hi, I'm Anuj</p>
+          <p class="hero-preview__subtitle" id="heroPreviewSubtitle">I build digital narratives using data and systems that feel intuitive.</p>
+          <p class="hero-preview__meta" id="heroPreviewMeta">Hover over the timeline below to get a glimpse of this work.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Archive timeline (ported from timeline.html; moved up
+         from the WORK section below) - no "Archive" heading here, it
+         reads as the hero's own content now. Hovering a bubble drives
+         the .hero-preview panel above (js/main.js) instead of a
+         tooltip; bubbles are otherwise inert (no click-through). ===== -->
+    <div class="archive-block">
+      <!-- One continuous full-width panel behind the legend and the
+           timeline - previously this grey background only sat behind
+           the chart itself. -->
+      <div class="archive-panel">
+        <div class="archive-chart-wrapper" id="archiveChartWrapper">
+          <div class="archive-chart" id="archiveChart"></div>
+        </div>
+
+        <div class="archive-filter-nav" id="archiveFilterNav">
+          <button class="archive-filter-btn is-active" data-category="All">
+            <span class="archive-filter-btn__dot" style="background-color: #1d1d1f;"></span>All
+          </button>
+          <button class="archive-filter-btn" data-category="Visual Journalism">
+            <span class="archive-filter-btn__dot" style="background-color: #e05d5d;"></span>Visual Journalism
+          </button>
+          <button class="archive-filter-btn" data-category="Graphic Design">
+            <span class="archive-filter-btn__dot" style="background-color: #2b9348;"></span>Graphic Design
+          </button>
+          <button class="archive-filter-btn" data-category="Game Design">
+            <span class="archive-filter-btn__dot" style="background-color: #e3a008;"></span>Game Design
+          </button>
+          <button class="archive-filter-btn" data-category="Web Development">
+            <span class="archive-filter-btn__dot" style="background-color: #3182ce;"></span>Web Development
+          </button>
+          <button class="archive-filter-btn" data-category="Creatives">
+            <span class="archive-filter-btn__dot" style="background-color: #805ad5;"></span>Creatives
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WORK SECTION ============ -->
+  <section id="works" class="section work-section">
+
+    <div class="section-header-block">
+      <h2 class="section-title" id="work-title">WORK</h2>
+      <p class="section-subtitle">Curation of my recent work using data and systems.</p>
+    </div>
+
+    <h3 class="section-label">Featured</h3>
+
+    <!-- Grid of case-study cards (featured.png reference) - full-bleed
+         width via .featured-grid's negative-margin breakout below.
+         Each card shows its title/description by default and
+         crossfades to its own cover image (.featured-card__image) on
+         hover/focus - see css/work.css. -->
+    <!-- Three size tiers, in DOM order so the grid's default auto-flow
+         (css/work.css) places them correctly with no per-card
+         grid-column/row needed beyond --big's own span: 1 big (the
+         lead case study, carrying the rotating badge that used to sit
+         on Packaging) -> 4 medium (the other real case studies) -> 4
+         small (archive-only extras, no dedicated page). -->
+    <div class="featured-grid" id="featuredGrid">
+      <a href="/project.html" class="featured-card featured-card--big">
+        <img class="featured-card__image" src="images/project/00-cover.png" alt="" loading="lazy" onerror="this.remove()">
+        <span class="featured-card__label">Visual Journalism</span>
+        <h4 class="featured-card__title">Intermission // ITC</h4>
+        <p class="featured-card__desc">How a colonial cigarette company became one of India's most valuable conglomerates.</p>
+        <span class="featured-card__spinner" aria-hidden="true">
+          <svg viewBox="0 0 100 100">
+            <defs><path id="featuredSpinPath" d="M 50,50 m -38,0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0"/></defs>
+            <text font-size="8.5" letter-spacing="2" fill="currentColor">
+              <textPath href="#featuredSpinPath">FEATURED &#8226; FEATURED &#8226; FEATURED &#8226; </textPath>
+            </text>
+          </svg>
+        </span>
+      </a>
+
+      <a href="/undersea-cables.html" class="featured-card featured-card--medium">
+        <img class="featured-card__image" src="images/undersea-cables/00-cover.png" alt="" loading="lazy" onerror="this.remove()">
+        <span class="featured-card__label">Visual Journalism</span>
+        <h4 class="featured-card__title">Undersea Cables</h4>
+        <p class="featured-card__desc">Meta's new India cable, and the fragile network holding up the country's internet.</p>
+      </a>
+
+      <a href="/airtel.html" class="featured-card featured-card--medium">
+        <img class="featured-card__image" src="images/airtel/00-cover.png" alt="" loading="lazy" onerror="this.remove()">
+        <span class="featured-card__label">Visual Journalism</span>
+        <h4 class="featured-card__title">Intermission // Airtel</h4>
+        <p class="featured-card__desc">How Bharti Airtel survived price wars and Reliance to become a $100bn+ company.</p>
+      </a>
+
+      <a href="/lightrock.html" class="featured-card featured-card--medium">
+        <img class="featured-card__image" src="images/lightrock/00-cover.png" alt="" loading="lazy" onerror="this.remove()">
+        <span class="featured-card__label">Visual Journalism</span>
+        <h4 class="featured-card__title">Investment Chart</h4>
+        <p class="featured-card__desc">A royal family's billion-dollar bet on Indian startups — without a winner.</p>
+      </a>
+
+      <a href="/revenue-growth.html" class="featured-card featured-card--medium">
+        <img class="featured-card__image" src="images/revenue-growth/00-cover.png" alt="" loading="lazy" onerror="this.remove()">
+        <span class="featured-card__label">Visual Journalism</span>
+        <h4 class="featured-card__title">Revenue Growth</h4>
+        <p class="featured-card__desc">At RBI-licensed NBFCs, 600% annual interest is board-approved and perfectly legal.</p>
+      </a>
+
+      <a href="#" class="featured-card featured-card--small">
+        <img class="featured-card__image" src="images/archive/03.png" alt="" loading="lazy" onerror="this.remove()">
+        <span class="featured-card__label">Graphic Design</span>
+        <h4 class="featured-card__title">Packaging — Baarbara Coffee</h4>
+        <p class="featured-card__desc">Coffee packaging design.</p>
+      </a>
+
+      <a href="#" class="featured-card featured-card--small">
+        <img class="featured-card__image" src="images/archive/17.png" alt="" loading="lazy" onerror="this.remove()">
+        <span class="featured-card__label">Game Design</span>
+        <h4 class="featured-card__title">Zelda — A Breath of Fresh Wind</h4>
+        <p class="featured-card__desc">Deep dive into the design of Breath of the Wild.</p>
+      </a>
+
+      <a href="#" class="featured-card featured-card--small">
+        <img class="featured-card__image" src="images/archive/04.png" alt="" loading="lazy" onerror="this.remove()">
+        <span class="featured-card__label">Creatives</span>
+        <h4 class="featured-card__title">Fabled Ciphers</h4>
+        <p class="featured-card__desc">Created as part of the Inktober challenge.</p>
+      </a>
+
+      <a href="#" class="featured-card featured-card--small">
+        <img class="featured-card__image" src="images/archive/29.png" alt="" loading="lazy" onerror="this.remove()">
+        <span class="featured-card__label">Web Development</span>
+        <h4 class="featured-card__title">Bird Map</h4>
+        <p class="featured-card__desc">Using eBird data to map the migration patterns of 5 birds in Bangalore.</p>
+      </a>
+    </div>
+
+  </section>
+
+  <!-- ============ CONTACT + FOOTER SECTION ============ -->
+  <section id="connect" class="section contact-section">
+
+    <div class="section-header-block">
+      <h2 class="section-title" id="contact-title">CONTACT</h2>
+      <p class="section-subtitle">Like something you like? Let's Connect</p>
+    </div>
+
+    <div class="contact-details">
+      <a class="contact-details__line" href="tel:+919874608128">+91 98746 08128</a>
+      <a class="contact-details__line" href="mailto:anujdebnath246@gmail.com">anujdebnath246@gmail.com</a>
+    </div>
+
+    <div class="contact-social-row">
+      <a class="link-arrow" href="https://www.instagram.com/codegarden.space/" target="_blank" rel="noopener">Instagram &#8599;</a>
+      <a class="link-arrow" href="https://medium.com/@radioactivesugar" target="_blank" rel="noopener">Medium &#8599;</a>
+    </div>
+
+    <div class="footer-columns">
+      <ul class="footer-nav">
+        <li><a class="footer-nav__link" href="/aboutme.html">About Me</a></li>
+        <li><a class="footer-nav__link" href="#works">Works</a></li>
+      </ul>
+
+      <address class="footer-address">
+        Address:<br>
+        Bengaluru,<br>
+        India
+      </address>
+    </div>
+
+    <div class="footer-links-row">
+      <a class="footer-links-row__link" href="https://radioactive-sugar.itch.io/" target="_blank" rel="noopener">[ itch.io ]</a>
+      <a class="footer-links-row__link" href="https://www.behance.net/anujdebnat6978" target="_blank" rel="noopener">[ Behance ]</a>
+      <a class="footer-links-row__link" href="https://www.linkedin.com/in/anuj-debnath-150407163/" target="_blank" rel="noopener">[ LinkedIn ]</a>
+    </div>
+
+    <h2 class="footer-wordmark" id="footer-wordmark">ANUJ DEBNATH</h2>
+  </section>
+
+  <div class="footer-bottom">
+    <span class="footer-bottom__location" id="footerClock">INDIA: (GMT+5:30) --:--</span>
+    <span class="footer-bottom__credit">Design &amp; Development &mdash; Anuj Debnath</span>
+    <span class="footer-bottom__copyright">2026 All Rights Reserved. Anuj Debnath. Any reproduction, distribution, or use of the materials without permission is prohibited.</span>
+  </div>
+
+  <!-- Custom "view" cursor shown over the featured cards + about-me nav link -->
+  <div class="custom-cursor" id="customCursor" aria-hidden="true">
+    <svg viewBox="0 0 24 24">
+      <line x1="7" y1="17" x2="17" y2="7"></line>
+      <polyline points="8 7 17 7 17 16"></polyline>
+    </svg>
+  </div>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/timeline-data.js"></script>
+  <script src="/js/main.js"></script>
+</body>
+</html>

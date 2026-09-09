@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anuj Debnath - Portfolio</title>
+
+  <!-- GSAP Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <style>
+    :root {
+      --bg-color: #f4f4f4;
+      --text-color: #000000;
+      --card-bg: #e2e2e2;
+      --card-border: #cccccc;
+      --dot-color: #888888;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 2.5rem 3rem;
+      max-width: 1240px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 20;
+    }
+
+    .brand {
+      font-size: 1.25rem;
+      font-weight: 800;
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    nav {
+      display: flex;
+      gap: 2.5rem;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: var(--text-color);
+      font-size: 0.95rem;
+      font-weight: 400;
+      transition: opacity 0.2s;
+    }
+
+    nav a:hover {
+      opacity: 0.6;
+    }
+
+    /* Main Container */
+    main {
+      position: relative;
+      width: 100%;
+      max-width: 1240px;
+      margin: 0 auto;
+      min-height: calc(100vh - 120px);
+      padding: 0 4rem 4rem 4rem;
+    }
+
+    /* Big Title - Positioned above image, overlapping it */
+    .hero-title-wrapper {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 10;
+      width: 100%;
+      pointer-events: none;
+    }
+
+    .hero-title {
+      font-size: clamp(3.5rem, 13vw, 10rem);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 0.85;
+      white-space: nowrap;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+    }
+
+    .letter {
+      display: inline-block;
+      transform: translateY(-120%);
+    }
+
+    .subtitle {
+      font-size: clamp(0.8rem, 1.2vw, 1.1rem);
+      color: #666666;
+      margin-top: 12px;
+      letter-spacing: 0.1em;
+      font-weight: 600;
+    }
+
+    /* Content Layout Container */
+    .content-grid {
+      display: grid;
+      grid-template-columns: minmax(260px, 26%) 1fr;
+      gap: 4rem;
+      margin-top: 100px;
+      position: relative;
+      z-index: 5;
+    }
+
+    /* Main Left Image Block */
+    .image-block-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .image-card-bg {
+      position: absolute;
+      top: 40px;
+      left: -30px;
+      width: calc(100% + 60px);
+      height: 380px;
+      background-color: #ebebeb;
+      z-index: 1;
+    }
+
+    .image-container {
+      position: relative;
+      width: 100%;
+      height: 340px;
+      background-color: #d1d1d1;
+      transform-origin: top;
+      transform: scaleY(0);
+      overflow: hidden;
+      z-index: 2;
+    }
+
+    .image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .image-caption {
+      margin-top: 1.5rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .image-caption h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .image-caption p {
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    /* Interactive Nodes Container */
+    .nodes-container {
+      position: relative;
+      min-height: 400px;
+      width: 100%;
+    }
+
+    .node {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      padding: 6px;
+      transition: opacity 0.2s;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      background-color: var(--dot-color);
+      border-radius: 50%;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    .node-label {
+      font-family: monospace, sans-serif;
+      font-size: 0.85rem;
+      color: #333;
+      white-space: nowrap;
+    }
+
+    .node:hover .dot {
+      transform: scale(1.6);
+      background-color: #000;
+    }
+
+    /* Hover Details Card Container */
+    .hover-card {
+      position: absolute;
+      width: 360px;
+      background: rgba(240, 240, 240, 0.96);
+      border: 1px solid #b5b5b5;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      display: flex;
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      z-index: 30;
+      backdrop-filter: blur(4px);
+    }
+
+    .hover-card.active {
+      opacity: 1;
+      pointer-events: auto;
+      visibility: visible;
+    }
+
+    .card-preview {
+      width: 120px;
+      background-color: #c4c4c4;
+      flex-shrink: 0;
+    }
+
+    .card-content {
+      padding: 1.2rem;
+      font-size: 0.8rem;
+      line-height: 1.4;
+      color: #222;
+    }
+
+    .card-content p {
+      margin-bottom: 0.8rem;
+    }
+
+    .card-content h4 {
+      font-size: 0.85rem;
+      margin-bottom: 0.4rem;
+      font-weight: 700;
+    }
+
+    .card-content ul {
+      list-style: none;
+    }
+
+    .card-content ul li {
+      margin-bottom: 0.25rem;
+    }
+
+    .card-content ul li a {
+      color: #000;
+      text-decoration: underline;
+    }
+
+    .card-content ul li a:hover {
+      color: #555;
+    }
+
+    /* Media Queries for Responsiveness */
+    @media (max-width: 992px) {
+      header {
+        padding: 2rem 2rem;
+      }
+
+      main {
+        padding: 0 2rem 2rem 2rem;
+      }
+
+      .content-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+        margin-top: 80px;
+      }
+
+      .image-block-wrapper {
+        max-width: 340px;
+        margin: 0 auto;
+      }
+
+      .nodes-container {
+        min-height: 350px;
+      }
+
+      .hover-card {
+        position: fixed;
+        bottom: 20px;
+        left: 50% !important;
+        top: auto !important;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 380px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      header {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1.5rem;
+      }
+
+      nav {
+        gap: 1.5rem;
+      }
+
+      main {
+        padding: 0 1.5rem 1.5rem 1.5rem;
+      }
+
+      .hero-title-wrapper {
+        top: 10px;
+      }
+
+      .node-label {
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      Anuj<br>Debnath
+    </div>
+    <nav>
+      <a href="#about">about me</a>
+      <a href="#works">works</a>
+      <a href="#connect">connect</a>
+    </nav>
+  </header>
+
+  <!-- Main Section -->
+  <main>
+    <!-- Big Title (Overlaying the image block) -->
+    <div class="hero-title-wrapper">
+      <h1 class="hero-title" id="title">DESIGNER</h1>
+      <div class="subtitle">BASED IN INDIA</div>
+    </div>
+
+    <div class="content-grid">
+      <!-- Left Image Section -->
+      <div class="image-block-wrapper">
+        <div class="image-card-bg"></div>
+        <div class="image-container" id="maskedImage">
+          <div style="width:100%; height:100%; background:#c4c4c4;"></div>
+        </div>
+        <div class="image-caption">
+          <h3>Visual Data Journalist</h3>
+          <p>at The Ken</p>
+        </div>
+      </div>
+
+      <!-- Interactive Dots Section -->
+      <div class="nodes-container">
+        <div class="node" style="top: 15%; left: 15%;" data-node="web">
+          <span class="dot"></span>
+          <span class="node-label">Web Development</span>
+        </div>
+
+        <div class="node" style="top: 48%; left: 5%;" data-node="ux">
+          <span class="dot"></span>
+          <span class="node-label">UX Design</span>
+        </div>
+
+        <div class="node" style="top: 82%; left: 15%;" data-node="game">
+          <span class="dot"></span>
+          <span class="node-label">Game Design</span>
+        </div>
+
+        <div class="node" style="top: 48%; left: 50%;" data-node="info">
+          <span class="dot"></span>
+          <span class="node-label">Information design</span>
+        </div>
+
+        <div class="node" style="top: 15%; left: 75%;" data-node="illustrator">
+          <span class="dot"></span>
+          <span class="node-label">Illustrator</span>
+        </div>
+
+        <div class="node" style="top: 82%; left: 75%;" data-node="graphic">
+          <span class="dot"></span>
+          <span class="node-label">Graphic Designer</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Info Card -->
+    <div class="hover-card" id="infoCard">
+      <div class="card-preview"></div>
+      <div class="card-content">
+        <p id="cardDesc">Using the understanding of systems and data, I design holistic visualisations and infographics for various projects.</p>
+        <h4>Some projects,</h4>
+        <ul id="cardLinks">
+          <li><a href="#">Intermission-Episode 4: ITC</a></li>
+          <li><a href="#">Intermission-Episode 2: ITC</a></li>
+          <li><a href="#">Editorial</a></li>
+          <li><a href="#">Bird Project</a></li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Split title into letter spans
+    const titleElement = document.getElementById('title');
+    const text = titleElement.innerText;
+    titleElement.innerHTML = '';
+
+    text.split('').forEach(char => {
+      const span = document.createElement('span');
+      span.classList.add('letter');
+      span.innerText = char;
+      titleElement.appendChild(span);
+    });
+
+    // GSAP Entrance Animations
+    const tl = gsap.timeline();
+
+    // 1. Reveal letters without bounce starting from middle outward
+    tl.to('.letter', {
+      y: '0%',
+      duration: 0.8,
+      ease: 'power2.out',
+      stagger: {
+        each: 0.05,
+        from: 'center'
+      }
+    })
+    // 2. Expand image vertical mask
+    .to('#maskedImage', {
+      scaleY: 1,
+      duration: 1,
+      ease: 'power3.inOut'
+    }, '-=0.4');
+
+    // Interactive Dots Data & Logic
+    const nodes = document.querySelectorAll('.node');
+    const infoCard = document.getElementById('infoCard');
+    const cardDesc = document.getElementById('cardDesc');
+    const cardLinks = document.getElementById('cardLinks');
+
+    const nodeData = {
+      'web': {
+        desc: 'Crafting responsive, performance-driven web interfaces with modern CSS and JavaScript animation frameworks.',
+        projects: [
+          { name: 'Interactive Data Story', url: '#' },
+          { name: 'Portfolio Template', url: '#' }
+        ]
+      },
+      'ux': {
+        desc: 'Focusing on user flow, wireframing, and creating intuitive user experiences for web and mobile platforms.',
+        projects: [
+          { name: 'E-commerce App Redesign', url: '#' },
+          { name: 'SaaS Dashboard Design', url: '#' }
+        ]
+      },
+      'game': {
+        desc: 'Designing mechanics, rules, and visual logic for immersive web-based interactive games.',
+        projects: [
+          { name: '2D Platformer Prototype', url: '#' },
+          { name: 'Educational Puzzle Game', url: '#' }
+        ]
+      },
+      'info': {
+        desc: 'Using the understanding of systems and data, I design holistic visualisations and infographics for various platforms.',
+        projects: [
+          { name: 'Intermission-Episode 4: ITC', url: '#' },
+          { name: 'Intermission-Episode 2: ITC', url: '#' },
+          { name: 'Editorial', url: '#' },
+          { name: 'Bird Project', url: '#' }
+        ]
+      },
+      'illustrator': {
+        desc: 'Creating custom vector art, editorial illustrations, and iconography sets.',
+        projects: [
+          { name: 'Magazine Covers', url: '#' },
+          { name: 'Vector Icon System', url: '#' }
+        ]
+      },
+      'graphic': {
+        desc: 'Brand identity systems, typography visual hierarchy, and print media design.',
+        projects: [
+          { name: 'Brand Styleguide', url: '#' },
+          { name: 'Poster Collection', url: '#' }
+        ]
+      }
+    };
+
+    let activeNode = null;
+
+    nodes.forEach(node => {
+      node.addEventListener('mouseenter', () => {
+        const key = node.getAttribute('data-node');
+        const data = nodeData[key];
+
+        if (data) {
+          cardDesc.textContent = data.desc;
+          cardLinks.innerHTML = data.projects
+            .map(p => `<li><a href="${p.url}">${p.name}</a></li>`)
+            .join('');
+
+          if (window.innerWidth > 992) {
+            const rect = node.getBoundingClientRect();
+            const mainRect = document.querySelector('main').getBoundingClientRect();
+
+            let topPos = rect.top - mainRect.top - 20;
+            let leftPos = rect.left - mainRect.left + 120;
+
+            if (leftPos + 360 > mainRect.width) {
+              leftPos = rect.left - mainRect.left - 370;
+            }
+
+            infoCard.style.top = `${topPos}px`;
+            infoCard.style.left = `${leftPos}px`;
+          }
+
+          infoCard.classList.add('active');
+          activeNode = node;
+        }
+      });
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (activeNode) {
+        const cardRect = infoCard.getBoundingClientRect();
+        const nodeRect = activeNode.getBoundingClientRect();
+
+        const isOverCard = e.clientX >= cardRect.left && e.clientX <= cardRect.right &&
+                           e.clientY >= cardRect.top && e.clientY <= cardRect.bottom;
+        const isOverNode = e.clientX >= nodeRect.left && e.clientX <= nodeRect.right &&
+                           e.clientY >= nodeRect.top && e.clientY <= nodeRect.bottom;
+
+        if (!isOverCard && !isOverNode) {
+          infoCard.classList.remove('active');
+          activeNode = null;
+        }
+      }
+    });
+  </script>
+</body>
+</html>

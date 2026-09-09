@@ -1,0 +1,29 @@
+/* =========================================================
+   UNDERSEA CABLES (page-specific)
+   This page follows the shared case-study layout (css/story.css +
+   css/case-study.css + css/case-study-alt.css) - the things unique
+   to it are the DESIGN heading's alignment and its vertical overlap
+   with the image below it.
+   ========================================================= */
+
+/* ---------- DESIGN heading ----------
+   Left edge pushed in to match the text column below it, so "D"
+   lines up with the "T" of "The base visualisation..." - that column
+   starts after a 45%-wide spacer (.story-columns__spacer--wide,
+   css/case-study-alt.css) plus the row's own 2rem gap
+   (.story-columns, css/story.css), both siblings of the same section
+   width as this heading. undersea-cables.css is only linked from
+   this page, so overriding the shared class here doesn't touch
+   lightrock.html / revenue-growth.html. */
+.story-heading--design {
+  margin-left: calc(45% + 2rem);
+  margin-top: 5rem;
+  margin-bottom: -0.5rem;
+}
+
+/* Pull the image below DESIGN up less than the shared .story-image--rise
+   default so the heading straddles the image's top edge - roughly half
+   the heading sits in the whitespace above the image, half overlaps it. */
+.story-heading--design + .story-image--rise {
+  margin-top: -2rem;
+}

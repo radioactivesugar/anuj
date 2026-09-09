@@ -1,0 +1,54 @@
+/* =========================================================
+   ITC PROTOTYPES GRID (project.html only)
+   The 3 live QW4K charts from prototypes/ITC/ (e-choupal,
+   smoke75, logofarm-treemap), embedded via iframe at the end of
+   the story - one full-width row per visualisation, each iframe's
+   height matched to that specific chart's own natural content
+   height (measured directly) so the frame hugs the viz with no
+   dead space below it and no internal scrollbar.
+   ========================================================= */
+
+.itc-prototypes-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  margin: 3rem 0 6rem;
+}
+
+.itc-prototype {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+}
+
+.itc-prototype iframe {
+  width: 100%;
+  border: none;
+  display: block;
+}
+
+.itc-prototype--echoupal iframe {
+  height: 950px;
+}
+
+.itc-prototype--smoke75 iframe {
+  height: 800px;
+}
+
+.itc-prototype--logofarm iframe {
+  height: 820px;
+}
+
+@media (max-width: 900px) {
+  .itc-prototype--echoupal iframe {
+    height: 1150px;
+  }
+
+  .itc-prototype--smoke75 iframe {
+    height: 690px;
+  }
+
+  .itc-prototype--logofarm iframe {
+    height: 900px;
+  }
+}

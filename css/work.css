@@ -1,0 +1,377 @@
+/* =========================================================
+   WORK SECTION  (#works)
+   Contains: Featured Work grid (new) + Archive timeline
+   (ported from timeline.html, prefixed "archive-").
+   ========================================================= */
+
+/* padding-bottom override cuts down the base .section's 6rem - on top
+   of .contact-section's own 4rem top padding, that read as a much
+   bigger gap before CONTACT than anything else on the page. */
+.work-section {
+  padding-top: 2rem;
+  padding-bottom: 1.5rem;
+}
+
+/* "Featured" (.section-label, css/style.css) matches "Archive"'s own
+   heading (.archive-title) in font-size only - scoped here rather
+   than changing the shared .section-label rule itself, since that
+   class is documented as reusable for other section labels too. */
+.work-section .section-label {
+  font-size: 1.25rem;
+}
+
+/* ---------- Featured grid ----------
+   Text-only editorial grid (featured.png reference) - no cover images
+   baked into the cells; the cover only ever appears as a cursor-
+   following preview on hover (see #featuredCursor below). Full-bleed:
+   breaks out of .section's centered max-width via the classic
+   negative-margin trick (100vw + left/right:50% + matching negative
+   margins) so the grid lines/background reach the true viewport
+   edges. Safe here because body already has overflow-x:hidden
+   (css/style.css) - 100vw can include the scrollbar's own width in
+   some browsers, which would otherwise force a horizontal scrollbar. */
+/* 4 columns x 3 explicit row heights (big/medium/small tier, tallest
+   to shortest) - --big spans 2x2 into the first two rows, so its own
+   height is those two row tracks combined. Everything else relies on
+   the grid's default auto-flow to land in the right spot, given the
+   DOM order below (1 big, then 4 medium, then 4 small): the 4 medium
+   cards fill the remaining single cells of rows 1-2 around --big,
+   then the 4 small cards flow into row 3. */
+.featured-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 230px 230px 150px;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  border-top: 1px solid var(--card-border);
+  border-left: 1px solid var(--card-border);
+}
+
+.featured-card--big {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.featured-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  /* No explicit height - stretches to fill whatever the grid gives it
+     (its own row-track height, or 2 combined for --big), same as any
+     grid item's default align-items:stretch. overflow:hidden guards
+     the small tier's tight 150px row against a longer title/desc
+     combination spilling into the row below (and clips the cover
+     image below to the card's own bounds). */
+  overflow: hidden;
+  padding: 2rem var(--section-pad-x);
+  background-color: var(--bg-color-alt);
+  color: var(--text-color);
+  text-decoration: none;
+  border-right: 1px solid var(--card-border);
+  border-bottom: 1px solid var(--card-border);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  /* Default arrow hidden in favor of #customCursor below (js/main.js
+     positions it on mousemove and toggles .is-active on enter/leave). */
+  cursor: none;
+}
+
+@media (hover: none) {
+  /* No real pointer to track (touch) - keep the normal tap behavior. */
+  .featured-card {
+    cursor: pointer;
+  }
+}
+
+/* ---------- Custom "view" cursor over the featured cards + the
+   "about me" nav link (js/main.js) - same component as the
+   case-study pager previews, css/case-study.css's own copy (that
+   page doesn't load work.css). ---------- */
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 68px;
+  height: 68px;
+  margin: -34px 0 0 -34px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.custom-cursor.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.custom-cursor svg {
+  width: 22px;
+  height: 22px;
+  stroke: var(--line-color);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Cover image - hidden until hover/focus, then crossfades in to fill
+   the card, on top of the text (which fades out in turn) rather than
+   the old cursor-follow preview. Sits behind the text via z-index
+   (not DOM order alone) since .featured-card__spinner needs to stay
+   above it too while both are visible during the crossfade. */
+.featured-card__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.featured-card:hover .featured-card__image,
+.featured-card:focus-visible .featured-card__image {
+  opacity: 1;
+}
+
+.featured-card__label,
+.featured-card__title,
+.featured-card__desc {
+  position: relative;
+  z-index: 1;
+  transition: opacity 0.3s ease, color 0.3s ease;
+}
+
+.featured-card:hover .featured-card__label,
+.featured-card:hover .featured-card__title,
+.featured-card:hover .featured-card__desc,
+.featured-card:focus-visible .featured-card__label,
+.featured-card:focus-visible .featured-card__title,
+.featured-card:focus-visible .featured-card__desc {
+  opacity: 0;
+}
+
+/* Small tier gets tighter padding and a smaller title - its 150px row
+   (vs. medium/big's 230/460px) has much less room to begin with. */
+.featured-card--small {
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+}
+
+.featured-card--small .featured-card__title {
+  font-size: 1.05rem;
+}
+
+/* Big tier's title/description scale up too, not just the box itself -
+   it should read as more important, not just occupy more space. */
+.featured-card--big .featured-card__title {
+  font-size: clamp(1.8rem, 2.6vw, 2.6rem);
+}
+
+.featured-card--big .featured-card__desc {
+  font-size: 0.95rem;
+  max-width: 32em;
+}
+
+.featured-card__label {
+  font-family: var(--font-caption);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+/* Deliberate one-off: the only serif on the site (prompt.md's type
+   system is Anta/DM Sans/Fragment Mono only) - a system serif rather
+   than a new webfont, matching featured.png's own headline treatment
+   for just this component. */
+.featured-card__title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  font-size: clamp(1.3rem, 1.7vw, 1.6rem);
+  line-height: 1.25;
+}
+
+.featured-card__desc {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  /* Pushed to the bottom of the card - a short title leaves genuine
+     empty space above the description instead of the two huddling
+     together, matching featured.png's generous negative space. */
+  margin-top: auto;
+}
+
+/* Rotating "FEATURED" badge, dropped into whichever card has the most
+   spare room (featured.png does the same in its own sparsest cell) -
+   circular text via SVG textPath, not an image, so it stays crisp at
+   any size and needs no asset. Fades out with the rest of the card's
+   text on hover/focus (same rule group above), just declared here
+   since the badge itself lives in its own block below. */
+.featured-card__spinner {
+  position: absolute;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  width: 64px;
+  height: 64px;
+  z-index: 1;
+  color: var(--text-faint);
+  animation: featuredSpin 14s linear infinite;
+  transition: opacity 0.3s ease;
+}
+
+/* Bigger to match its new home (only ever used on --big currently) -
+   64px read as lost in a 460px-tall card. */
+.featured-card--big .featured-card__spinner {
+  right: 2rem;
+  bottom: 2rem;
+  width: 110px;
+  height: 110px;
+}
+
+.featured-card:hover .featured-card__spinner,
+.featured-card:focus-visible .featured-card__spinner {
+  opacity: 0;
+}
+
+.featured-card__spinner svg {
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes featuredSpin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Archive timeline (from timeline.html; now embedded in
+   the hero section, css/hero.css, instead of sitting below the
+   Featured work grid - no more "Archive" heading, so no top margin
+   needed to clear one; just enough gap below the hero image row. Just
+   the chart + legend now - no gallery or tooltip below it (bubble
+   hover instead drives .hero-preview, css/hero.css + js/main.js). */
+.archive-block {
+  margin-top: 3rem;
+}
+
+/* No glass card behind the legend/chart - just plain layout spacing
+   now (the page-wide ambient gradient in css/style.css handles colour
+   for the whole site, this section doesn't need its own background on
+   top of that). Zero horizontal padding so the legend/chart below
+   align flush with the "Archive" heading above, instead of sitting
+   inset from it. */
+.archive-panel {
+  width: 100%;
+  padding: 3rem 0 1rem;
+}
+
+/* Bubbles always sit at data-value y=0 (js/main.js), dead center of
+   the yAxis's symmetric -10..10 range, regardless of this height - so
+   a tall wrapper just means more unused space above and below them. */
+.archive-chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 190px;
+}
+
+.archive-chart {
+  width: 100%;
+  height: 100%;
+}
+
+/* Category filter nav with legend dots - now sits above the timeline
+   (was below it), so it only needs bottom spacing before the chart. */
+.archive-filter-nav {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin: 0 0 30px 0;
+  flex-wrap: wrap;
+}
+
+.archive-filter-btn {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #86868b;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-caption);
+}
+
+.archive-filter-btn__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.archive-filter-btn:hover {
+  color: var(--line-color);
+}
+
+.archive-filter-btn.is-active {
+  color: var(--line-color);
+  border-bottom: 2px solid var(--line-color);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  /* Fixed row tracks (230/230/150px) assumed a 4-column layout with
+     --big spanning 2x2 - at 2 columns that math no longer holds, so
+     rows go back to auto-sized and each tier gets its own min-height
+     instead. */
+  .featured-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: none;
+  }
+
+  .featured-card--big {
+    grid-column: span 2;
+    grid-row: auto;
+    min-height: 320px;
+  }
+
+  .featured-card--medium,
+  .featured-card--small {
+    min-height: 200px;
+  }
+}
+
+@media (max-width: 576px) {
+  .featured-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .featured-card--big {
+    grid-column: 1;
+  }
+
+  .archive-filter-nav {
+    gap: 14px;
+  }
+}

@@ -1,0 +1,359 @@
+/* =========================================================
+   GLOBAL STYLESHEET
+   Shared design tokens, reset, site header, and the reusable
+   "section" building blocks used by every section below
+   (hero / work / archive / contact). Section-specific rules
+   live in their own files: hero.css, work.css, contact.css,
+   story.css, about.css, project.css
+   ========================================================= */
+
+/* -----------------------------------------
+   Type system
+   Anta = headers, DM Sans = body copy, Fragment Mono = captions/labels.
+   Fallback stacks after each are what the browser uses per-glyph if the
+   custom font is missing a character.
+   ----------------------------------------- */
+@font-face {
+  font-family: 'Anta';
+  src: url('../fonts/Anta-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'DM Sans';
+  src: url('../fonts/DMSans-VariableFont.ttf') format('truetype-variations');
+  font-weight: 100 1000;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'DM Sans';
+  src: url('../fonts/DMSans-Italic-VariableFont.ttf') format('truetype-variations');
+  font-weight: 100 1000;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Fragment Mono';
+  src: url('../fonts/FragmentMono-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Fragment Mono';
+  src: url('../fonts/FragmentMono-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  /* Color tokens */
+  --bg-color: #ffffff;
+  --bg-color-alt: #f5f5f7;
+  --text-color: #000000;
+  --text-muted: #555555;
+  --text-faint: #6e6e73;
+  --card-bg: #e2e2e2;
+  --card-bg-alt: #d9d9d9;
+  --card-bg-strong: #d1d1d6;
+  --card-border: #cccccc;
+  --dot-color: #888888;
+  --section-header-bg: #efefef;
+  --line-color: #1d1d1f;
+
+  /* The five Archive/category colors - single source of truth for the
+     site's only accent colors, mirrored in js/main.js's
+     archiveCategoryColors (that copy drives the eCharts bubbles/legend,
+     which can't read a CSS custom property; keep the two in sync by
+     hand if either changes). Reach for one of these five when a new
+     component needs to signal a category - never a new accent color. */
+  --color-visual-journalism: #e05d5d;
+  --color-graphic-design: #2b9348;
+  --color-game-design: #e3a008;
+  --color-web-development: #3182ce;
+  --color-creatives: #805ad5;
+
+  /* Layout tokens */
+  --max-width: 1240px;
+  --section-pad-x: 4rem;
+
+  /* Type tokens: header / body / caption */
+  --font-heading: 'Anta', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-caption: 'Fragment Mono', "SF Mono", Menlo, Consolas, monospace;
+  /* Plain system sans for chrome that isn't a title or body copy (nav
+     brand, nav links) - per the landing.jpg reference these stay in a
+     neutral UI font rather than any of the three above. */
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Site-wide ambient gradient - a soft, page-length wash drawn from
+   the same 5 category accent colors used everywhere else (Archive
+   legend dots, work-card categories - see --color-* tokens above),
+   just heavily lightened toward white. It runs top to bottom across
+   the full page height (not the viewport), so scrolling through a
+   page reads as passing through a gentle progression of colour
+   rather than a flat backdrop - literal "sense of progress" tied to
+   the same palette that already organizes the work.
+   Layers (back to front in background-image, so listed front-first
+   here per the CSS spec): grain texture on top, a slow-drifting
+   soft colour blob in the middle for a little life/motion, and the
+   scroll-mapped progress gradient on the bottom. Kept extremely
+   subtle - low alpha throughout - so it reads as "white site with a
+   hint of warmth," never as a colourful background fighting the
+   content. Motion is tiny, slow (60s), and fully OFF for
+   prefers-reduced-motion. */
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-color);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.035 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(640px 640px at 20% 30%, rgba(224, 93, 93, 0.05), transparent 70%),
+    linear-gradient(180deg,
+      #ffffff 0%,
+      #fdf3e3 12%,
+      #fbeae8 26%,
+      #f5eefb 42%,
+      #eaf2fb 58%,
+      #e9f6ee 74%,
+      #ffffff 90%,
+      #ffffff 100%
+    );
+  background-repeat: repeat, no-repeat, no-repeat;
+  background-position: 0 0, 20% 30%, center top;
+  background-size: 220px 220px, auto, 100% 100%;
+  background-attachment: fixed, scroll, scroll;
+  animation: ambientDrift 60s ease-in-out infinite alternate;
+  color: var(--text-color);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+@keyframes ambientDrift {
+  0%   { background-position: 0 0, 20% 30%, center top; }
+  50%  { background-position: 0 0, 38% 58%, center top; }
+  100% { background-position: 0 0, 20% 30%, center top; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    animation: none;
+  }
+}
+
+/* Any real heading tag defaults to the header font; the footer
+   wordmark (an <h2>) picks this up automatically, while the nav
+   brand deliberately opts OUT below (it's UI chrome, not a title).
+   Anta only ships a 400 weight file, so font-weight is reset here too —
+   otherwise the browser's default bold h1-h6 would fake-bold the glyphs. */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+}
+
+/* -----------------------------------------
+   Site Header (shared across every section)
+   ----------------------------------------- */
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 2.5rem 3rem;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  position: relative;
+  z-index: 20;
+}
+
+.site-header__brand {
+  font-family: var(--font-ui);
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.15;
+  text-decoration: none;
+  color: var(--text-color);
+}
+
+.site-nav {
+  display: flex;
+  gap: 2.5rem;
+}
+
+.site-nav__link {
+  position: relative;
+  font-family: var(--font-ui);
+  text-decoration: none;
+  color: var(--text-color);
+  font-size: 0.95rem;
+  font-weight: 400;
+}
+
+/* Hover state is an underline that draws in from the left - no
+   cursor change and no opacity fade, just the underline. */
+.site-nav__link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -0.2rem;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.site-nav__link:hover::after {
+  transform: scaleX(1);
+}
+
+/* -----------------------------------------
+   Generic section shell
+   Every <section> reuses this shell, then adds
+   its own modifier class for background/spacing.
+   ----------------------------------------- */
+.section {
+  position: relative;
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 4rem var(--section-pad-x) 6rem;
+}
+
+/* Wraps a section's title + subtitle (used by the Work and Contact
+   sections) - no background of its own anymore, just the spacing, so
+   the ambient gradient behind the page shows through here too. */
+.section-header-block {
+  padding: 3rem 2rem 3.5rem;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+/* Big animated heading, shared by DESIGNER / WORK / CONTACT.
+   Split into .letter spans by js/main.js and revealed with GSAP. */
+.section-title {
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 10vw, 7rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+  white-space: nowrap;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+.letter {
+  display: inline-block;
+  transform: translateY(-120%);
+}
+
+/* Word-by-word body copy reveal (js/common.js splitWords /
+   revealWordsOnScroll). inline-block so GSAP's y-offset actually
+   applies - plain inline elements ignore transforms. */
+.word {
+  display: inline-block;
+}
+
+.section-subtitle {
+  font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+  color: var(--text-muted);
+  margin-top: 0.85rem;
+  text-align: center;
+}
+
+/* Small left-aligned label, e.g. "Featured" / "Archive" */
+.section-label {
+  font-family: var(--font-caption);
+  font-size: 1.05rem;
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+}
+
+/* Reusable date/org/stack caption stack - used by the project hero
+   and its prev/next preview cards. */
+.meta-list {
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  max-width: 68%;
+}
+
+/* Each line (date / org / stack / link) is a <span> - block so it
+   actually sits on its own line instead of all running into one
+   paragraph, and so margin-top between them has any effect at all
+   (vertical margins do nothing on inline elements). */
+.meta-list > * {
+  display: block;
+}
+
+.meta-list > * + * {
+  margin-top: 0.5rem;
+}
+
+/* Underlined link with a trailing arrow, e.g. social links */
+.link-arrow {
+  color: var(--text-color);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.link-arrow:hover {
+  opacity: 0.6;
+}
+
+/* -----------------------------------------
+   Responsive
+   ----------------------------------------- */
+@media (max-width: 992px) {
+  .site-header {
+    padding: 2rem 2rem;
+  }
+
+  .section {
+    padding: 3rem 2rem 4rem;
+  }
+
+  .section-header-block {
+    padding: 2.5rem 1.5rem 3rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .site-header {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.5rem;
+  }
+
+  .site-nav {
+    gap: 1.5rem;
+  }
+
+  .section {
+    padding: 2.5rem 1.5rem 3rem;
+  }
+}

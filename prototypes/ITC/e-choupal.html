@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>e-Choupal — ITC Mandi Price Map</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 24px 15px;
+      display: flex;
+      justify-content: center;
+      background-color: #3b6ea5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+/* styles/mandiMap.css — QW4K2 */
+
+.QW4K2-mandi-section, .QW4K2-mandi-section *{box-sizing:border-box}
+
+/* Retro "desktop" backdrop behind the window — replaces the original page-level <body> styling
+   so the retro look stays scoped to this section instead of overriding the whole page. */
+.QW4K2-mandi-section{
+  --win-bg:#d4d0c8; --win-edge-light:#fff; --win-edge-shadow:#808080;
+  --choupal-yellow:#fdf5c9; --choupal-yellow-2:#e2daaa; --choupal-green:#006600;
+  --choupal-green-dk:#003300;
+  /*background-color:#3b6ea5;*/
+  font-family:"MS Sans Serif",Tahoma,Arial,sans-serif;
+  font-size:13px; padding:10px;
+  position:relative;
+  overflow:hidden;
+  width:100%;
+}
+.QW4K2-mandi-section.QW4K2-dither-effect::after{
+  content:" ";display:block;position:absolute;top:0;left:0;bottom:0;right:0;
+  background:linear-gradient(rgba(18,16,16,0) 50%,rgba(0,0,0,.08) 50%),
+    linear-gradient(90deg,rgba(255,0,0,.02),rgba(0,255,0,.01),rgba(0,0,255,.02));
+  background-size:100% 3px,3px 100%;z-index:9999;pointer-events:none;
+}
+.QW4K2-window{
+  background:var(--win-bg);border:2px solid;
+  border-color:var(--win-edge-light) var(--win-edge-shadow) var(--win-edge-shadow) var(--win-edge-light);
+  box-shadow:1px 1px 0 0 #000;padding:2px;max-width:1200px;margin:0 auto;
+}
+.QW4K2-title-bar{
+  background:linear-gradient(90deg,#000080,#1084d0);color:#fff;padding:4px 6px;
+  display:flex;justify-content:space-between;align-items:center;font-weight:bold;
+}
+.QW4K2-window-controls button{
+  background:var(--win-bg);border:1px solid;
+  border-color:var(--win-edge-light) var(--win-edge-shadow) var(--win-edge-shadow) var(--win-edge-light);
+  font-weight:bold;font-size:10px;padding:1px 4px;cursor:pointer;
+}
+.QW4K2-menu-bar{display:flex;justify-content:space-between;align-items:center;padding:4px;
+  border-bottom:1px solid var(--win-edge-shadow);}
+.QW4K2-left-menus span{margin-right:12px;cursor:pointer;}
+.QW4K2-lang-select-box{font-size:11px;background:#fff;border:1px solid var(--win-edge-shadow);
+  padding:1px 2px;font-weight:bold;}
+.QW4K2-address-bar{display:flex;align-items:center;gap:5px;padding:4px;background:var(--win-bg);
+  border-bottom:2px solid var(--win-edge-shadow);}
+.QW4K2-address-input{flex-grow:1;background:#fff;border:2px solid;
+  border-color:var(--win-edge-shadow) var(--win-edge-light) var(--win-edge-light) var(--win-edge-shadow);
+  padding:2px 4px;font-family:monospace;}
+.QW4K2-choupal-header{background-color:var(--choupal-yellow);border-bottom:3px solid var(--choupal-green);}
+.QW4K2-ticker{background-color:var(--choupal-green);color:#fff;font-weight:bold;padding:4px;
+  overflow:hidden;white-space:nowrap;}
+.QW4K2-brand-main{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;}
+.QW4K2-logo-placeholder{font-size:11px;font-weight:bold;line-height:1.2;color:var(--choupal-green-dk);}
+.QW4K2-choupal-title{font-size:32px;font-weight:bold;color:var(--choupal-green);text-shadow:1px 1px 0 #000;}
+.QW4K2-crop-nav{background:var(--choupal-yellow-2);padding:6px;text-align:center;
+  border-top:1px solid var(--win-edge-shadow);border-bottom:1px solid var(--win-edge-shadow);font-weight:bold;}
+.QW4K2-crop-nav a{color:#002266;text-decoration:none;margin:0 8px;cursor:pointer;}
+.QW4K2-crop-nav a.QW4K2-selected-crop{color:red;border-bottom:2px solid red;}
+
+/* dismissed the first time any crop is picked, from either panel — see
+   selectCrop() in mandiMap.js */
+.QW4K2-crop-hint{font-size:11px;font-style:italic;color:var(--choupal-green-dk);text-align:center;}
+#QW4K2-crop-hint-top{background:var(--choupal-yellow-2);padding:2px 6px 4px;}
+#QW4K2-crop-hint-left{text-align:left;margin-bottom:6px;}
+
+.QW4K2-workspace{display:flex;background:#fff;height:640px;overflow:hidden;}
+
+/* LEFT SIDEBAR = commodities (styled to match e-Choupal reference) */
+.QW4K2-sidebar{width:210px;flex:0 0 210px;background-color:var(--choupal-yellow);
+  border-right:2px solid var(--choupal-green);padding:10px;font-weight:bold;
+  display:flex;flex-direction:column;height:100%;overflow:hidden;}
+.QW4K2-sidebar-title{color:brown;font-size:16px;margin-bottom:6px;padding-bottom:2px;}
+.QW4K2-state-select{margin-bottom:10px;font-weight:bold;color:#000;font-size:12px;}
+.QW4K2-state-select select{font-size:12px;background:#fff;border:1px solid var(--win-edge-shadow);
+  padding:1px 2px;font-weight:bold;font-family:inherit;}
+.QW4K2-commodity-list{list-style:none;padding:0;margin:0 0 12px;overflow-y:auto;}
+.QW4K2-commodity-list li{margin-bottom:8px;}
+.QW4K2-commodity-list button{
+  width:100%;text-align:left;font-family:inherit;font-size:15px;font-weight:bold;
+  background:transparent;border:1px solid transparent;padding:1px 2px;cursor:pointer;
+  color:var(--choupal-green);display:flex;align-items:center;gap:5px;line-height:1.1;
+}
+.QW4K2-commodity-list button:hover{color:#004400;text-decoration:underline;}
+/* leaf/flame bullet before every item */
+.QW4K2-commodity-list button::before{content:"✽";color:#c85000;font-size:12px;flex:0 0 auto;}
+/* selected item: red text in an inset box, like the reference */
+.QW4K2-commodity-list button.QW4K2-active{
+  color:#cc0000;background:var(--choupal-yellow);
+  border:1px solid var(--win-edge-shadow);
+  box-shadow:inset 1px 1px 0 var(--win-edge-shadow);padding:2px 3px;
+}
+.QW4K2-commodity-list button.QW4K2-active::before{color:#cc0000;}
+.QW4K2-commodity-list .QW4K2-cnt{display:none;}
+.QW4K2-commodity-list li.QW4K2-all-item{margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid brown;}
+
+.QW4K2-side-note{margin-top:auto;font-size:10px;font-weight:normal;color:#665;
+  border-top:1px solid var(--win-edge-shadow);padding-top:6px;line-height:1.35;}
+.QW4K2-side-code{font-size:12px;font-weight:bold;color:var(--choupal-green);margin-top:8px;
+  cursor:pointer;border-top:1px solid var(--win-edge-shadow);padding-top:8px;}
+.QW4K2-side-code:hover{text-decoration:underline;}
+
+/* CENTER = map hero (fixed to the workspace frame, independent of sidebar) */
+.QW4K2-content-area{flex:1 1 auto;padding:12px;display:flex;flex-direction:column;gap:10px;
+  min-width:0;height:100%;overflow:hidden;}
+.QW4K2-desc{flex:0 0 auto;}
+.QW4K2-desc b{color:var(--choupal-green-dk);}
+.QW4K2-map-frame{flex:1 1 auto;border:2px inset var(--win-edge-shadow);background:#dcd2b8;padding:4px;
+  display:flex;flex-direction:column;min-height:0;position:relative;}
+
+/* default placeholder shown before any district is hovered — matches the
+   real per-district popup's own styling (.QW4K2-pop-h/-sub/-rule) so it
+   reads as "this is where that popup will appear". Hidden/shown by the
+   mouseover/mouseout handlers in mandiMap.js. */
+.QW4K2-map-hint{
+  position:absolute;
+  top:10px;
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--win-bg);
+  border:1px solid var(--win-edge-shadow);
+  padding:8px 12px;
+  font-family:monospace;
+  font-size:12px;
+  text-align:center;
+  pointer-events:none;
+  box-shadow:0 2px 6px rgba(0,0,0,0.25);
+  z-index:999;
+}
+.QW4K2-map-hint-cta{margin-top:4px;font-weight:bold;color:var(--choupal-green);}
+.QW4K2-map-caption{flex:0 0 auto;font-family:monospace;font-size:11px;font-weight:bold;color:#000;
+  background:var(--win-bg);border:1px solid var(--win-edge-shadow);padding:3px 6px;margin-bottom:4px;
+  display:flex;justify-content:space-between;align-items:center;}
+#QW4K2-map{flex:1 1 auto;width:100%;background:#dcd2b8;min-height:0;}
+
+.QW4K2-table-wrap{flex:0 0 auto;height:150px;overflow-y:scroll;border:2px inset var(--win-edge-shadow);background:#fff;}
+.QW4K2-mandi-table{width:100%;border-collapse:collapse;}
+.QW4K2-mandi-table th,.QW4K2-mandi-table td{border:1px solid #808080;padding:5px;font-size:12px;text-align:left;}
+.QW4K2-mandi-table th{background-color:var(--win-bg);position:sticky;top:0;}
+.QW4K2-highlight-row{background-color:#e2f0d9;font-weight:bold;}
+
+/* Windows-98 style scrollbars to match the chrome — scoped to this module's own
+   internal scrolling elements only (never the page/body scrollbar). */
+.QW4K2-commodity-list, .QW4K2-table-wrap, .QW4K2-mandi-section .leaflet-popup-content{
+  scrollbar-width:auto;
+  scrollbar-color:var(--win-bg) #b8b4ac;
+}
+.QW4K2-commodity-list::-webkit-scrollbar,
+.QW4K2-table-wrap::-webkit-scrollbar,
+.QW4K2-mandi-section .leaflet-popup-content::-webkit-scrollbar{
+  width:16px;height:16px;
+}
+.QW4K2-commodity-list::-webkit-scrollbar-track,
+.QW4K2-table-wrap::-webkit-scrollbar-track,
+.QW4K2-mandi-section .leaflet-popup-content::-webkit-scrollbar-track{
+  background-color:#b8b4ac;
+  background-image:linear-gradient(45deg,#c8c4bc 25%,transparent 25%,transparent 75%,#c8c4bc 75%),
+    linear-gradient(45deg,#c8c4bc 25%,transparent 25%,transparent 75%,#c8c4bc 75%);
+  background-size:2px 2px;background-position:0 0,1px 1px;
+}
+.QW4K2-commodity-list::-webkit-scrollbar-thumb,
+.QW4K2-table-wrap::-webkit-scrollbar-thumb,
+.QW4K2-mandi-section .leaflet-popup-content::-webkit-scrollbar-thumb{
+  background:var(--win-bg);
+  border:2px solid;
+  border-color:var(--win-edge-light) var(--win-edge-shadow) var(--win-edge-shadow) var(--win-edge-light);
+}
+.QW4K2-commodity-list::-webkit-scrollbar-thumb:active,
+.QW4K2-table-wrap::-webkit-scrollbar-thumb:active,
+.QW4K2-mandi-section .leaflet-popup-content::-webkit-scrollbar-thumb:active{
+  border-color:var(--win-edge-shadow) var(--win-edge-light) var(--win-edge-light) var(--win-edge-shadow);
+}
+/* the little end buttons */
+.QW4K2-commodity-list::-webkit-scrollbar-button,
+.QW4K2-table-wrap::-webkit-scrollbar-button,
+.QW4K2-mandi-section .leaflet-popup-content::-webkit-scrollbar-button{
+  background:var(--win-bg);
+  border:2px solid;
+  border-color:var(--win-edge-light) var(--win-edge-shadow) var(--win-edge-shadow) var(--win-edge-light);
+  width:16px;height:16px;
+  display:block;
+}
+.QW4K2-commodity-list::-webkit-scrollbar-button:active,
+.QW4K2-table-wrap::-webkit-scrollbar-button:active,
+.QW4K2-mandi-section .leaflet-popup-content::-webkit-scrollbar-button:active{
+  border-color:var(--win-edge-shadow) var(--win-edge-light) var(--win-edge-light) var(--win-edge-shadow);
+}
+.QW4K2-commodity-list::-webkit-scrollbar-corner,
+.QW4K2-table-wrap::-webkit-scrollbar-corner,
+.QW4K2-mandi-section .leaflet-popup-content::-webkit-scrollbar-corner{ background:var(--win-bg); }
+
+/* Leaflet skin to match — .leaflet-* classes belong to the Leaflet library's own
+   DOM and must stay unprefixed. Scoped under .QW4K2-mandi-section so it only
+   affects this module's map instance, not any other Leaflet map on the page. */
+.QW4K2-mandi-section .leaflet-container{font-family:"MS Sans Serif",Tahoma,sans-serif;background:#dcd2b8;}
+.QW4K2-mandi-section .leaflet-popup-content-wrapper{border-radius:0;background:var(--win-bg);
+  border:2px solid;border-color:var(--win-edge-light) var(--win-edge-shadow) var(--win-edge-shadow) var(--win-edge-light);
+  box-shadow:1px 1px 0 #000;}
+.QW4K2-mandi-section .leaflet-popup-content{margin:8px 10px;font-size:12px;}
+.QW4K2-mandi-section .leaflet-popup-tip{background:var(--win-bg);}
+.QW4K2-pop-h{font-weight:bold;color:var(--choupal-green);font-size:13px;}
+.QW4K2-pop-sub{font-family:monospace;font-size:10px;color:#555;}
+.QW4K2-pop-rule{border:none;border-top:1px solid var(--win-edge-shadow);margin:4px 0;}
+.QW4K2-dlabel{background:transparent;border:none;box-shadow:none;font-family:monospace;font-size:10px;
+  color:#000;font-weight:bold;text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff;white-space:nowrap;padding:0;}
+.QW4K2-dlabel::before{display:none;}
+.QW4K2-map-legend{background:var(--win-bg);border:2px solid;
+  border-color:var(--win-edge-light) var(--win-edge-shadow) var(--win-edge-shadow) var(--win-edge-light);
+  padding:6px 8px;font-size:11px;line-height:1.5;font-weight:bold;color:#000;}
+.QW4K2-map-legend .QW4K2-sw{display:inline-block;width:14px;height:10px;margin-right:5px;vertical-align:middle;
+  border:1px solid #555;}
+@media(max-width:820px){
+  .QW4K2-workspace{flex-direction:column;height:auto;overflow:visible;}
+  .QW4K2-sidebar{width:100%;flex:0 0 auto;height:auto;overflow:visible;
+    border-right:none;border-bottom:2px solid var(--choupal-green);}
+  .QW4K2-commodity-list{max-height:200px;}
+  .QW4K2-content-area{height:auto;overflow:visible;}
+  .QW4K2-map-frame{height:440px;flex:0 0 auto;}
+}
+
+/* Mobile only: keep both the commodity list and the price table (Mandi
+   Terminal + rates) capped and internally scrollable — letting either
+   expand to full height instead ate up too much vertical space on phones. */
+@media(max-width:768px){
+  .QW4K2-commodity-list{max-height:110px;overflow-y:auto;}
+  .QW4K2-table-wrap{height:120px;overflow-y:auto;}
+
+  /* the full 4-line placeholder (district/sub/rule/CTA) is sized for the
+     much wider desktop map — on a narrow mobile map it was covering too
+     much of the visible area. Trim it down to 2 lines here, but keep it
+     anchored to the same top spot as desktop (see base rule above). */
+  .QW4K2-map-hint{
+    max-width:90%;
+    padding:4px 10px;
+  }
+  .QW4K2-map-hint .QW4K2-pop-sub,
+  .QW4K2-map-hint .QW4K2-pop-rule{display:none;}
+  .QW4K2-map-hint .QW4K2-pop-h{font-size:11px;}
+  .QW4K2-map-hint-cta{margin-top:2px;font-size:11px;}
+}
+  </style>
+</head>
+<body>
+
+        <section class="QW4K2-mandi-section QW4K2-dither-effect">
+          <div class="QW4K2-window">
+            <div class="QW4K2-title-bar">
+              <div class="QW4K2-title-text" id="QW4K2-win-title">e-Choupal : Harnessing technology for the Indian farmer...</div>
+              <div class="QW4K2-window-controls"><button>_</button><button>&#9633;</button><button>X</button></div>
+            </div>
+
+            <div class="QW4K2-menu-bar">
+              <div class="QW4K2-left-menus"><span>File</span><span>Edit</span><span>View</span><span>Favorites</span><span>Help</span></div>
+              <div>
+                <span style="font-weight:bold;font-size:11px;">Language / &#2349;&#2366;&#2359;&#2366;: </span>
+                <select class="QW4K2-lang-select-box" id="QW4K2-langToggle">
+                  <option value="en" selected>English</option>
+                  <option value="hi">&#2361;&#2367;&#2344;&#2381;&#2342;&#2368; (Hindi)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="QW4K2-choupal-header">
+              <div class="QW4K2-ticker"><marquee scrollamount="3" id="QW4K2-marquee-ticker"></marquee></div>
+              <div class="QW4K2-brand-main">
+                <div class="QW4K2-logo-placeholder">ITC Limited<br>Agri Business</div>
+                <div class="QW4K2-choupal-title" id="QW4K2-brand-title">&#2312;-&#2330;&#2380;&#2346;&#2366;&#2354;</div>
+                <div style="font-size:24px;">&#127806;&#128187;</div>
+              </div>
+              <div class="QW4K2-crop-nav" id="QW4K2-crop-links"></div>
+              <div class="QW4K2-crop-hint" id="QW4K2-crop-hint-top">Select a crop above too</div>
+            </div>
+
+            <div class="QW4K2-workspace">
+              <!-- LEFT SIDEBAR : COMMODITIES -->
+              <div class="QW4K2-sidebar">
+                <div class="QW4K2-sidebar-title" id="QW4K2-side-title"></div>
+                <div class="QW4K2-state-select">
+                  <span id="QW4K2-state-label"></span>
+                  <select id="QW4K2-stateSel">
+                    <option value="Madhya Pradesh" selected>Madhya Pradesh</option>
+                  </select>
+                </div>
+                <div class="QW4K2-crop-hint" id="QW4K2-crop-hint-left">Select a crop from this list too</div>
+                <ul class="QW4K2-commodity-list" id="QW4K2-commodity-list"></ul>
+                <div class="QW4K2-side-code" id="QW4K2-side-code"></div>
+                <div class="QW4K2-side-note" id="QW4K2-side-note"></div>
+              </div>
+
+              <!-- CENTER : MAP HERO -->
+              <div class="QW4K2-content-area">
+                <div class="QW4K2-desc"><b id="QW4K2-desc-text"></b></div>
+                <div class="QW4K2-map-frame">
+                  <div class="QW4K2-map-caption">
+                    <span id="QW4K2-map-title"></span>
+                    <span id="QW4K2-map-stat"></span>
+                  </div>
+                  <div id="QW4K2-map"></div>
+                  <div id="QW4K2-map-hint" class="QW4K2-map-hint">
+                    <div class="QW4K2-pop-h">Select a district</div>
+                    <div class="QW4K2-pop-sub">Modal price will appear here</div>
+                    <hr class="QW4K2-pop-rule">
+                    <div class="QW4K2-map-hint-cta">Click the map to interact</div>
+                  </div>
+                </div>
+                <div class="QW4K2-table-wrap">
+                  <table class="QW4K2-mandi-table">
+                    <thead><tr id="QW4K2-table-headers"></tr></thead>
+                    <tbody id="QW4K2-table-body"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script>
+// scripts/mandiMap_geo.js — QW4K2
+// Madhya Pradesh district boundaries (GeoJSON), extracted verbatim from mandiMap.html — do not edit by hand.
+
+const MP_GEO = {"type": "FeatureCollection", "features": [{"type": "Feature", "properties": {"district": "Anuppur"}, "geometry": {"type": "Polygon", "coordinates": [[[82.1158, 23.1037], [82.0671, 23.1168], [82.0240, 23.0801], [81.9381, 23.0778], [81.9184, 23.0409], [81.9372, 23.0094], [81.9402, 22.9570], [81.8600, 22.9150], [81.8563, 22.8908], [81.7859, 22.8770], [81.6865, 22.9397], [81.6405, 23.0136], [81.6196, 22.9981], [81.5894, 23.0199], [81.5521, 23.0187], [81.6019, 23.0381], [81.6097, 23.0640], [81.5464, 23.0905], [81.5310, 23.1185], [81.5898, 23.1714], [81.5946, 23.1939], [81.5624, 23.2111], [81.5836, 23.2276], [81.6242, 23.2309], [81.6064, 23.1979], [81.6428, 23.1949], [81.6657, 23.2142], [81.7484, 23.2135], [81.7814, 23.2603], [81.8756, 23.2397], [81.8566, 23.2772], [81.8128, 23.3083], [81.8478, 23.3196], [81.8688, 23.2983], [81.9261, 23.3511], [81.9325, 23.3850], [81.9597, 23.3690], [81.9736, 23.4175], [82.0159, 23.4235], [82.0203, 23.3843], [82.0457, 23.3778], [82.0567, 23.3935], [82.0984, 23.3977], [82.1109, 23.3558], [82.1378, 23.3618], [82.1875, 23.3222], [82.1863, 23.2776], [82.1424, 23.2277], [82.1373, 23.1649], [82.1537, 23.1580], [82.1510, 23.1417], [82.1158, 23.1037]]]}}, {"type": "Feature", "properties": {"district": "Ashoknagar"}, "geometry": {"type": "Polygon", "coordinates": [[[77.8995, 25.0042], [77.9069, 24.9871], [77.9459, 24.9912], [77.9567, 24.9701], [78.0107, 24.9580], [77.9761, 24.9172], [77.9676, 24.8498], [77.9917, 24.8555], [78.0154, 24.8408], [78.0427, 24.8607], [78.1056, 24.8400], [78.1915, 24.8396], [78.2238, 24.7830], [78.2203, 24.7473], [78.2684, 24.6671], [78.2566, 24.6486], [78.2698, 24.6153], [78.2588, 24.5581], [78.2165, 24.5316], [78.2401, 24.5095], [78.2396, 24.4894], [78.2696, 24.4761], [78.2570, 24.4435], [78.1622, 24.4000], [78.1427, 24.3616], [78.0869, 24.3236], [78.0876, 24.2619], [78.0637, 24.2614], [78.0246, 24.2934], [78.0021, 24.2430], [77.9605, 24.2523], [77.9365, 24.2357], [77.9216, 24.2728], [77.8804, 24.2841], [77.8859, 24.3196], [77.6919, 24.3070], [77.6148, 24.3364], [77.6166, 24.3551], [77.6612, 24.3692], [77.6835, 24.3938], [77.7162, 24.3926], [77.7303, 24.4335], [77.6764, 24.4052], [77.6503, 24.4075], [77.6493, 24.4250], [77.6290, 24.4323], [77.5861, 24.3787], [77.5024, 24.4105], [77.4701, 24.4529], [77.4722, 24.4707], [77.4926, 24.4737], [77.4705, 24.5926], [77.4767, 24.6369], [77.5474, 24.7269], [77.5485, 24.7645], [77.5191, 24.7972], [77.5150, 24.8360], [77.5814, 24.8935], [77.5385, 24.9062], [77.5472, 24.9354], [77.5823, 24.9677], [77.5868, 24.9308], [77.6046, 24.9322], [77.6673, 24.8702], [77.7004, 24.8569], [77.7424, 24.8716], [77.8201, 25.0045], [77.8995, 25.0042]]]}}, {"type": "Feature", "properties": {"district": "Balaghat"}, "geometry": {"type": "Polygon", "coordinates": [[[80.7895, 22.3964], [80.8411, 22.3874], [80.8837, 22.3516], [80.8752, 22.3332], [80.9220, 22.3311], [80.8980, 22.3028], [80.9090, 22.2787], [80.9928, 22.2886], [81.0404, 22.2405], [81.0157, 22.2202], [81.0257, 22.1976], [81.0116, 22.1840], [81.0157, 22.1327], [80.9717, 22.1214], [81.0036, 22.0968], [80.9991, 22.0615], [80.9877, 22.0484], [80.9634, 22.0583], [80.9505, 22.1130], [80.9108, 22.1191], [80.8457, 21.9608], [80.8184, 21.9567], [80.8365, 21.9356], [80.8238, 21.8978], [80.8395, 21.8754], [80.8317, 21.8048], [80.8112, 21.7474], [80.7827, 21.7395], [80.7429, 21.7579], [80.7185, 21.7118], [80.7074, 21.6641], [80.7224, 21.6227], [80.7092, 21.5867], [80.7306, 21.5387], [80.7302, 21.4720], [80.6565, 21.3307], [80.5931, 21.3247], [80.5194, 21.3895], [80.4854, 21.3976], [80.4483, 21.4023], [80.4404, 21.3721], [80.4033, 21.3764], [80.3890, 21.4073], [80.4113, 21.4382], [80.3692, 21.5229], [80.3244, 21.5487], [80.3201, 21.5735], [80.2919, 21.5780], [80.2602, 21.6201], [80.2163, 21.6203], [80.2004, 21.6347], [80.1439, 21.6049], [80.1149, 21.6070], [80.0635, 21.5545], [80.0282, 21.5573], [79.9935, 21.5347], [79.9662, 21.5572], [79.9363, 21.5568], [79.9158, 21.5244], [79.8570, 21.5309], [79.7918, 21.5814], [79.7326, 21.6025], [79.6581, 21.5773], [79.6474, 21.5571], [79.5761, 21.5433], [79.5366, 21.5442], [79.5375, 21.5689], [79.5058, 21.5902], [79.5363, 21.6048], [79.5350, 21.6271], [79.5889, 21.6443], [79.5823, 21.6561], [79.6044, 21.6865], [79.5950, 21.7088], [79.6680, 21.6955], [79.6514, 21.7346], [79.6756, 21.7455], [79.6861, 21.8002], [79.7631, 21.8075], [79.7891, 21.8440], [79.7759, 21.8634], [79.8125, 21.8696], [79.8347, 21.8852], [79.8350, 21.9043], [79.8646, 21.8997], [79.8862, 21.9295], [79.8323, 21.9398], [79.8574, 21.9670], [79.9176, 21.9715], [79.9229, 22.0629], [79.9986, 22.0834], [80.0634, 22.0774], [80.0284, 22.1828], [80.0904, 22.2461], [80.0761, 22.2998], [80.0936, 22.3415], [80.1496, 22.3502], [80.1625, 22.3285], [80.2294, 22.3018], [80.3187, 22.3458], [80.3380, 22.3295], [80.3347, 22.2995], [80.3904, 22.3064], [80.4124, 22.2814], [80.4114, 22.2464], [80.4404, 22.2484], [80.4579, 22.2800], [80.4999, 22.2755], [80.5291, 22.2414], [80.6992, 22.2045], [80.7217, 22.2215], [80.6974, 22.2512], [80.6987, 22.2732], [80.7805, 22.3134], [80.7895, 22.3964]]]}}, {"type": "Feature", "properties": {"district": "Badwani"}, "geometry": {"type": "Polygon", "coordinates": [[[75.3233, 22.1279], [75.3975, 22.0940], [75.4033, 22.0788], [75.3870, 22.0744], [75.4578, 22.0650], [75.4167, 22.0601], [75.4209, 22.0302], [75.4458, 22.0268], [75.3978, 21.9904], [75.3546, 21.9832], [75.3379, 21.9141], [75.3087, 21.9111], [75.2967, 21.9271], [75.2868, 21.9175], [75.2819, 21.8739], [75.3110, 21.8414], [75.2787, 21.8063], [75.2828, 21.7441], [75.2192, 21.7382], [75.2121, 21.7115], [75.2695, 21.6829], [75.2979, 21.6365], [75.3413, 21.6688], [75.4412, 21.6782], [75.4535, 21.6429], [75.5056, 21.6165], [75.4658, 21.5529], [75.4672, 21.5188], [75.4993, 21.4912], [75.6089, 21.4622], [75.5926, 21.4254], [75.6294, 21.3947], [75.5481, 21.3724], [75.4684, 21.3942], [75.3983, 21.3829], [75.3613, 21.4032], [75.3019, 21.3892], [75.2996, 21.4156], [75.2198, 21.4108], [75.1150, 21.4595], [75.0535, 21.5671], [74.8990, 21.6308], [74.8641, 21.6338], [74.8272, 21.6101], [74.7094, 21.6275], [74.6651, 21.6523], [74.5905, 21.6641], [74.5841, 21.6847], [74.5572, 21.6835], [74.5517, 21.7189], [74.5117, 21.7249], [74.5036, 21.8071], [74.5274, 21.9087], [74.4934, 21.9544], [74.4486, 21.9711], [74.4362, 22.0022], [74.4538, 22.0061], [74.4355, 22.0309], [74.5300, 22.0515], [74.5638, 22.0241], [74.5901, 22.0226], [74.6785, 22.0359], [74.7805, 22.0792], [74.8321, 22.0622], [74.9066, 22.0846], [75.3233, 22.1279]]]}}, {"type": "Feature", "properties": {"district": "Betul"}, "geometry": {"type": "Polygon", "coordinates": [[[78.2719, 22.4019], [78.2782, 22.3549], [78.2441, 22.3255], [78.2617, 22.2695], [78.2901, 22.2557], [78.2624, 22.2248], [78.2733, 22.0936], [78.3401, 22.1125], [78.3423, 22.0570], [78.3973, 22.0073], [78.3851, 21.9285], [78.4148, 21.9567], [78.4649, 21.9628], [78.5129, 21.9349], [78.5157, 21.9112], [78.5368, 21.9101], [78.5416, 21.8689], [78.5208, 21.8386], [78.4646, 21.8171], [78.4938, 21.7940], [78.4683, 21.7869], [78.4568, 21.7247], [78.4247, 21.7200], [78.4169, 21.6925], [78.3853, 21.6678], [78.3899, 21.6411], [78.3625, 21.6219], [78.3457, 21.6297], [78.3229, 21.5773], [78.3041, 21.5714], [78.2661, 21.5942], [78.2554, 21.5852], [78.2692, 21.5707], [78.1809, 21.5586], [78.1693, 21.4985], [77.9387, 21.3869], [77.8818, 21.3776], [77.7993, 21.4123], [77.7934, 21.3907], [77.7464, 21.3842], [77.7338, 21.3647], [77.7052, 21.3590], [77.6911, 21.3970], [77.6672, 21.3714], [77.6509, 21.3933], [77.6015, 21.3935], [77.6048, 21.3669], [77.5844, 21.3644], [77.5484, 21.3812], [77.4870, 21.3777], [77.4693, 21.4568], [77.4383, 21.4729], [77.4188, 21.5208], [77.4235, 21.5425], [77.4575, 21.5565], [77.5669, 21.5297], [77.6071, 21.5427], [77.5709, 21.5626], [77.5713, 21.6270], [77.5421, 21.7010], [77.4777, 21.7702], [77.4011, 21.7561], [77.2799, 21.7612], [77.2831, 21.7242], [77.2246, 21.7178], [77.2074, 21.6940], [77.1714, 21.7272], [77.1577, 21.7134], [77.0578, 21.7193], [77.0765, 21.7721], [77.1044, 21.7793], [77.0977, 21.7887], [77.1214, 21.7771], [77.1946, 21.7911], [77.1675, 21.8104], [77.1626, 21.8674], [77.2090, 21.8700], [77.2038, 21.8929], [77.2434, 21.9151], [77.2726, 21.9667], [77.3915, 21.9993], [77.3935, 22.0276], [77.4947, 22.0361], [77.4992, 22.0792], [77.4510, 22.0881], [77.4629, 22.1699], [77.4126, 22.1776], [77.3591, 22.2211], [77.3529, 22.2520], [77.3759, 22.2511], [77.3819, 22.2292], [77.4397, 22.2218], [77.5403, 22.3579], [77.5459, 22.3411], [77.5830, 22.3455], [77.6464, 22.3091], [77.6801, 22.3259], [77.7386, 22.3211], [77.7432, 22.3479], [77.7811, 22.3300], [77.8525, 22.3586], [77.8528, 22.2832], [77.8713, 22.2825], [77.9358, 22.3369], [77.9838, 22.3201], [78.1808, 22.3996], [78.2719, 22.4019]]]}}, {"type": "Feature", "properties": {"district": "Bhind"}, "geometry": {"type": "Polygon", "coordinates": [[[78.7183, 26.7817], [78.7410, 26.7925], [78.7663, 26.7645], [78.8061, 26.7687], [78.8649, 26.7046], [78.9039, 26.7133], [78.9481, 26.6967], [78.9379, 26.6626], [78.9931, 26.6845], [78.9872, 26.6441], [79.0056, 26.6104], [78.9780, 26.5924], [78.9796, 26.5740], [78.9913, 26.5823], [78.9979, 26.5509], [79.0205, 26.5516], [79.0609, 26.5032], [79.0484, 26.4560], [79.1267, 26.4448], [79.1172, 26.4171], [79.0868, 26.4178], [79.0904, 26.3793], [79.0767, 26.3660], [79.1337, 26.3449], [79.1156, 26.3350], [79.1265, 26.3160], [79.0938, 26.3119], [79.0835, 26.2724], [79.0672, 26.2876], [79.0370, 26.2669], [79.0626, 26.2469], [79.0570, 26.2328], [79.0171, 26.2321], [79.0149, 26.1974], [78.9773, 26.1954], [79.0034, 26.1729], [79.0007, 26.1549], [78.9653, 26.1557], [78.9426, 26.1391], [79.0031, 26.0817], [78.9443, 26.0369], [78.9431, 25.9906], [78.9236, 25.9808], [78.9295, 25.9493], [78.8613, 25.9102], [78.8305, 25.9499], [78.8050, 25.9439], [78.7770, 25.9660], [78.7801, 26.0157], [78.7664, 26.0223], [78.7820, 26.0475], [78.8072, 26.0478], [78.7907, 26.0615], [78.8203, 26.0717], [78.7956, 26.0947], [78.8367, 26.1149], [78.7945, 26.1723], [78.8289, 26.2052], [78.7841, 26.2312], [78.8189, 26.2696], [78.8136, 26.2904], [78.7841, 26.2942], [78.7467, 26.2693], [78.7340, 26.2319], [78.6898, 26.2203], [78.6864, 26.1707], [78.6394, 26.1758], [78.6212, 26.1623], [78.6078, 26.2242], [78.6025, 26.2002], [78.5757, 26.2202], [78.5387, 26.1974], [78.4912, 26.2672], [78.4744, 26.2712], [78.4628, 26.2541], [78.4362, 26.2653], [78.4078, 26.3023], [78.4107, 26.3371], [78.3240, 26.3526], [78.2564, 26.3433], [78.2542, 26.3648], [78.2855, 26.4120], [78.2815, 26.4443], [78.2483, 26.4487], [78.2582, 26.4661], [78.2365, 26.4709], [78.2040, 26.5263], [78.2345, 26.5320], [78.2232, 26.5374], [78.2316, 26.5496], [78.2602, 26.5409], [78.2634, 26.5714], [78.2927, 26.5967], [78.3037, 26.5566], [78.3304, 26.5506], [78.3629, 26.5942], [78.3784, 26.5920], [78.3730, 26.6093], [78.4108, 26.5950], [78.4285, 26.6434], [78.4613, 26.6543], [78.4543, 26.6772], [78.4873, 26.6760], [78.5031, 26.6921], [78.5210, 26.6814], [78.5061, 26.7267], [78.5292, 26.7394], [78.5350, 26.7716], [78.6019, 26.7560], [78.6204, 26.7751], [78.6590, 26.7692], [78.6834, 26.7946], [78.7153, 26.8002], [78.7183, 26.7817]]]}}, {"type": "Feature", "properties": {"district": "Bhopal"}, "geometry": {"type": "Polygon", "coordinates": [[[77.2231, 23.9001], [77.3702, 23.8883], [77.3957, 23.8588], [77.3901, 23.8374], [77.4130, 23.8089], [77.4431, 23.8007], [77.4314, 23.7877], [77.4528, 23.7692], [77.4989, 23.7825], [77.5455, 23.7618], [77.5694, 23.7728], [77.6090, 23.7540], [77.5998, 23.7346], [77.6154, 23.7193], [77.6451, 23.7221], [77.6295, 23.6684], [77.5687, 23.6534], [77.5531, 23.6019], [77.5045, 23.5800], [77.5174, 23.5216], [77.4878, 23.4311], [77.5097, 23.4170], [77.5227, 23.4310], [77.5544, 23.4277], [77.5540, 23.3821], [77.5787, 23.3572], [77.6252, 23.3522], [77.5801, 23.2886], [77.5959, 23.2329], [77.5814, 23.1899], [77.5621, 23.1836], [77.5636, 23.1482], [77.4933, 23.1065], [77.3793, 23.0930], [77.3233, 23.1120], [77.2846, 23.1049], [77.2373, 23.1981], [77.2133, 23.2071], [77.2171, 23.2307], [77.1932, 23.2255], [77.1856, 23.2380], [77.2134, 23.2618], [77.2197, 23.2944], [77.1765, 23.3116], [77.1832, 23.3605], [77.2001, 23.3635], [77.2233, 23.3320], [77.2269, 23.3607], [77.2579, 23.3882], [77.2339, 23.4002], [77.2409, 23.4132], [77.2770, 23.4123], [77.2942, 23.4355], [77.2814, 23.5698], [77.2941, 23.5862], [77.2718, 23.6145], [77.2248, 23.6301], [77.2179, 23.6703], [77.1954, 23.6637], [77.1653, 23.6930], [77.2110, 23.7980], [77.2231, 23.9001]]]}}, {"type": "Feature", "properties": {"district": "Burhanpur"}, "geometry": {"type": "Polygon", "coordinates": [[[76.7802, 21.5624], [76.7878, 21.5401], [76.7629, 21.5226], [76.7918, 21.4898], [76.7841, 21.4664], [76.7433, 21.4431], [76.7320, 21.4088], [76.6245, 21.3351], [76.6610, 21.2824], [76.6584, 21.2478], [76.6425, 21.2477], [76.6233, 21.1926], [76.5593, 21.2058], [76.5291, 21.1892], [76.4873, 21.1960], [76.4526, 21.1148], [76.4118, 21.1072], [76.3763, 21.0773], [76.2817, 21.0753], [76.2621, 21.0947], [76.1686, 21.0858], [76.1684, 21.1054], [76.1356, 21.1262], [76.1399, 21.1400], [76.1139, 21.1646], [76.1274, 21.1779], [76.1668, 21.1707], [76.1727, 21.1882], [76.1640, 21.2241], [76.1444, 21.2380], [76.1592, 21.2591], [76.1069, 21.3602], [76.0986, 21.3739], [76.0523, 21.3527], [75.9916, 21.3760], [76.0105, 21.4211], [76.0088, 21.4793], [75.9483, 21.4832], [75.9537, 21.5470], [76.0283, 21.5506], [76.1278, 21.5960], [76.1773, 21.5432], [76.2128, 21.5711], [76.2895, 21.5960], [76.2938, 21.5780], [76.3325, 21.5695], [76.3600, 21.5704], [76.3752, 21.5983], [76.4178, 21.6000], [76.4220, 21.5868], [76.4381, 21.5969], [76.5107, 21.5635], [76.6158, 21.5759], [76.7077, 21.5617], [76.7427, 21.5785], [76.7542, 21.5584], [76.7802, 21.5624]]]}}, {"type": "Feature", "properties": {"district": "Chhatarpur"}, "geometry": {"type": "Polygon", "coordinates": [[[80.2953, 25.4077], [80.3132, 25.3722], [80.3040, 25.2888], [80.3409, 25.2786], [80.3780, 25.2375], [80.3990, 25.2429], [80.4236, 25.1741], [80.3512, 25.1449], [80.2669, 25.0302], [80.1542, 24.9662], [80.1421, 24.9405], [80.0465, 24.9423], [80.0274, 24.9259], [80.0548, 24.8634], [80.0830, 24.8443], [80.0783, 24.8133], [79.9901, 24.7272], [79.9522, 24.6607], [79.9203, 24.6915], [79.8897, 24.6971], [79.8391, 24.6165], [79.8521, 24.5868], [79.8821, 24.5952], [79.8954, 24.5771], [79.8693, 24.5746], [79.8769, 24.5241], [79.8603, 24.5110], [79.8756, 24.4804], [79.8607, 24.4617], [79.8761, 24.3781], [79.8386, 24.3554], [79.8342, 24.3778], [79.7701, 24.3856], [79.7444, 24.4187], [79.6986, 24.3835], [79.6810, 24.3995], [79.6722, 24.3784], [79.6196, 24.3796], [79.6143, 24.4226], [79.5639, 24.4496], [79.5392, 24.4265], [79.5554, 24.3921], [79.5043, 24.4035], [79.4660, 24.3908], [79.4332, 24.4160], [79.4228, 24.3970], [79.3884, 24.3897], [79.4043, 24.3545], [79.3813, 24.2169], [79.3572, 24.1955], [79.2965, 24.1868], [79.3205, 24.1494], [79.2483, 24.1527], [79.1782, 24.1222], [79.1565, 24.1265], [79.1329, 24.1027], [79.0691, 24.1329], [79.0403, 24.2219], [79.0561, 24.2305], [79.0607, 24.2668], [79.0860, 24.2472], [79.1053, 24.2673], [79.1333, 24.2572], [79.1660, 24.2813], [79.1625, 24.3096], [79.1781, 24.3206], [79.1340, 24.3732], [79.1461, 24.3786], [79.1441, 24.4091], [79.1595, 24.4099], [79.1527, 24.3764], [79.1901, 24.3629], [79.1911, 24.3377], [79.2260, 24.3431], [79.2249, 24.3642], [79.2462, 24.3743], [79.2361, 24.4172], [79.1673, 24.4352], [79.0666, 24.4070], [79.0476, 24.3740], [79.0109, 24.3864], [78.9992, 24.3753], [78.9819, 24.4472], [79.0110, 24.5395], [79.0640, 24.5975], [79.0597, 24.6274], [79.1859, 24.6167], [79.2123, 24.6658], [79.2898, 24.6791], [79.3138, 24.7443], [79.3006, 24.8100], [79.3419, 24.9052], [79.3242, 25.0504], [79.3369, 25.0772], [79.3303, 25.1264], [79.2788, 25.1973], [79.2735, 25.2481], [79.3253, 25.2224], [79.3325, 25.2008], [79.3469, 25.2142], [79.3291, 25.2299], [79.3411, 25.2304], [79.3445, 25.2642], [79.3319, 25.2762], [79.3100, 25.2619], [79.2877, 25.2902], [79.2619, 25.2677], [79.2676, 25.3187], [79.2947, 25.3402], [79.3445, 25.3344], [79.3307, 25.2940], [79.3497, 25.2884], [79.3582, 25.2635], [79.3674, 25.2943], [79.4153, 25.2592], [79.4574, 25.2838], [79.4904, 25.2703], [79.4591, 25.2694], [79.4270, 25.2250], [79.4427, 25.2125], [79.4095, 25.2087], [79.3838, 25.1702], [79.3991, 25.1134], [79.4151, 25.1390], [79.4311, 25.1354], [79.4310, 25.1075], [79.4683, 25.1344], [79.4605, 25.0963], [79.4898, 25.0827], [79.5655, 25.1775], [79.5896, 25.1472], [79.6028, 25.1547], [79.5978, 25.1314], [79.6200, 25.1426], [79.6661, 25.1271], [79.7456, 25.1438], [79.8492, 25.0969], [79.8476, 25.1333], [79.8721, 25.1485], [79.8471, 25.2402], [79.9023, 25.2569], [79.9134, 25.2334], [79.9425, 25.2718], [79.9967, 25.2686], [80.0207, 25.3431], [80.0832, 25.3558], [80.1232, 25.3384], [80.1591, 25.3776], [80.1878, 25.3836], [80.1939, 25.4162], [80.2451, 25.4048], [80.2558, 25.4287], [80.2953, 25.4077]]]}}, {"type": "Feature", "properties": {"district": "Chhindwara"}, "geometry": {"type": "Polygon", "coordinates": [[[79.2233, 22.8176], [79.2558, 22.7419], [79.2382, 22.7206], [79.2596, 22.6880], [79.2902, 22.6834], [79.2784, 22.6564], [79.2992, 22.6478], [79.2928, 22.6203], [79.3379, 22.6179], [79.3681, 22.5982], [79.3151, 22.5412], [79.3390, 22.4877], [79.2314, 22.4754], [79.1937, 22.4501], [79.2186, 22.4257], [79.2307, 22.4488], [79.2602, 22.4554], [79.3180, 22.4354], [79.3292, 22.4449], [79.3309, 22.4250], [79.2930, 22.4167], [79.2792, 22.3773], [79.3124, 22.3950], [79.3380, 22.3864], [79.3479, 22.3514], [79.2809, 22.3164], [79.2991, 22.2917], [79.3377, 22.2866], [79.3577, 22.2654], [79.3603, 22.2228], [79.3304, 22.2421], [79.3197, 22.2262], [79.3503, 22.1343], [79.3871, 22.1037], [79.3716, 22.0853], [79.3841, 22.0440], [79.4027, 22.0418], [79.3911, 21.9925], [79.3702, 21.9930], [79.3684, 21.9730], [79.3364, 21.9537], [79.3426, 21.9252], [79.3223, 21.9193], [79.2716, 21.8359], [79.2882, 21.8109], [79.2799, 21.7794], [79.2237, 21.7563], [79.2269, 21.6576], [79.1478, 21.6605], [79.0880, 21.5991], [79.0095, 21.6014], [78.9944, 21.6187], [78.9132, 21.5923], [78.9116, 21.5709], [78.9278, 21.5602], [78.9044, 21.5548], [78.9406, 21.5137], [78.9318, 21.4874], [78.8957, 21.5005], [78.8798, 21.4849], [78.7846, 21.4891], [78.7721, 21.4671], [78.7464, 21.4938], [78.7241, 21.4643], [78.6840, 21.4819], [78.5848, 21.4868], [78.5665, 21.5156], [78.5085, 21.5284], [78.4804, 21.5061], [78.4300, 21.5017], [78.4134, 21.5777], [78.4225, 21.6019], [78.3757, 21.6174], [78.3776, 21.5956], [78.3546, 21.5769], [78.3390, 21.6080], [78.3457, 21.6297], [78.3625, 21.6219], [78.3899, 21.6411], [78.3853, 21.6678], [78.4169, 21.6925], [78.4247, 21.7200], [78.4535, 21.7197], [78.4683, 21.7869], [78.4938, 21.7940], [78.4646, 21.8171], [78.5362, 21.8550], [78.5368, 21.9101], [78.5157, 21.9112], [78.5129, 21.9349], [78.4624, 21.9635], [78.4148, 21.9567], [78.3851, 21.9285], [78.3973, 22.0073], [78.3423, 22.0570], [78.3401, 22.1125], [78.2733, 22.0936], [78.2624, 22.2248], [78.2901, 22.2557], [78.2617, 22.2695], [78.2441, 22.3255], [78.2782, 22.3549], [78.2696, 22.4078], [78.3161, 22.4270], [78.3746, 22.4220], [78.4201, 22.3859], [78.4561, 22.3825], [78.5561, 22.4258], [78.5458, 22.4597], [78.5092, 22.4825], [78.5431, 22.5347], [78.4949, 22.5986], [78.4953, 22.6401], [78.5175, 22.6670], [78.6057, 22.6531], [78.6221, 22.6807], [78.6743, 22.7021], [78.6812, 22.6592], [78.7546, 22.6241], [78.7784, 22.6317], [78.7742, 22.6506], [78.8130, 22.6582], [78.8429, 22.6869], [78.9051, 22.6756], [78.9388, 22.6295], [78.9883, 22.6207], [79.0130, 22.6510], [79.0002, 22.6930], [79.0212, 22.7108], [79.0074, 22.7286], [79.0217, 22.7321], [79.0089, 22.7393], [79.0387, 22.7615], [79.0820, 22.7460], [79.1314, 22.7907], [79.1720, 22.7886], [79.2233, 22.8176]]]}}, {"type": "Feature", "properties": {"district": "Damoh"}, "geometry": {"type": "Polygon", "coordinates": [[[79.6127, 24.3935], [79.6531, 24.3733], [79.6810, 24.3995], [79.6986, 24.3835], [79.7473, 24.4185], [79.8147, 24.3501], [79.7972, 24.3206], [79.8287, 24.3233], [79.8505, 24.3050], [79.8371, 24.2882], [79.8066, 24.2873], [79.8023, 24.2690], [79.8392, 24.2476], [79.8352, 24.2198], [79.8085, 24.2035], [79.8053, 24.1625], [79.7574, 24.1041], [79.7568, 24.0785], [79.7309, 24.0648], [79.7546, 24.0364], [79.8343, 24.0279], [79.8310, 24.0076], [79.8498, 23.9953], [79.8317, 23.9365], [79.8635, 23.9056], [79.8496, 23.8544], [79.8643, 23.8205], [79.8127, 23.7417], [79.8314, 23.7203], [79.8211, 23.7003], [79.9296, 23.6809], [79.9493, 23.6593], [79.9380, 23.6402], [79.9470, 23.6231], [79.8990, 23.5848], [79.8437, 23.5081], [79.8216, 23.5152], [79.7799, 23.4538], [79.7315, 23.4352], [79.6662, 23.3379], [79.5332, 23.2639], [79.4850, 23.2599], [79.4191, 23.1950], [79.3237, 23.1503], [79.3001, 23.2350], [79.2640, 23.2163], [79.2591, 23.2431], [79.2253, 23.2532], [79.2205, 23.2274], [79.1905, 23.2421], [79.1699, 23.2234], [79.1651, 23.2524], [79.2079, 23.2630], [79.2238, 23.2930], [79.2050, 23.3201], [79.2298, 23.3419], [79.2125, 23.3667], [79.1845, 23.3709], [79.1810, 23.4048], [79.1952, 23.4171], [79.1763, 23.4340], [79.2130, 23.4393], [79.2205, 23.4616], [79.2795, 23.4803], [79.2930, 23.5163], [79.3231, 23.5258], [79.3186, 23.5528], [79.2924, 23.5718], [79.3117, 23.5883], [79.2964, 23.6001], [79.2946, 23.6411], [79.3294, 23.6329], [79.3454, 23.6604], [79.2801, 23.6934], [79.2921, 23.7105], [79.2853, 23.7480], [79.2659, 23.7461], [79.2151, 23.7880], [79.2434, 23.8290], [79.1448, 23.8510], [79.0879, 23.9220], [79.0715, 23.9079], [79.0504, 23.9253], [79.0916, 23.9576], [79.0773, 23.9773], [79.1276, 23.9811], [79.1813, 24.0163], [79.1392, 24.1049], [79.1534, 24.1248], [79.2483, 24.1527], [79.3159, 24.1473], [79.3257, 24.1549], [79.2965, 24.1868], [79.3724, 24.2024], [79.4043, 24.3545], [79.3858, 24.3724], [79.3895, 24.3915], [79.4228, 24.3970], [79.4332, 24.4160], [79.4660, 24.3908], [79.5043, 24.4035], [79.5554, 24.3921], [79.5392, 24.4265], [79.5639, 24.4496], [79.6143, 24.4226], [79.6239, 24.4075], [79.6127, 24.3935]]]}}, {"type": "Feature", "properties": {"district": "Datia"}, "geometry": {"type": "Polygon", "coordinates": [[[78.7850, 26.2361], [78.8289, 26.2052], [78.7945, 26.1723], [78.8367, 26.1149], [78.7932, 26.0907], [78.8212, 26.0745], [78.7907, 26.0615], [78.8072, 26.0478], [78.7820, 26.0475], [78.7664, 26.0223], [78.7801, 26.0157], [78.7753, 25.9701], [78.8050, 25.9439], [78.8305, 25.9499], [78.8552, 25.9125], [78.8763, 25.9156], [78.8871, 25.8989], [78.8826, 25.8702], [78.8466, 25.8605], [78.8462, 25.8387], [78.8657, 25.8343], [78.8619, 25.7991], [78.8112, 25.8301], [78.8004, 25.8128], [78.8222, 25.8152], [78.8205, 25.7994], [78.7995, 25.7993], [78.7757, 25.7614], [78.7468, 25.7490], [78.8113, 25.6744], [78.8051, 25.6245], [78.6770, 25.5941], [78.6486, 25.5656], [78.6086, 25.5890], [78.5811, 25.5643], [78.4862, 25.5822], [78.4491, 25.5527], [78.4370, 25.5643], [78.4475, 25.5795], [78.4566, 25.5691], [78.4604, 25.5897], [78.4372, 25.5998], [78.3905, 25.5757], [78.4030, 25.6034], [78.3816, 25.6128], [78.3685, 25.6661], [78.3282, 25.6693], [78.3007, 25.7098], [78.2760, 25.7068], [78.2531, 25.7243], [78.2405, 25.7200], [78.2423, 25.6967], [78.2091, 25.7045], [78.2217, 25.7308], [78.2737, 25.7555], [78.2736, 25.7863], [78.3145, 25.7994], [78.3177, 25.8327], [78.3827, 25.8408], [78.3839, 25.8595], [78.4630, 25.9137], [78.4775, 25.9669], [78.5335, 25.9802], [78.6004, 26.0529], [78.6388, 26.0675], [78.6336, 26.0892], [78.6001, 26.1046], [78.6044, 26.1351], [78.6437, 26.1303], [78.6253, 26.1694], [78.6864, 26.1707], [78.6898, 26.2203], [78.7340, 26.2319], [78.7467, 26.2693], [78.7841, 26.2942], [78.8136, 26.2904], [78.8189, 26.2696], [78.7850, 26.2361]]]}}, {"type": "Feature", "properties": {"district": "Dewas"}, "geometry": {"type": "Polygon", "coordinates": [[[75.9604, 23.3252], [75.9921, 23.2726], [75.9689, 23.2525], [75.9983, 23.2505], [76.0023, 23.2110], [76.0284, 23.1839], [76.0551, 23.1045], [76.0512, 23.0818], [76.0754, 23.0526], [76.1046, 23.0601], [76.1064, 23.0838], [76.0463, 23.1464], [76.0493, 23.1829], [76.0699, 23.1657], [76.1382, 23.1960], [76.1223, 23.2135], [76.0785, 23.1959], [76.0479, 23.2065], [76.0739, 23.2133], [76.0709, 23.2408], [76.2452, 23.2165], [76.3570, 23.2340], [76.4068, 23.2209], [76.4234, 23.1946], [76.5063, 23.1826], [76.5357, 23.1324], [76.4933, 23.1100], [76.5162, 23.0915], [76.5136, 23.0764], [76.4468, 23.0906], [76.4600, 23.0749], [76.4468, 23.0276], [76.4676, 23.0033], [76.4439, 22.9891], [76.4710, 22.9736], [76.4494, 22.9322], [76.4621, 22.9051], [76.4960, 22.8958], [76.5181, 22.8652], [76.5203, 22.8079], [76.5574, 22.7903], [76.5492, 22.7765], [76.5661, 22.7783], [76.5640, 22.7642], [76.6396, 22.8090], [76.6527, 22.7885], [76.7003, 22.7967], [76.6906, 22.8249], [76.7664, 22.8206], [76.7595, 22.8283], [76.7866, 22.8372], [76.8052, 22.8664], [76.8470, 22.8707], [76.8463, 22.8842], [76.8592, 22.8727], [76.8610, 22.8899], [76.8762, 22.8764], [76.8750, 22.8959], [76.8860, 22.8842], [76.8939, 22.8937], [76.8894, 22.8752], [76.9059, 22.8821], [76.8998, 22.8664], [76.9147, 22.8732], [76.9028, 22.8365], [76.9186, 22.8316], [76.9259, 22.8797], [76.9573, 22.8666], [76.9808, 22.8832], [76.9956, 22.8757], [77.0072, 22.7998], [77.0241, 22.7787], [77.0164, 22.7409], [77.0326, 22.7358], [77.0386, 22.7091], [77.0265, 22.6936], [77.0850, 22.6569], [77.0816, 22.6290], [77.1190, 22.6028], [77.1203, 22.5627], [77.0674, 22.5152], [76.8983, 22.4899], [76.7870, 22.4319], [76.7807, 22.3533], [76.7415, 22.3003], [76.7216, 22.3164], [76.6785, 22.3090], [76.6549, 22.3378], [76.6527, 22.3684], [76.6227, 22.3795], [76.6034, 22.4112], [76.5085, 22.4182], [76.4444, 22.3886], [76.4465, 22.3502], [76.3208, 22.3016], [76.2518, 22.2957], [76.2051, 22.3571], [76.2215, 22.3601], [76.2368, 22.3957], [76.2140, 22.4213], [76.1041, 22.4738], [76.0857, 22.5505], [76.1054, 22.5629], [76.0631, 22.5875], [76.0883, 22.5868], [76.0822, 22.6059], [76.1134, 22.5841], [76.1181, 22.6071], [76.1431, 22.5932], [76.1426, 22.6123], [76.1660, 22.6061], [76.1507, 22.6350], [76.1876, 22.6430], [76.1707, 22.6211], [76.1873, 22.5997], [76.1984, 22.6282], [76.2289, 22.6203], [76.2438, 22.6468], [76.2264, 22.6556], [76.2246, 22.6783], [76.1880, 22.6656], [76.2018, 22.6794], [76.1816, 22.6971], [76.1020, 22.7045], [76.0321, 22.8467], [75.9834, 22.8754], [75.9651, 22.9480], [75.8997, 22.9994], [75.9023, 23.0290], [75.9625, 23.0290], [75.9904, 23.0818], [75.9305, 23.1481], [75.9469, 23.1633], [75.9529, 23.2142], [75.9493, 23.2296], [75.9297, 23.2308], [75.9314, 23.2985], [75.9472, 23.3234], [75.9604, 23.3252]]]}}, {"type": "Feature", "properties": {"district": "Dhar"}, "geometry": {"type": "Polygon", "coordinates": [[[75.3019, 23.1321], [75.3192, 23.1121], [75.3280, 23.0739], [75.3496, 23.0722], [75.3384, 23.0463], [75.3044, 23.0455], [75.3030, 22.9982], [75.3276, 22.9850], [75.3259, 22.9601], [75.3051, 22.9563], [75.3340, 22.8775], [75.3320, 22.8418], [75.3564, 22.8373], [75.3744, 22.8713], [75.4410, 22.8716], [75.4232, 22.8307], [75.4372, 22.7764], [75.4810, 22.7726], [75.4791, 22.7369], [75.5088, 22.7341], [75.5153, 22.7100], [75.5200, 22.6673], [75.4957, 22.6475], [75.5218, 22.6606], [75.5363, 22.6351], [75.5820, 22.6620], [75.6041, 22.6362], [75.6940, 22.6302], [75.7028, 22.6492], [75.6849, 22.6401], [75.6833, 22.6603], [75.7057, 22.6646], [75.7127, 22.6387], [75.6782, 22.5838], [75.6317, 22.5627], [75.5964, 22.5703], [75.5982, 22.5262], [75.5580, 22.5167], [75.5718, 22.4561], [75.5453, 22.4133], [75.5591, 22.3778], [75.5364, 22.3604], [75.5255, 22.3757], [75.5055, 22.3720], [75.5089, 22.3430], [75.4919, 22.3306], [75.5084, 22.3243], [75.5337, 22.2676], [75.5358, 22.2287], [75.5105, 22.1641], [75.2457, 22.1265], [75.1905, 22.1056], [74.9066, 22.0846], [74.8321, 22.0622], [74.7805, 22.0792], [74.6785, 22.0359], [74.5901, 22.0226], [74.5572, 22.0276], [74.5382, 22.0508], [74.5060, 22.0464], [74.4959, 22.0654], [74.5172, 22.1019], [74.4811, 22.0963], [74.4745, 22.1124], [74.5420, 22.1194], [74.4993, 22.1693], [74.5159, 22.2213], [74.5442, 22.2389], [74.5617, 22.2206], [74.5648, 22.2445], [74.5920, 22.2437], [74.6040, 22.2704], [74.6495, 22.2746], [74.6662, 22.3062], [74.6355, 22.3125], [74.6246, 22.3449], [74.6347, 22.3645], [74.6934, 22.3672], [74.6934, 22.4157], [74.7257, 22.4395], [74.7487, 22.4367], [74.7098, 22.4796], [74.7285, 22.5056], [74.7199, 22.5330], [74.7328, 22.5548], [74.7842, 22.5814], [74.7979, 22.6598], [74.7664, 22.7498], [74.7945, 22.7624], [74.8967, 22.7504], [74.9871, 22.8684], [75.0087, 22.9434], [75.0098, 23.1138], [75.1102, 23.1166], [75.2324, 23.0904], [75.2465, 23.1396], [75.3019, 23.1321]]]}}, {"type": "Feature", "properties": {"district": "Dindori"}, "geometry": {"type": "Polygon", "coordinates": [[[81.1175, 23.2178], [81.1537, 23.1666], [81.1850, 23.1673], [81.1746, 23.1546], [81.1875, 23.1312], [81.2075, 23.1394], [81.2064, 23.1187], [81.2355, 23.1102], [81.2562, 23.0709], [81.2478, 23.0542], [81.2242, 23.0590], [81.2031, 23.0172], [81.1813, 22.9519], [81.1917, 22.9143], [81.3534, 22.8499], [81.3989, 22.8513], [81.4688, 22.7596], [81.5021, 22.7645], [81.5225, 22.7508], [81.5897, 22.7580], [81.6386, 22.7841], [81.6848, 22.7791], [81.6965, 22.7460], [81.6869, 22.7134], [81.7318, 22.6891], [81.7070, 22.6496], [81.6565, 22.6320], [81.6413, 22.6075], [81.6486, 22.5689], [81.6235, 22.5642], [81.6157, 22.5390], [81.5630, 22.5510], [81.5569, 22.5321], [81.5190, 22.5399], [81.4798, 22.4933], [81.4380, 22.4939], [81.4480, 22.4673], [81.4244, 22.4792], [81.4189, 22.4542], [81.3965, 22.4413], [81.3787, 22.5053], [81.3229, 22.5243], [81.3159, 22.4897], [81.2604, 22.4935], [81.2555, 22.4724], [81.2235, 22.4516], [81.1941, 22.4620], [81.1868, 22.4892], [81.1706, 22.4880], [81.1480, 22.4558], [81.1049, 22.4327], [81.1138, 22.2943], [81.0846, 22.2467], [81.0404, 22.2405], [80.9928, 22.2886], [80.9090, 22.2787], [80.9025, 22.3177], [80.9247, 22.3274], [80.8998, 22.3420], [80.8740, 22.3348], [80.9066, 22.3914], [80.8634, 22.4367], [80.9684, 22.5212], [80.9728, 22.5420], [80.9558, 22.5600], [80.9397, 22.5557], [80.9287, 22.5854], [80.9584, 22.5911], [80.9511, 22.6024], [80.9866, 22.6154], [80.9992, 22.6374], [80.9504, 22.6393], [80.9361, 22.6752], [80.9175, 22.6822], [80.9104, 22.7123], [80.9338, 22.7455], [80.8634, 22.7593], [80.8639, 22.8063], [80.8473, 22.8102], [80.8647, 22.8499], [80.8276, 22.8510], [80.7844, 22.8195], [80.7246, 22.8141], [80.7264, 22.8593], [80.6478, 22.8389], [80.5664, 22.8703], [80.5790, 22.9621], [80.5182, 23.0806], [80.5209, 23.1076], [80.5741, 23.1395], [80.5451, 23.1695], [80.5157, 23.1587], [80.4728, 23.2002], [80.4956, 23.2052], [80.5164, 23.2592], [80.5757, 23.2866], [80.5668, 23.3539], [80.6943, 23.3730], [80.7526, 23.3438], [80.7099, 23.2824], [80.7554, 23.2215], [80.7818, 23.2245], [80.7861, 23.2517], [80.8010, 23.2547], [80.8552, 23.2236], [80.9345, 23.2907], [81.0262, 23.2086], [81.0605, 23.1959], [81.1175, 23.2178]]]}}, {"type": "Feature", "properties": {"district": "East Nimar"}, "geometry": {"type": "Polygon", "coordinates": [[[76.5085, 22.4182], [76.6034, 22.4112], [76.6227, 22.3795], [76.6527, 22.3684], [76.6549, 22.3378], [76.6837, 22.3052], [76.7161, 22.3168], [76.7415, 22.3003], [76.7797, 22.3505], [76.8156, 22.3426], [76.8213, 22.3212], [76.8506, 22.3358], [76.8920, 22.3024], [76.8418, 22.2609], [76.8536, 22.2558], [76.8360, 22.2003], [76.8448, 22.1797], [76.8256, 22.1644], [76.8362, 22.1346], [76.8648, 22.1397], [76.8711, 22.1226], [76.8520, 22.1107], [76.8404, 22.0619], [76.8781, 21.9944], [76.9001, 21.9916], [76.9030, 22.0147], [76.9322, 21.9939], [76.9478, 22.0108], [76.9760, 22.0095], [76.9975, 21.9842], [77.0252, 21.9947], [77.1512, 21.9868], [77.2186, 21.9171], [77.1988, 21.8785], [77.2090, 21.8700], [77.1752, 21.8732], [77.1599, 21.8591], [77.1675, 21.8104], [77.1946, 21.7911], [77.1214, 21.7771], [77.0977, 21.7887], [77.1044, 21.7793], [77.0705, 21.7617], [77.0715, 21.7324], [77.0561, 21.7358], [77.0594, 21.7094], [76.9972, 21.6816], [76.9011, 21.6008], [76.8521, 21.6150], [76.8335, 21.5930], [76.7953, 21.5975], [76.7802, 21.5624], [76.7624, 21.5564], [76.7427, 21.5785], [76.7077, 21.5617], [76.6158, 21.5759], [76.5107, 21.5635], [76.4381, 21.5969], [76.4220, 21.5868], [76.4178, 21.6000], [76.3752, 21.5983], [76.3540, 21.5683], [76.2938, 21.5780], [76.2895, 21.5960], [76.2128, 21.5711], [76.1773, 21.5432], [76.1278, 21.5960], [76.0787, 21.5745], [76.0736, 21.6637], [76.1082, 21.6912], [76.1619, 21.6754], [76.1743, 21.6887], [76.1544, 21.7344], [76.1178, 21.7230], [76.1024, 21.7405], [76.1262, 21.7555], [76.0960, 21.7716], [76.1109, 21.7954], [76.1030, 21.8500], [76.1702, 21.8880], [76.1512, 21.9482], [76.1594, 21.9695], [76.1457, 21.9817], [76.1684, 22.0044], [76.1609, 22.0357], [76.1997, 22.0415], [76.2337, 22.0777], [76.2274, 22.1027], [76.1832, 22.1247], [76.1424, 22.1002], [76.1647, 22.0801], [76.1559, 22.0631], [76.1058, 22.0567], [76.1036, 22.0931], [76.1453, 22.1126], [76.1261, 22.1674], [76.1556, 22.1798], [76.1634, 22.2072], [76.1076, 22.2145], [76.0982, 22.1924], [76.0774, 22.1892], [76.0318, 22.1994], [76.0232, 22.2170], [76.1160, 22.2571], [76.1663, 22.2626], [76.2121, 22.3326], [76.2518, 22.2957], [76.3208, 22.3016], [76.4465, 22.3502], [76.4444, 22.3886], [76.4788, 22.4083], [76.5085, 22.4182]]]}}, {"type": "Feature", "properties": {"district": "Guna"}, "geometry": {"type": "Polygon", "coordinates": [[[77.2755, 25.1121], [77.3106, 25.0712], [77.3672, 24.9290], [77.4156, 24.9501], [77.4560, 24.9316], [77.4747, 24.8791], [77.5572, 24.8759], [77.5150, 24.8360], [77.5491, 24.7412], [77.4767, 24.6369], [77.4705, 24.5926], [77.4926, 24.4737], [77.4707, 24.4691], [77.4712, 24.4374], [77.5861, 24.3787], [77.6290, 24.4323], [77.6493, 24.4250], [77.6503, 24.4075], [77.6764, 24.4052], [77.7303, 24.4335], [77.7162, 24.3926], [77.6886, 24.3962], [77.6166, 24.3551], [77.6148, 24.3364], [77.6437, 24.3196], [77.5933, 24.3021], [77.5889, 24.2736], [77.5485, 24.2531], [77.4990, 24.2582], [77.4869, 24.2808], [77.4465, 24.2445], [77.4291, 24.2464], [77.3943, 24.2837], [77.4041, 24.3319], [77.3498, 24.3479], [77.3180, 24.2895], [77.3468, 24.2210], [77.3273, 24.2192], [77.3397, 24.1874], [77.2982, 24.1709], [77.3087, 24.1553], [77.2841, 24.1291], [77.2936, 24.0928], [77.2554, 24.0605], [77.2907, 24.0475], [77.2750, 24.0288], [77.3071, 24.0162], [77.2899, 24.0039], [77.3085, 23.9885], [77.2910, 23.9795], [77.3021, 23.9523], [77.2922, 23.9350], [77.3182, 23.9155], [77.3153, 23.8896], [77.1820, 23.9023], [77.1781, 23.9395], [77.1597, 23.9529], [77.1841, 24.0091], [77.1781, 24.0868], [77.0248, 24.0868], [76.9977, 24.0615], [76.9645, 24.0558], [76.9448, 24.0838], [76.8867, 24.1086], [76.8775, 24.1349], [76.8999, 24.1311], [76.9161, 24.1887], [76.9331, 24.1868], [76.9444, 24.2062], [76.8741, 24.2710], [76.8401, 24.3387], [76.8369, 24.3607], [76.8523, 24.3748], [76.8358, 24.4165], [76.8510, 24.4353], [76.8378, 24.4505], [76.8513, 24.4691], [76.8145, 24.5343], [76.8662, 24.5493], [76.8795, 24.5253], [76.9128, 24.5435], [76.9146, 24.4876], [76.9653, 24.4608], [77.0015, 24.4778], [77.0319, 24.5287], [77.0503, 24.5265], [77.0643, 24.5641], [77.0602, 24.6377], [77.0334, 24.7029], [76.9719, 24.7316], [76.9633, 24.7595], [76.8472, 24.7504], [76.8006, 24.8245], [76.8316, 24.8402], [76.8950, 24.8395], [76.9489, 24.8728], [76.9138, 24.8878], [76.9235, 24.9142], [76.8912, 24.9196], [76.8672, 24.9654], [76.8680, 25.0013], [76.8543, 25.0103], [76.8744, 25.0131], [76.8820, 25.0340], [76.9534, 25.0484], [76.9937, 25.0799], [77.0772, 25.0579], [77.1401, 25.0962], [77.1577, 25.0882], [77.1695, 25.1137], [77.2755, 25.1121]]]}}, {"type": "Feature", "properties": {"district": "Gwalior"}, "geometry": {"type": "Polygon", "coordinates": [[[78.2770, 26.3520], [78.4107, 26.3371], [78.4078, 26.3023], [78.4362, 26.2653], [78.4628, 26.2541], [78.4744, 26.2712], [78.4912, 26.2672], [78.5387, 26.1974], [78.5757, 26.2202], [78.6025, 26.2002], [78.6078, 26.2242], [78.6178, 26.1668], [78.6437, 26.1303], [78.6044, 26.1351], [78.6001, 26.1046], [78.6336, 26.0892], [78.6388, 26.0675], [78.6004, 26.0529], [78.5335, 25.9802], [78.4775, 25.9669], [78.4630, 25.9137], [78.3839, 25.8595], [78.3827, 25.8408], [78.3245, 25.8375], [78.3145, 25.7994], [78.2568, 25.7848], [78.2069, 25.7439], [78.1702, 25.7435], [78.1515, 25.7241], [78.0465, 25.7160], [77.9887, 25.7457], [77.9932, 25.7707], [77.8718, 25.7437], [77.8559, 25.8144], [77.7959, 25.8257], [77.7757, 25.8611], [77.7418, 25.8662], [77.7385, 25.8876], [77.6961, 25.8859], [77.6700, 25.9215], [77.6652, 25.9849], [77.7226, 26.0551], [77.7536, 26.0458], [77.7688, 26.0596], [77.7540, 26.0915], [77.7649, 26.1216], [77.7347, 26.1339], [77.7369, 26.1689], [77.8076, 26.2609], [77.8365, 26.2573], [77.8295, 26.2357], [77.8560, 26.2200], [77.9041, 26.2587], [77.9430, 26.2497], [77.9518, 26.2653], [77.9861, 26.2500], [77.9819, 26.2735], [78.0032, 26.2779], [77.9971, 26.3295], [78.0572, 26.3192], [78.0672, 26.3353], [78.1376, 26.3469], [78.2213, 26.3104], [78.2514, 26.3191], [78.2496, 26.3379], [78.2770, 26.3520]]]}}, {"type": "Feature", "properties": {"district": "Harda"}, "geometry": {"type": "Polygon", "coordinates": [[[77.1491, 22.5862], [77.2622, 22.5452], [77.2409, 22.5291], [77.2740, 22.5043], [77.2835, 22.4557], [77.2720, 22.4466], [77.3004, 22.4402], [77.3070, 22.3571], [77.3502, 22.3173], [77.3591, 22.2211], [77.4126, 22.1776], [77.4629, 22.1699], [77.4510, 22.0881], [77.4992, 22.0792], [77.4947, 22.0361], [77.3935, 22.0276], [77.3915, 21.9993], [77.2726, 21.9667], [77.2434, 21.9151], [77.2159, 21.9078], [77.2035, 21.9367], [77.1337, 21.9955], [76.9975, 21.9842], [76.9760, 22.0095], [76.9478, 22.0108], [76.9322, 21.9939], [76.9030, 22.0147], [76.9023, 21.9936], [76.8836, 21.9876], [76.8404, 22.0619], [76.8662, 22.1382], [76.8362, 22.1346], [76.8256, 22.1644], [76.8448, 22.1797], [76.8360, 22.2003], [76.8536, 22.2558], [76.8418, 22.2609], [76.8920, 22.3024], [76.8506, 22.3358], [76.8213, 22.3212], [76.8156, 22.3426], [76.7797, 22.3505], [76.7870, 22.4319], [76.8983, 22.4899], [77.0674, 22.5152], [77.1491, 22.5862]]]}}, {"type": "Feature", "properties": {"district": "Hoshangabad"}, "geometry": {"type": "Polygon", "coordinates": [[[78.3911, 22.9656], [78.4673, 22.9857], [78.4632, 22.9616], [78.5661, 22.9587], [78.5826, 22.9134], [78.5757, 22.8850], [78.5886, 22.8822], [78.5694, 22.8699], [78.5946, 22.8504], [78.5846, 22.8188], [78.6157, 22.8207], [78.6105, 22.8004], [78.6321, 22.8005], [78.6273, 22.7628], [78.6442, 22.7838], [78.6915, 22.7667], [78.6711, 22.7287], [78.6880, 22.7105], [78.6221, 22.6807], [78.6093, 22.6547], [78.5216, 22.6680], [78.4953, 22.6401], [78.4956, 22.5955], [78.5431, 22.5347], [78.5092, 22.4825], [78.5458, 22.4597], [78.5561, 22.4258], [78.4561, 22.3825], [78.4201, 22.3859], [78.3780, 22.4212], [78.3161, 22.4270], [78.2594, 22.3999], [78.1808, 22.3996], [77.9838, 22.3201], [77.9358, 22.3369], [77.8713, 22.2825], [77.8528, 22.2832], [77.8525, 22.3586], [77.7811, 22.3300], [77.7432, 22.3479], [77.7386, 22.3211], [77.6801, 22.3259], [77.6464, 22.3091], [77.5830, 22.3455], [77.5459, 22.3411], [77.5433, 22.3593], [77.4996, 22.3155], [77.4968, 22.2830], [77.4500, 22.2523], [77.4397, 22.2218], [77.3819, 22.2292], [77.3759, 22.2511], [77.3524, 22.2520], [77.3481, 22.3227], [77.3070, 22.3571], [77.3004, 22.4402], [77.2720, 22.4466], [77.2835, 22.4557], [77.2740, 22.5043], [77.2409, 22.5291], [77.2622, 22.5452], [77.2034, 22.5685], [77.2436, 22.6032], [77.2640, 22.6110], [77.2865, 22.5695], [77.3207, 22.5663], [77.3593, 22.6135], [77.5677, 22.6727], [77.6150, 22.7453], [77.6607, 22.7340], [77.6941, 22.7667], [77.7299, 22.7581], [77.7712, 22.7904], [77.7894, 22.8347], [77.8404, 22.8653], [77.8638, 22.8587], [77.8657, 22.8229], [77.9208, 22.8488], [77.9037, 22.8058], [77.9162, 22.7628], [77.9353, 22.7729], [77.9338, 22.8033], [77.9611, 22.8196], [78.0285, 22.8051], [78.0641, 22.8157], [78.1110, 22.7948], [78.1241, 22.8397], [78.1934, 22.8946], [78.2339, 22.8702], [78.2754, 22.8717], [78.3165, 22.9190], [78.3478, 22.9227], [78.3911, 22.9656]]]}}, {"type": "Feature", "properties": {"district": "Indore"}, "geometry": {"type": "Polygon", "coordinates": [[[75.5668, 23.0893], [75.6281, 23.0871], [75.6187, 23.0565], [75.6417, 23.0092], [75.6492, 23.0286], [75.7298, 23.0198], [75.7367, 23.0386], [75.8725, 23.0417], [75.9125, 22.9817], [75.9651, 22.9480], [75.9834, 22.8754], [76.0321, 22.8467], [76.1020, 22.7045], [76.1816, 22.6971], [76.2018, 22.6794], [76.1911, 22.6644], [76.2246, 22.6783], [76.2264, 22.6556], [76.2438, 22.6468], [76.2326, 22.6234], [76.1984, 22.6282], [76.1873, 22.5997], [76.1707, 22.6211], [76.1876, 22.6430], [76.1507, 22.6350], [76.1660, 22.6061], [76.1426, 22.6123], [76.1431, 22.5932], [76.1085, 22.6033], [76.1134, 22.5841], [76.0822, 22.6059], [76.0883, 22.5868], [76.0631, 22.5875], [76.1050, 22.5619], [76.0781, 22.5287], [76.0300, 22.5319], [76.0273, 22.4991], [76.0540, 22.4809], [76.0575, 22.4591], [76.0343, 22.4401], [76.0129, 22.4465], [76.0091, 22.4229], [75.9685, 22.4407], [75.9123, 22.4211], [75.9084, 22.3895], [75.8553, 22.3836], [75.8270, 22.4082], [75.7801, 22.3730], [75.7206, 22.3721], [75.6523, 22.3356], [75.6399, 22.3568], [75.6015, 22.3442], [75.6088, 22.3652], [75.5649, 22.3746], [75.5457, 22.3965], [75.5718, 22.4561], [75.5565, 22.5131], [75.5982, 22.5262], [75.5964, 22.5703], [75.6317, 22.5627], [75.6782, 22.5838], [75.7139, 22.6223], [75.7057, 22.6646], [75.6833, 22.6603], [75.6849, 22.6401], [75.7028, 22.6492], [75.6940, 22.6302], [75.6041, 22.6362], [75.5820, 22.6620], [75.5363, 22.6351], [75.5218, 22.6606], [75.4957, 22.6475], [75.5200, 22.6673], [75.5088, 22.7341], [75.4791, 22.7369], [75.4810, 22.7726], [75.4372, 22.7764], [75.4232, 22.8307], [75.4436, 22.8649], [75.4401, 22.9106], [75.4787, 22.9334], [75.4554, 22.9447], [75.4888, 22.9871], [75.4757, 23.0065], [75.4897, 23.0181], [75.5073, 23.0084], [75.5212, 23.0440], [75.5697, 23.0713], [75.5668, 23.0893]]]}}, {"type": "Feature", "properties": {"district": "Jabalpur"}, "geometry": {"type": "Polygon", "coordinates": [[[79.8089, 23.4630], [79.8046, 23.4426], [79.8375, 23.4481], [79.8343, 23.4240], [79.8574, 23.4182], [79.8665, 23.3662], [79.8826, 23.3636], [79.9300, 23.4040], [79.9699, 23.3492], [80.0639, 23.3493], [80.1011, 23.3197], [80.1187, 23.3423], [80.1623, 23.3029], [80.1928, 23.3371], [80.2231, 23.3408], [80.2615, 23.3216], [80.2858, 23.3629], [80.3198, 23.3049], [80.3614, 23.3089], [80.3578, 23.3292], [80.3891, 23.3500], [80.4426, 23.3451], [80.4786, 23.3920], [80.5125, 23.3794], [80.5371, 23.3920], [80.5505, 23.3796], [80.5333, 23.3590], [80.5668, 23.3539], [80.5770, 23.2899], [80.5164, 23.2592], [80.4956, 23.2052], [80.4728, 23.2002], [80.5157, 23.1587], [80.5478, 23.1684], [80.5734, 23.1330], [80.5209, 23.1076], [80.5178, 23.0804], [80.5038, 23.0818], [80.5041, 23.1090], [80.4536, 23.1291], [80.4518, 23.1459], [80.4200, 23.1429], [80.4014, 23.1745], [80.3028, 23.0987], [80.2674, 23.1312], [80.2704, 23.1486], [80.1811, 23.1307], [80.1733, 23.1178], [80.1979, 23.0786], [80.1748, 23.0615], [80.1804, 23.0249], [80.1540, 23.0517], [80.1067, 23.0534], [80.0963, 23.0798], [79.9888, 23.0281], [80.0002, 23.0082], [79.9860, 22.9955], [80.0051, 22.9754], [79.9458, 22.9470], [79.9658, 22.9219], [79.9573, 22.8546], [79.9017, 22.8476], [79.8934, 22.8649], [79.8370, 22.8320], [79.8050, 22.8702], [79.7609, 22.8456], [79.7538, 22.8591], [79.7699, 22.8807], [79.7383, 22.9022], [79.7424, 22.9197], [79.6556, 22.9245], [79.6166, 22.9567], [79.6327, 22.9800], [79.5852, 23.0242], [79.6066, 23.1068], [79.5128, 23.1442], [79.4502, 23.0972], [79.3451, 23.1080], [79.3474, 23.1404], [79.4850, 23.2599], [79.5332, 23.2639], [79.6662, 23.3379], [79.7331, 23.4364], [79.8089, 23.4630]]]}}, {"type": "Feature", "properties": {"district": "Jhabua"}, "geometry": {"type": "Polygon", "coordinates": [[[74.7926, 23.2358], [74.7684, 23.1791], [74.8039, 23.1661], [74.7815, 23.1499], [74.8110, 23.1358], [74.8862, 23.1375], [74.9267, 23.1620], [74.9909, 23.1421], [74.9923, 23.1121], [75.0098, 23.1138], [75.0087, 22.9434], [74.9871, 22.8684], [74.8967, 22.7504], [74.7945, 22.7624], [74.7664, 22.7498], [74.7979, 22.6598], [74.7842, 22.5814], [74.7328, 22.5548], [74.7199, 22.5330], [74.7285, 22.5056], [74.7098, 22.4796], [74.7487, 22.4367], [74.7257, 22.4395], [74.6934, 22.4157], [74.6934, 22.3672], [74.6347, 22.3645], [74.6246, 22.3449], [74.6355, 22.3125], [74.6662, 22.3062], [74.6495, 22.2746], [74.6040, 22.2704], [74.5920, 22.2437], [74.5648, 22.2445], [74.5617, 22.2206], [74.5442, 22.2389], [74.5159, 22.2213], [74.4993, 22.1693], [74.5420, 22.1194], [74.4745, 22.1124], [74.4811, 22.0963], [74.5172, 22.1019], [74.4959, 22.0654], [74.5060, 22.0464], [74.3883, 22.0201], [74.3546, 21.9791], [74.3020, 21.9674], [74.2906, 21.9360], [74.1888, 21.9282], [74.1460, 21.9540], [74.1538, 21.9864], [74.1003, 22.0015], [74.0977, 22.0154], [74.1807, 22.0866], [74.1546, 22.1055], [74.1302, 22.0977], [74.1227, 22.2129], [74.0757, 22.2218], [74.0915, 22.2437], [74.0590, 22.3054], [74.0719, 22.3602], [74.0998, 22.3729], [74.1342, 22.3323], [74.1910, 22.3219], [74.2068, 22.3676], [74.2270, 22.3585], [74.2254, 22.3782], [74.2456, 22.3775], [74.2579, 22.4000], [74.2941, 22.3944], [74.2540, 22.4330], [74.2046, 22.4371], [74.1908, 22.4778], [74.1866, 22.4441], [74.1610, 22.4321], [74.1442, 22.4567], [74.1230, 22.4208], [74.1050, 22.4334], [74.1033, 22.4678], [74.0780, 22.4656], [74.0852, 22.5085], [74.0587, 22.5105], [74.0370, 22.4915], [74.0423, 22.5371], [74.0780, 22.5516], [74.1533, 22.5174], [74.1951, 22.5568], [74.1900, 22.5674], [74.2138, 22.5674], [74.2653, 22.6448], [74.3841, 22.6435], [74.4030, 22.7307], [74.4392, 22.7855], [74.4391, 22.8094], [74.4649, 22.8150], [74.4789, 22.8586], [74.4514, 22.9239], [74.4003, 22.8993], [74.3620, 22.9330], [74.3416, 22.9646], [74.3707, 22.9800], [74.3227, 23.0626], [74.3911, 23.1119], [74.4672, 23.0852], [74.5122, 23.0888], [74.5426, 23.1069], [74.5457, 23.1320], [74.6080, 23.1448], [74.6691, 23.2014], [74.7155, 23.1946], [74.7456, 23.2121], [74.7479, 23.2379], [74.7926, 23.2358]]]}}, {"type": "Feature", "properties": {"district": "Katni"}, "geometry": {"type": "Polygon", "coordinates": [[[80.7293, 24.1096], [80.6927, 24.0931], [80.7068, 24.0726], [80.7191, 24.0825], [80.7950, 24.0674], [80.7976, 24.0432], [80.7507, 24.0321], [80.7536, 23.9927], [80.7800, 23.9729], [80.7920, 23.9742], [80.8018, 24.0192], [80.8327, 24.0289], [80.8630, 24.0834], [80.9505, 24.0691], [80.8978, 24.0413], [80.8692, 23.9715], [80.8280, 23.9559], [80.8351, 23.9101], [80.8683, 23.9062], [80.8548, 23.8808], [80.8870, 23.8632], [80.9057, 23.7890], [80.8844, 23.7683], [80.8966, 23.6845], [80.8141, 23.6717], [80.7230, 23.7316], [80.7029, 23.7634], [80.6625, 23.6717], [80.6361, 23.6512], [80.6424, 23.6363], [80.6139, 23.6147], [80.6152, 23.5949], [80.5550, 23.5681], [80.5438, 23.5457], [80.5385, 23.4952], [80.5580, 23.4699], [80.5534, 23.4429], [80.5237, 23.4183], [80.5371, 23.3920], [80.5125, 23.3794], [80.4786, 23.3920], [80.4426, 23.3451], [80.3891, 23.3500], [80.3578, 23.3292], [80.3614, 23.3089], [80.3198, 23.3049], [80.2858, 23.3629], [80.2615, 23.3216], [80.2231, 23.3408], [80.1928, 23.3371], [80.1623, 23.3029], [80.1187, 23.3423], [80.1011, 23.3197], [80.0639, 23.3493], [79.9699, 23.3492], [79.9300, 23.4040], [79.8826, 23.3636], [79.8665, 23.3662], [79.8574, 23.4182], [79.8343, 23.4240], [79.8375, 23.4481], [79.8173, 23.4351], [79.8036, 23.4440], [79.8077, 23.4674], [79.7933, 23.4665], [79.8048, 23.5018], [79.8216, 23.5152], [79.8437, 23.5081], [79.8990, 23.5848], [79.9470, 23.6231], [79.9380, 23.6402], [79.9493, 23.6593], [79.9296, 23.6809], [79.8211, 23.7003], [79.8232, 23.7699], [79.8510, 23.7943], [79.8591, 23.8321], [79.9347, 23.8323], [79.9640, 23.8656], [80.0089, 23.9805], [80.0498, 23.9966], [80.0768, 23.9799], [80.0944, 23.9869], [80.1120, 23.9567], [80.1429, 23.9438], [80.1679, 24.0037], [80.1991, 23.9986], [80.2285, 23.9784], [80.2029, 23.9790], [80.2207, 23.9536], [80.3224, 23.9149], [80.3152, 23.9339], [80.3554, 23.9735], [80.3805, 23.9680], [80.5122, 24.0199], [80.5256, 24.0330], [80.5091, 24.0521], [80.5278, 24.0716], [80.5474, 24.0578], [80.5414, 24.0361], [80.6234, 24.0812], [80.6438, 24.0520], [80.6379, 24.0948], [80.6745, 24.0804], [80.6703, 24.1123], [80.7305, 24.1381], [80.7293, 24.1096]]]}}, {"type": "Feature", "properties": {"district": "Mandla"}, "geometry": {"type": "MultiPolygon", "coordinates": [[[[80.8851, 22.3497], [80.8740, 22.3348], [80.8753, 22.3463], [80.8851, 22.3497]]], [[[80.4200, 23.1429], [80.4518, 23.1459], [80.4536, 23.1291], [80.5041, 23.1090], [80.5038, 23.0818], [80.5522, 23.0321], [80.5790, 22.9621], [80.5682, 22.8686], [80.6644, 22.8378], [80.7264, 22.8593], [80.7246, 22.8141], [80.7844, 22.8195], [80.8276, 22.8510], [80.8647, 22.8499], [80.8473, 22.8102], [80.8639, 22.8063], [80.8634, 22.7593], [80.9338, 22.7455], [80.9104, 22.7123], [80.9175, 22.6822], [80.9361, 22.6752], [80.9504, 22.6393], [80.9992, 22.6374], [80.9866, 22.6154], [80.9511, 22.6024], [80.9584, 22.5911], [80.9287, 22.5854], [80.9397, 22.5557], [80.9558, 22.5600], [80.9728, 22.5420], [80.9684, 22.5212], [80.8634, 22.4367], [80.9066, 22.3914], [80.8963, 22.3646], [80.8853, 22.3499], [80.8411, 22.3874], [80.7895, 22.3964], [80.7805, 22.3134], [80.6971, 22.2697], [80.7217, 22.2215], [80.6992, 22.2045], [80.5291, 22.2414], [80.4999, 22.2755], [80.4579, 22.2800], [80.4404, 22.2484], [80.4114, 22.2464], [80.4124, 22.2814], [80.3904, 22.3064], [80.3347, 22.2995], [80.3380, 22.3295], [80.3187, 22.3458], [80.2294, 22.3018], [80.1625, 22.3285], [80.1496, 22.3502], [80.0833, 22.3436], [80.0641, 22.3778], [80.0859, 22.4280], [80.0194, 22.5051], [80.0253, 22.5441], [79.9473, 22.5586], [80.0019, 22.5799], [80.0295, 22.6087], [80.1063, 22.6288], [80.1459, 22.6036], [80.1921, 22.6080], [80.2094, 22.6303], [80.1888, 22.6534], [80.2297, 22.6776], [80.2334, 22.7182], [80.2841, 22.7273], [80.2620, 22.7961], [80.2089, 22.8031], [80.1783, 22.7680], [80.0963, 22.7728], [80.0653, 22.7593], [80.0143, 22.7959], [79.9980, 22.8278], [79.9750, 22.8332], [79.9573, 22.8546], [79.9658, 22.9219], [79.9458, 22.9470], [80.0051, 22.9754], [79.9860, 22.9955], [80.0002, 23.0082], [79.9888, 23.0281], [80.0963, 23.0798], [80.1067, 23.0534], [80.1540, 23.0517], [80.1804, 23.0249], [80.1748, 23.0615], [80.1979, 23.0786], [80.1749, 23.1252], [80.2393, 23.1498], [80.2704, 23.1486], [80.2674, 23.1312], [80.3028, 23.0987], [80.3815, 23.1470], [80.3933, 23.1743], [80.4200, 23.1429]]]]}}, {"type": "Feature", "properties": {"district": "Mandsaur"}, "geometry": {"type": "Polygon", "coordinates": [[[75.7861, 24.7655], [75.8387, 24.7298], [75.8271, 24.6715], [75.8488, 24.6530], [75.8281, 24.6133], [75.8354, 24.5975], [75.8525, 24.6143], [75.8740, 24.6071], [75.8843, 24.5817], [75.9151, 24.5745], [75.9070, 24.5504], [75.9250, 24.5382], [75.9093, 24.5148], [75.8925, 24.5215], [75.9124, 24.4855], [75.8986, 24.4415], [75.8290, 24.4225], [75.8096, 24.4412], [75.8151, 24.4651], [75.7911, 24.4752], [75.7835, 24.4518], [75.7487, 24.4284], [75.7552, 24.4093], [75.7268, 24.4052], [75.7379, 24.3479], [75.7650, 24.3106], [75.8112, 24.3034], [75.8126, 24.2568], [75.8268, 24.2464], [75.7735, 24.2208], [75.7434, 24.1396], [75.7762, 24.1389], [75.7896, 24.1098], [75.8023, 24.1183], [75.8121, 24.1028], [75.8357, 24.1113], [75.8337, 24.0754], [75.7796, 24.0620], [75.7620, 23.9979], [75.7004, 23.9690], [75.6691, 24.0335], [75.6347, 23.9998], [75.5838, 23.9919], [75.5669, 24.0227], [75.5143, 24.0487], [75.4647, 23.9807], [75.4555, 23.9170], [75.3715, 23.8732], [75.3432, 23.8090], [75.3231, 23.8081], [75.3336, 23.8399], [75.2987, 23.8555], [75.2556, 23.8246], [75.2336, 23.8652], [75.1919, 23.8298], [75.1332, 23.8312], [75.1187, 23.8510], [75.0916, 23.8177], [75.0502, 23.8266], [75.0544, 23.8000], [75.0366, 23.7853], [75.0083, 23.8161], [74.9399, 23.7658], [74.9276, 23.7983], [74.9103, 23.8008], [74.9056, 23.8739], [74.9213, 23.9357], [74.9686, 23.9797], [74.9929, 24.0297], [74.9595, 24.1100], [74.9361, 24.1237], [74.8801, 24.2164], [74.9619, 24.3024], [74.9590, 24.3551], [74.9822, 24.3750], [74.9924, 24.3607], [75.0224, 24.3951], [75.0540, 24.3740], [75.0405, 24.3453], [75.1132, 24.3832], [75.1314, 24.3709], [75.1215, 24.3583], [75.2129, 24.3318], [75.3096, 24.3388], [75.3311, 24.3593], [75.3614, 24.3405], [75.4225, 24.3518], [75.4285, 24.3793], [75.4845, 24.4245], [75.5275, 24.4878], [75.5791, 24.5158], [75.5899, 24.5413], [75.5875, 24.6210], [75.5722, 24.6349], [75.5788, 24.6531], [75.6095, 24.6540], [75.5485, 24.7155], [75.5819, 24.7227], [75.6094, 24.6899], [75.6340, 24.6911], [75.7307, 24.7555], [75.7861, 24.7655]]]}}, {"type": "Feature", "properties": {"district": "Morena"}, "geometry": {"type": "Polygon", "coordinates": [[[78.3646, 26.8688], [78.3897, 26.8248], [78.4258, 26.8323], [78.4507, 26.7980], [78.5350, 26.7716], [78.5292, 26.7394], [78.5061, 26.7267], [78.5210, 26.6814], [78.5031, 26.6921], [78.4873, 26.6760], [78.4543, 26.6772], [78.4613, 26.6543], [78.4285, 26.6434], [78.4108, 26.5950], [78.3730, 26.6093], [78.3784, 26.5920], [78.3629, 26.5942], [78.3304, 26.5506], [78.3037, 26.5566], [78.2927, 26.5967], [78.2634, 26.5714], [78.2602, 26.5409], [78.2361, 26.5505], [78.2232, 26.5374], [78.2345, 26.5320], [78.2074, 26.5344], [78.2365, 26.4709], [78.2582, 26.4661], [78.2483, 26.4487], [78.2784, 26.4477], [78.2870, 26.4202], [78.2542, 26.3648], [78.2514, 26.3191], [78.2003, 26.3105], [78.1376, 26.3469], [78.0672, 26.3353], [78.0572, 26.3192], [77.9971, 26.3295], [78.0032, 26.2779], [77.9819, 26.2735], [77.9861, 26.2500], [77.9518, 26.2653], [77.9430, 26.2497], [77.9041, 26.2587], [77.8560, 26.2200], [77.8295, 26.2357], [77.8365, 26.2573], [77.8076, 26.2609], [77.7369, 26.1689], [77.7347, 26.1339], [77.7649, 26.1216], [77.7540, 26.0915], [77.7688, 26.0596], [77.7536, 26.0458], [77.7226, 26.0551], [77.6652, 25.9849], [77.6700, 25.9215], [77.5420, 25.9084], [77.5311, 25.9458], [77.5586, 25.9372], [77.5930, 25.9652], [77.6406, 25.9696], [77.6416, 26.0141], [77.6153, 26.0176], [77.6076, 26.0354], [77.6284, 26.0714], [77.6612, 26.0750], [77.6558, 26.1048], [77.5976, 26.0763], [77.6057, 26.0465], [77.5731, 26.0181], [77.3938, 26.1579], [77.2685, 26.1298], [77.2271, 26.0853], [77.2001, 26.1110], [77.1730, 26.1782], [77.1394, 26.1682], [77.1302, 26.1796], [77.1405, 26.1950], [77.1093, 26.2250], [77.1240, 26.2379], [77.2031, 26.2374], [77.2899, 26.2955], [77.3346, 26.3572], [77.3662, 26.3715], [77.4367, 26.3681], [77.4277, 26.4069], [77.5228, 26.4149], [77.6676, 26.5083], [77.7139, 26.5042], [77.7443, 26.5452], [77.8129, 26.5548], [77.8204, 26.5998], [77.8793, 26.6202], [77.8945, 26.6622], [77.9478, 26.6650], [77.9922, 26.7026], [78.0857, 26.6830], [78.0891, 26.7381], [78.1160, 26.7546], [78.0956, 26.7717], [78.1055, 26.8007], [78.1761, 26.7914], [78.1675, 26.8319], [78.2229, 26.8372], [78.2608, 26.8209], [78.2820, 26.8640], [78.3646, 26.8688]]]}}, {"type": "Feature", "properties": {"district": "Narsinghpur"}, "geometry": {"type": "Polygon", "coordinates": [[[78.8423, 23.2281], [78.8881, 23.2159], [78.9281, 23.2357], [78.9362, 23.2138], [78.9751, 23.2010], [78.9885, 23.2157], [79.0250, 23.1968], [79.1013, 23.2086], [79.1085, 23.1725], [79.1414, 23.1742], [79.1800, 23.2004], [79.1905, 23.2421], [79.2205, 23.2274], [79.2356, 23.2529], [79.2591, 23.2431], [79.2640, 23.2163], [79.3017, 23.2333], [79.3237, 23.1503], [79.3656, 23.1670], [79.3451, 23.1080], [79.4502, 23.0972], [79.5047, 23.1421], [79.5655, 23.1336], [79.5750, 23.1138], [79.6089, 23.1050], [79.5852, 23.0242], [79.6335, 22.9746], [79.5775, 22.9443], [79.6157, 22.9047], [79.6188, 22.8757], [79.5381, 22.8199], [79.5103, 22.7777], [79.5075, 22.7222], [79.4664, 22.7259], [79.4635, 22.7430], [79.4068, 22.7244], [79.3862, 22.6734], [79.3194, 22.6179], [79.2928, 22.6203], [79.2992, 22.6478], [79.2784, 22.6564], [79.2902, 22.6834], [79.2596, 22.6880], [79.2382, 22.7206], [79.2558, 22.7419], [79.2233, 22.8176], [79.1720, 22.7886], [79.1314, 22.7907], [79.0820, 22.7460], [79.0387, 22.7615], [79.0111, 22.7421], [79.0212, 22.7108], [79.0002, 22.6930], [79.0130, 22.6510], [78.9910, 22.6215], [78.9388, 22.6295], [78.9051, 22.6756], [78.8429, 22.6869], [78.8130, 22.6582], [78.7742, 22.6506], [78.7761, 22.6300], [78.7359, 22.6265], [78.6778, 22.6659], [78.6743, 22.7021], [78.6880, 22.7105], [78.6711, 22.7287], [78.6885, 22.7730], [78.6545, 22.7699], [78.6442, 22.7838], [78.6305, 22.7613], [78.6321, 22.8005], [78.6105, 22.8004], [78.6157, 22.8207], [78.5846, 22.8188], [78.5946, 22.8504], [78.5694, 22.8699], [78.5886, 22.8822], [78.5757, 22.8850], [78.5826, 22.9134], [78.5661, 22.9587], [78.4632, 22.9616], [78.4673, 22.9857], [78.4369, 22.9883], [78.4638, 23.0089], [78.5853, 23.0146], [78.6175, 23.0338], [78.6410, 23.0270], [78.7239, 23.0496], [78.7500, 23.0827], [78.7945, 23.1012], [78.7842, 23.1217], [78.8090, 23.2200], [78.8015, 23.2392], [78.8274, 23.2554], [78.8423, 23.2281]]]}}, {"type": "Feature", "properties": {"district": "Neemuch"}, "geometry": {"type": "Polygon", "coordinates": [[[75.1591, 25.0454], [75.2005, 25.0344], [75.3542, 25.0373], [75.3189, 25.0065], [75.3374, 24.9631], [75.3138, 24.9004], [75.2759, 24.9767], [75.2663, 24.9619], [75.2930, 24.9231], [75.2670, 24.9142], [75.2614, 24.8896], [75.3113, 24.8694], [75.3259, 24.8870], [75.3719, 24.8779], [75.4242, 24.8927], [75.4170, 24.8639], [75.3057, 24.8133], [75.2789, 24.8534], [75.2273, 24.8591], [75.2499, 24.8956], [75.2234, 24.8900], [75.2081, 24.9099], [75.2013, 24.8842], [75.2515, 24.8322], [75.2064, 24.8099], [75.1868, 24.7603], [75.2169, 24.7224], [75.2240, 24.7354], [75.2672, 24.7327], [75.4518, 24.6932], [75.5485, 24.7155], [75.6095, 24.6540], [75.5788, 24.6531], [75.5722, 24.6349], [75.5875, 24.6210], [75.5924, 24.5623], [75.5814, 24.5194], [75.5195, 24.4798], [75.4135, 24.3491], [75.3614, 24.3405], [75.3311, 24.3593], [75.3096, 24.3388], [75.2129, 24.3318], [75.1215, 24.3583], [75.1314, 24.3709], [75.1132, 24.3832], [75.0405, 24.3453], [75.0540, 24.3740], [75.0224, 24.3951], [74.9924, 24.3607], [74.9822, 24.3750], [74.9590, 24.3551], [74.9619, 24.3024], [74.9040, 24.2458], [74.8697, 24.2807], [74.8533, 24.2699], [74.7547, 24.2789], [74.7836, 24.3168], [74.7869, 24.3716], [74.8581, 24.4555], [74.8541, 24.4702], [74.8182, 24.4619], [74.8145, 24.4922], [74.7789, 24.4833], [74.7119, 24.5109], [74.7567, 24.5546], [74.7479, 24.5968], [74.7901, 24.6107], [74.7834, 24.6367], [74.8171, 24.6716], [74.8133, 24.6861], [74.7752, 24.6877], [74.7896, 24.7266], [74.7800, 24.7427], [74.8031, 24.7548], [74.7993, 24.7956], [74.8498, 24.6986], [74.8928, 24.6553], [74.9428, 24.6603], [74.9621, 24.7008], [74.9998, 24.7084], [74.9934, 24.7527], [75.0202, 24.7527], [75.0070, 24.7960], [74.9169, 24.7871], [74.8585, 24.8130], [74.8488, 24.7926], [74.8375, 24.8084], [74.8590, 24.8290], [74.8241, 24.9148], [74.8327, 24.9674], [74.8532, 24.9747], [74.8672, 24.9369], [74.8846, 24.9497], [74.9005, 24.9397], [74.9125, 24.8990], [74.9487, 24.8948], [74.9448, 24.8779], [75.0433, 24.8592], [75.0563, 24.8819], [75.1188, 24.8890], [75.1190, 24.9747], [75.1608, 24.9876], [75.1591, 25.0454]]]}}, {"type": "Feature", "properties": {"district": "Panna"}, "geometry": {"type": "Polygon", "coordinates": [[[80.4407, 25.0820], [80.4701, 25.0446], [80.5415, 25.0337], [80.5422, 25.0066], [80.4986, 25.0092], [80.4655, 24.9763], [80.4886, 24.9182], [80.4769, 24.8878], [80.4755, 24.8574], [80.4828, 24.8909], [80.5155, 24.9202], [80.6271, 24.8767], [80.5905, 24.8464], [80.5998, 24.8377], [80.5318, 24.8123], [80.4678, 24.7602], [80.4327, 24.7506], [80.4045, 24.7780], [80.3875, 24.7478], [80.3983, 24.7149], [80.3606, 24.6945], [80.4152, 24.6376], [80.4141, 24.6134], [80.4645, 24.6146], [80.4388, 24.5326], [80.4592, 24.5242], [80.4322, 24.5088], [80.4172, 24.4453], [80.4544, 24.4393], [80.4644, 24.3798], [80.4954, 24.3767], [80.5095, 24.3462], [80.5712, 24.3028], [80.5581, 24.2704], [80.5827, 24.2560], [80.5660, 24.2478], [80.6178, 24.2014], [80.6146, 24.1872], [80.6245, 24.2012], [80.6695, 24.1960], [80.6434, 24.1779], [80.6267, 24.1866], [80.6187, 24.1633], [80.6036, 24.1715], [80.5926, 24.1418], [80.5039, 24.0803], [80.4762, 24.0721], [80.4386, 24.0948], [80.4364, 24.0383], [80.3802, 24.0446], [80.3833, 24.0034], [80.3499, 23.9796], [80.3420, 23.9465], [80.3152, 23.9339], [80.3224, 23.9149], [80.2207, 23.9536], [80.2029, 23.9790], [80.2285, 23.9784], [80.1991, 23.9986], [80.1679, 24.0037], [80.1429, 23.9438], [80.1120, 23.9567], [80.0944, 23.9869], [80.0768, 23.9799], [80.0463, 23.9962], [80.0089, 23.9805], [79.9640, 23.8656], [79.9347, 23.8323], [79.8591, 23.8321], [79.8496, 23.8544], [79.8635, 23.9056], [79.8317, 23.9365], [79.8507, 23.9896], [79.8310, 24.0076], [79.8382, 24.0252], [79.7546, 24.0364], [79.7309, 24.0648], [79.7568, 24.0785], [79.7574, 24.1041], [79.8053, 24.1625], [79.8085, 24.2035], [79.8352, 24.2198], [79.8392, 24.2476], [79.8023, 24.2690], [79.8066, 24.2873], [79.8514, 24.3023], [79.8287, 24.3233], [79.7972, 24.3206], [79.8147, 24.3501], [79.7900, 24.3767], [79.8187, 24.3873], [79.8481, 24.3532], [79.8761, 24.3781], [79.8607, 24.4617], [79.8756, 24.4804], [79.8603, 24.5110], [79.8769, 24.5241], [79.8693, 24.5746], [79.8954, 24.5771], [79.8821, 24.5952], [79.8521, 24.5868], [79.8391, 24.6165], [79.8897, 24.6971], [79.9203, 24.6915], [79.9522, 24.6607], [79.9901, 24.7272], [80.0783, 24.8133], [80.0830, 24.8443], [80.0274, 24.9132], [80.0465, 24.9423], [80.1421, 24.9405], [80.1542, 24.9662], [80.2669, 25.0302], [80.3141, 25.0035], [80.3588, 25.0260], [80.3821, 25.0097], [80.3657, 25.0577], [80.4407, 25.0820]]]}}, {"type": "Feature", "properties": {"district": "Raisen"}, "geometry": {"type": "Polygon", "coordinates": [[[78.4289, 23.7444], [78.4631, 23.6470], [78.4797, 23.6417], [78.5077, 23.6611], [78.4980, 23.5356], [78.5315, 23.5652], [78.6335, 23.5513], [78.6407, 23.5646], [78.7322, 23.5798], [78.7293, 23.5348], [78.7134, 23.5368], [78.6729, 23.4975], [78.6560, 23.4528], [78.6242, 23.4540], [78.5942, 23.4266], [78.6168, 23.4219], [78.6360, 23.3498], [78.6582, 23.3366], [78.7128, 23.3547], [78.7643, 23.2980], [78.7512, 23.2516], [78.8033, 23.2373], [78.7905, 23.0952], [78.7500, 23.0827], [78.7205, 23.0476], [78.6175, 23.0338], [78.5853, 23.0146], [78.4582, 23.0074], [78.3524, 22.9253], [78.3165, 22.9190], [78.2754, 22.8717], [78.2339, 22.8702], [78.1934, 22.8946], [78.1273, 22.8435], [78.1046, 22.7931], [78.0641, 22.8157], [78.0243, 22.8060], [78.0254, 22.8453], [78.0045, 22.8607], [78.0291, 22.9110], [78.0009, 22.9334], [77.9441, 22.9054], [77.9602, 22.9645], [77.8700, 22.9524], [77.7734, 22.9005], [77.6954, 22.8865], [77.6682, 22.8582], [77.6878, 22.8375], [77.6248, 22.8341], [77.5571, 22.8783], [77.5315, 22.8538], [77.5172, 22.8739], [77.5232, 22.8956], [77.4868, 22.8884], [77.4621, 22.9114], [77.4285, 22.9122], [77.4269, 22.9612], [77.3987, 22.9650], [77.3629, 23.0011], [77.3714, 23.0235], [77.3574, 23.0601], [77.3793, 23.0930], [77.4933, 23.1065], [77.5636, 23.1482], [77.5621, 23.1836], [77.5814, 23.1899], [77.5959, 23.2329], [77.5801, 23.2886], [77.6238, 23.3376], [77.6234, 23.3580], [77.5787, 23.3572], [77.5540, 23.3821], [77.5544, 23.4277], [77.5227, 23.4310], [77.5097, 23.4170], [77.4878, 23.4311], [77.5124, 23.5180], [77.5612, 23.5067], [77.6210, 23.4677], [77.6472, 23.4850], [77.6244, 23.5504], [77.6679, 23.5219], [77.7300, 23.5385], [77.8106, 23.4626], [77.8694, 23.4451], [77.9103, 23.4561], [77.9557, 23.4160], [77.9557, 23.3762], [78.0171, 23.3487], [78.0519, 23.3878], [78.0431, 23.4051], [77.9890, 23.4187], [77.9957, 23.4700], [78.0200, 23.4759], [78.0807, 23.4541], [78.1432, 23.4785], [78.1295, 23.4873], [78.1288, 23.5202], [78.1894, 23.5445], [78.2161, 23.5326], [78.2207, 23.5635], [78.2714, 23.6145], [78.2947, 23.6818], [78.2846, 23.7025], [78.3216, 23.6937], [78.3357, 23.6619], [78.4045, 23.6421], [78.3925, 23.6799], [78.4234, 23.6808], [78.4043, 23.6928], [78.4240, 23.7194], [78.4070, 23.7348], [78.3542, 23.6767], [78.3404, 23.6834], [78.3629, 23.7296], [78.4289, 23.7444]]]}}, {"type": "Feature", "properties": {"district": "Rajgarh"}, "geometry": {"type": "Polygon", "coordinates": [[[76.6929, 24.2850], [76.7024, 24.2488], [76.6742, 24.1934], [76.6951, 24.1760], [76.7207, 24.1617], [76.7549, 24.1720], [76.8011, 24.1203], [76.8765, 24.1383], [76.8867, 24.1086], [76.9448, 24.0838], [76.9645, 24.0558], [76.9977, 24.0615], [77.0248, 24.0868], [77.1781, 24.0868], [77.1841, 24.0091], [77.1597, 23.9529], [77.1781, 23.9395], [77.1820, 23.9023], [77.2231, 23.9001], [77.2081, 23.8469], [77.2177, 23.8247], [77.1754, 23.7083], [77.1358, 23.6505], [77.1521, 23.6149], [77.1461, 23.5780], [77.0481, 23.4846], [76.9712, 23.5091], [76.9352, 23.4758], [76.9073, 23.4993], [76.9166, 23.5195], [76.8922, 23.5264], [76.8761, 23.5004], [76.8166, 23.4885], [76.7939, 23.4597], [76.7593, 23.5007], [76.6922, 23.4908], [76.6567, 23.5032], [76.6572, 23.5397], [76.6000, 23.5651], [76.5803, 23.5521], [76.5277, 23.5764], [76.5022, 23.5680], [76.5125, 23.5357], [76.4891, 23.5380], [76.5035, 23.5151], [76.4356, 23.5499], [76.4372, 23.6071], [76.4616, 23.5983], [76.4007, 23.6784], [76.4097, 23.7231], [76.3947, 23.7660], [76.3755, 23.7728], [76.3814, 23.8129], [76.3589, 23.8192], [76.3552, 23.8535], [76.3287, 23.8676], [76.3248, 23.8898], [76.2969, 23.9013], [76.3126, 23.9306], [76.3000, 23.9661], [76.2527, 23.9852], [76.2761, 24.0069], [76.2679, 24.0526], [76.2128, 24.0593], [76.2012, 24.1037], [76.2359, 24.0997], [76.2253, 24.1204], [76.2451, 24.1523], [76.2242, 24.1570], [76.2155, 24.2168], [76.2476, 24.2279], [76.2827, 24.2157], [76.2896, 24.2370], [76.3268, 24.2536], [76.4144, 24.2074], [76.4236, 24.2269], [76.4532, 24.2168], [76.4699, 24.2313], [76.5314, 24.1634], [76.5797, 24.1806], [76.5657, 24.2007], [76.5973, 24.2299], [76.5880, 24.2495], [76.6139, 24.2421], [76.6163, 24.2628], [76.6682, 24.2673], [76.6929, 24.2850]]]}}, {"type": "Feature", "properties": {"district": "Ratlam"}, "geometry": {"type": "Polygon", "coordinates": [[[75.4768, 23.9147], [75.5764, 23.8432], [75.5560, 23.8259], [75.5833, 23.8152], [75.5825, 23.8003], [75.6518, 23.8019], [75.6744, 23.7844], [75.6858, 23.7184], [75.6431, 23.7137], [75.6175, 23.6639], [75.5233, 23.6723], [75.5030, 23.6245], [75.5135, 23.5921], [75.4950, 23.5620], [75.5226, 23.5434], [75.5038, 23.5306], [75.4451, 23.5529], [75.3972, 23.6053], [75.3322, 23.5966], [75.3350, 23.6318], [75.2810, 23.5940], [75.2733, 23.5453], [75.2437, 23.5377], [75.2357, 23.5182], [75.2018, 23.5370], [75.1858, 23.5265], [75.1730, 23.4588], [75.1342, 23.4084], [75.1671, 23.4004], [75.2057, 23.3530], [75.2009, 23.3298], [75.2585, 23.3169], [75.2636, 23.3022], [75.3263, 23.2959], [75.3206, 23.2800], [75.2626, 23.2718], [75.2824, 23.2227], [75.2452, 23.2309], [75.2257, 23.2144], [75.2351, 23.0907], [75.1102, 23.1166], [74.9923, 23.1121], [74.9909, 23.1421], [74.9267, 23.1620], [74.8862, 23.1375], [74.8038, 23.1375], [74.7809, 23.1546], [74.8029, 23.1696], [74.7684, 23.1791], [74.7867, 23.1987], [74.7922, 23.2408], [74.6996, 23.2203], [74.7221, 23.2425], [74.7011, 23.2721], [74.6462, 23.2597], [74.5719, 23.3008], [74.5534, 23.2825], [74.5336, 23.3230], [74.5192, 23.3219], [74.5707, 23.3777], [74.5740, 23.4225], [74.5984, 23.4297], [74.6133, 23.4613], [74.6547, 23.4644], [74.7006, 23.5036], [74.7336, 23.5005], [74.7850, 23.5480], [74.8028, 23.5340], [74.8454, 23.5541], [74.9060, 23.6229], [74.9397, 23.6303], [74.9076, 23.6828], [74.9405, 23.7348], [74.9318, 23.7581], [74.9582, 23.7684], [74.9704, 23.7973], [75.0142, 23.8165], [75.0366, 23.7853], [75.0544, 23.8000], [75.0502, 23.8266], [75.0916, 23.8177], [75.1187, 23.8510], [75.1332, 23.8312], [75.1919, 23.8298], [75.2336, 23.8652], [75.2576, 23.8238], [75.2987, 23.8555], [75.3316, 23.8424], [75.3219, 23.8112], [75.3349, 23.8067], [75.3715, 23.8732], [75.4268, 23.9118], [75.4768, 23.9147]]]}}, {"type": "Feature", "properties": {"district": "Rewa"}, "geometry": {"type": "Polygon", "coordinates": [[[81.5856, 25.1866], [81.5817, 25.1682], [81.6100, 25.1736], [81.6189, 25.1596], [81.5921, 25.1363], [81.6012, 25.1002], [81.6167, 25.1226], [81.6319, 25.1032], [81.5937, 25.0797], [81.6043, 25.0607], [81.6586, 25.0797], [81.6818, 25.0437], [81.7323, 25.0487], [81.7892, 25.0101], [81.8293, 25.0193], [81.8861, 24.9928], [81.8984, 25.0096], [81.9120, 24.9309], [81.8964, 24.8925], [81.9591, 24.8306], [82.0048, 24.8506], [82.0818, 24.8221], [82.1121, 24.7922], [82.1322, 24.8044], [82.1593, 24.7922], [82.1959, 24.8245], [82.1790, 24.8046], [82.2087, 24.7977], [82.2094, 24.7814], [82.1893, 24.7822], [82.1956, 24.7637], [82.1728, 24.7395], [82.2137, 24.7286], [82.1994, 24.7520], [82.2228, 24.7517], [82.2209, 24.7670], [82.2383, 24.7544], [82.2436, 24.7757], [82.2299, 24.6696], [82.2530, 24.6660], [82.2633, 24.6864], [82.2964, 24.6700], [82.2986, 24.6011], [82.2665, 24.5956], [82.1710, 24.6218], [82.1774, 24.6108], [82.1223, 24.5956], [82.0621, 24.6034], [82.0534, 24.5788], [81.9469, 24.5496], [81.9429, 24.5761], [81.9203, 24.5723], [81.8876, 24.5558], [81.8912, 24.5311], [81.7380, 24.4984], [81.7285, 24.5147], [81.6894, 24.5034], [81.5072, 24.4318], [81.3064, 24.3282], [81.2642, 24.3248], [81.2760, 24.3594], [81.2616, 24.3833], [81.2813, 24.3844], [81.2834, 24.3991], [81.2312, 24.4473], [81.2173, 24.4935], [81.1316, 24.5146], [81.1504, 24.5261], [81.1557, 24.6420], [81.1752, 24.7018], [81.0389, 24.8012], [81.0632, 24.8062], [81.0650, 24.8353], [81.0902, 24.8374], [81.1167, 24.9018], [81.1324, 24.8920], [81.1523, 24.9162], [81.1614, 24.9585], [81.1989, 24.9347], [81.1844, 24.9292], [81.2126, 24.9345], [81.2016, 24.9957], [81.2615, 25.0684], [81.2456, 25.1055], [81.2747, 25.1534], [81.2691, 25.1677], [81.3063, 25.1659], [81.3146, 25.1162], [81.3129, 25.1635], [81.3299, 25.1724], [81.3912, 25.1231], [81.4302, 25.1336], [81.4383, 25.1104], [81.4008, 25.1077], [81.4837, 25.0749], [81.5075, 25.1068], [81.4717, 25.1349], [81.4896, 25.1342], [81.4954, 25.1523], [81.5246, 25.1436], [81.5300, 25.1633], [81.5095, 25.1870], [81.5856, 25.1866]]]}}, {"type": "Feature", "properties": {"district": "Sagar"}, "geometry": {"type": "Polygon", "coordinates": [[[78.3823, 24.2739], [78.4347, 24.2976], [78.4402, 24.3255], [78.4677, 24.3393], [78.5053, 24.3939], [78.5784, 24.3570], [78.6228, 24.3098], [78.6217, 24.2862], [78.6544, 24.2737], [78.6691, 24.2450], [78.6988, 24.2344], [78.7322, 24.2538], [78.7458, 24.2392], [78.7602, 24.2584], [78.7845, 24.1851], [78.8022, 24.1819], [78.8135, 24.2102], [78.8242, 24.2012], [78.8788, 24.2230], [78.8790, 24.2540], [78.9117, 24.2765], [78.9077, 24.3012], [78.9668, 24.3536], [78.9868, 24.4232], [78.9992, 24.3753], [79.0109, 24.3864], [79.0416, 24.3722], [79.0666, 24.4070], [79.1609, 24.4341], [79.2361, 24.4172], [79.2462, 24.3743], [79.2093, 24.3352], [79.1911, 24.3377], [79.1901, 24.3629], [79.1527, 24.3764], [79.1595, 24.4099], [79.1441, 24.4091], [79.1461, 24.3786], [79.1340, 24.3732], [79.1774, 24.3294], [79.1625, 24.3096], [79.1672, 24.2834], [79.1333, 24.2572], [79.1053, 24.2673], [79.0907, 24.2477], [79.0607, 24.2668], [79.0561, 24.2305], [79.0403, 24.2248], [79.0668, 24.1356], [79.1405, 24.1050], [79.1813, 24.0163], [79.1276, 23.9811], [79.0773, 23.9773], [79.0916, 23.9576], [79.0519, 23.9189], [79.0715, 23.9079], [79.0879, 23.9220], [79.1448, 23.8510], [79.2434, 23.8290], [79.2151, 23.7880], [79.2659, 23.7461], [79.2853, 23.7480], [79.2921, 23.7105], [79.2801, 23.6934], [79.3454, 23.6604], [79.3294, 23.6329], [79.2946, 23.6411], [79.2964, 23.6001], [79.3117, 23.5883], [79.2924, 23.5718], [79.3186, 23.5528], [79.3231, 23.5258], [79.2930, 23.5163], [79.2795, 23.4803], [79.2205, 23.4616], [79.2130, 23.4393], [79.1763, 23.4340], [79.1952, 23.4171], [79.1810, 23.4048], [79.1845, 23.3709], [79.2125, 23.3667], [79.2298, 23.3419], [79.2050, 23.3201], [79.2238, 23.2930], [79.2079, 23.2630], [79.1658, 23.2581], [79.1685, 23.2258], [79.1838, 23.2229], [79.1762, 23.1961], [79.1085, 23.1725], [79.1013, 23.2086], [79.0498, 23.1952], [78.9885, 23.2157], [78.9751, 23.2010], [78.9362, 23.2138], [78.9281, 23.2357], [78.8881, 23.2159], [78.8423, 23.2281], [78.8274, 23.2554], [78.8015, 23.2392], [78.7565, 23.2483], [78.7643, 23.2980], [78.7186, 23.3499], [78.6477, 23.3416], [78.6246, 23.3671], [78.6168, 23.4219], [78.5942, 23.4266], [78.6242, 23.4540], [78.6560, 23.4528], [78.6729, 23.4975], [78.7134, 23.5368], [78.7293, 23.5348], [78.7271, 23.5844], [78.6407, 23.5646], [78.6335, 23.5513], [78.5315, 23.5652], [78.4980, 23.5356], [78.5077, 23.6611], [78.4797, 23.6417], [78.4631, 23.6470], [78.4276, 23.7484], [78.3629, 23.7296], [78.3404, 23.6834], [78.3670, 23.6879], [78.3946, 23.7348], [78.4229, 23.7230], [78.4026, 23.7007], [78.4234, 23.6808], [78.3925, 23.6799], [78.4096, 23.6484], [78.3930, 23.6363], [78.3715, 23.6576], [78.3323, 23.6641], [78.3182, 23.6961], [78.2846, 23.7025], [78.2871, 23.6776], [78.2634, 23.7319], [78.2463, 23.7104], [78.2321, 23.7179], [78.2596, 23.7545], [78.2478, 23.7602], [78.2627, 23.7815], [78.2517, 23.7925], [78.2809, 23.7878], [78.2786, 23.8145], [78.2582, 23.8193], [78.2928, 23.8324], [78.2903, 23.8506], [78.2695, 23.8469], [78.2565, 23.8628], [78.2725, 23.8701], [78.2873, 23.9186], [78.2592, 23.9500], [78.2830, 23.9692], [78.2723, 24.0330], [78.2061, 24.0722], [78.1698, 24.0132], [78.1186, 24.0458], [78.1076, 24.0317], [78.0695, 24.0484], [78.0846, 24.0691], [78.1130, 24.0540], [78.1297, 24.1201], [78.0909, 24.1600], [78.1200, 24.1681], [78.1371, 24.2066], [78.0534, 24.2348], [78.0899, 24.2348], [78.0858, 24.2537], [78.0633, 24.2508], [78.0914, 24.2655], [78.0869, 24.3236], [78.1427, 24.3616], [78.1622, 24.4000], [78.2038, 24.4109], [78.2607, 24.4539], [78.3609, 24.3857], [78.3259, 24.3296], [78.3823, 24.2739]]]}}, {"type": "Feature", "properties": {"district": "Satna"}, "geometry": {"type": "Polygon", "coordinates": [[[80.8780, 25.1956], [80.9055, 25.1644], [80.8649, 25.1236], [80.8706, 25.0710], [80.8266, 25.0391], [80.8502, 25.0031], [80.7899, 24.9671], [80.8022, 24.9444], [80.8349, 24.9345], [80.8848, 24.9488], [80.9027, 24.9401], [80.8973, 24.9567], [80.9424, 24.9711], [80.9552, 24.9257], [80.9722, 24.9396], [81.0167, 24.9324], [81.0095, 24.9543], [81.0812, 24.9502], [81.1167, 24.8870], [81.0902, 24.8374], [81.0588, 24.8274], [81.0621, 24.8049], [81.0389, 24.8012], [81.1752, 24.7018], [81.1557, 24.6420], [81.1504, 24.5261], [81.1316, 24.5146], [81.2173, 24.4935], [81.2312, 24.4473], [81.2834, 24.3991], [81.2813, 24.3844], [81.2616, 24.3833], [81.2760, 24.3594], [81.2642, 24.3248], [81.2983, 24.3252], [81.3187, 24.2962], [81.3375, 24.2962], [81.3440, 24.2569], [81.3828, 24.2675], [81.3655, 24.2172], [81.3397, 24.1927], [81.2716, 24.1893], [81.2173, 24.1555], [81.2194, 24.1320], [81.1935, 24.1124], [81.1392, 24.1394], [80.9873, 24.0941], [80.9659, 24.0691], [80.8630, 24.0834], [80.8327, 24.0289], [80.8018, 24.0192], [80.7880, 23.9717], [80.7536, 23.9927], [80.7507, 24.0321], [80.7976, 24.0432], [80.7931, 24.0701], [80.7425, 24.0677], [80.7191, 24.0825], [80.7068, 24.0726], [80.6924, 24.0888], [80.7380, 24.1196], [80.7305, 24.1381], [80.6703, 24.1123], [80.6745, 24.0804], [80.6340, 24.0913], [80.6438, 24.0520], [80.6234, 24.0812], [80.5414, 24.0361], [80.5474, 24.0578], [80.5278, 24.0716], [80.5091, 24.0521], [80.5256, 24.0330], [80.4860, 24.0018], [80.3502, 23.9701], [80.3833, 24.0034], [80.3802, 24.0446], [80.4364, 24.0383], [80.4386, 24.0948], [80.4762, 24.0721], [80.5039, 24.0803], [80.5926, 24.1418], [80.6036, 24.1715], [80.6187, 24.1633], [80.6267, 24.1866], [80.6434, 24.1779], [80.6695, 24.1960], [80.6245, 24.2012], [80.6146, 24.1872], [80.6178, 24.2014], [80.5660, 24.2478], [80.5827, 24.2560], [80.5581, 24.2704], [80.5712, 24.3028], [80.5095, 24.3462], [80.4954, 24.3767], [80.4644, 24.3798], [80.4544, 24.4393], [80.4172, 24.4453], [80.4322, 24.5088], [80.4592, 24.5242], [80.4388, 24.5326], [80.4645, 24.6146], [80.4141, 24.6134], [80.4152, 24.6376], [80.3606, 24.6945], [80.3983, 24.7149], [80.3875, 24.7478], [80.4045, 24.7780], [80.4327, 24.7506], [80.4678, 24.7602], [80.5318, 24.8123], [80.5998, 24.8377], [80.5905, 24.8464], [80.6264, 24.8691], [80.5155, 24.9202], [80.4828, 24.8909], [80.4755, 24.8574], [80.4886, 24.9182], [80.4655, 24.9763], [80.4986, 25.0092], [80.5425, 25.0088], [80.5403, 25.0357], [80.4942, 25.0453], [80.4999, 25.0895], [80.4744, 25.1018], [80.5095, 25.1010], [80.5434, 25.0676], [80.5624, 25.0914], [80.6067, 25.0721], [80.5877, 25.1091], [80.5996, 25.1554], [80.6323, 25.1232], [80.6013, 25.1044], [80.6200, 25.0895], [80.6352, 25.0975], [80.6562, 25.0744], [80.6792, 25.0818], [80.6735, 25.0541], [80.7272, 25.0718], [80.7759, 25.0616], [80.7759, 25.0843], [80.7252, 25.0979], [80.7253, 25.1228], [80.6996, 25.1371], [80.7995, 25.1464], [80.8276, 25.1103], [80.8362, 25.1926], [80.8780, 25.1956]]]}}, {"type": "Feature", "properties": {"district": "Sehore"}, "geometry": {"type": "Polygon", "coordinates": [[[77.1713, 23.6837], [77.1954, 23.6637], [77.2179, 23.6703], [77.2248, 23.6301], [77.2718, 23.6145], [77.2941, 23.5862], [77.2814, 23.5698], [77.2942, 23.4355], [77.2770, 23.4123], [77.2409, 23.4132], [77.2339, 23.4002], [77.2579, 23.3882], [77.2269, 23.3607], [77.2233, 23.3320], [77.2001, 23.3635], [77.1832, 23.3605], [77.1765, 23.3116], [77.2197, 23.2944], [77.2134, 23.2618], [77.1856, 23.2380], [77.1932, 23.2255], [77.2171, 23.2307], [77.2133, 23.2071], [77.2373, 23.1981], [77.2826, 23.1057], [77.3233, 23.1120], [77.3793, 23.0930], [77.3574, 23.0601], [77.3714, 23.0235], [77.3612, 23.0048], [77.3987, 22.9650], [77.4269, 22.9612], [77.4285, 22.9122], [77.4621, 22.9114], [77.4868, 22.8884], [77.5232, 22.8956], [77.5172, 22.8739], [77.5315, 22.8538], [77.5571, 22.8783], [77.6248, 22.8341], [77.6878, 22.8375], [77.6682, 22.8582], [77.6954, 22.8865], [77.7734, 22.9005], [77.8700, 22.9524], [77.9602, 22.9645], [77.9441, 22.9054], [78.0009, 22.9334], [78.0291, 22.9110], [78.0045, 22.8607], [78.0254, 22.8453], [78.0243, 22.8060], [77.9936, 22.8215], [77.9545, 22.8171], [77.9162, 22.7628], [77.9037, 22.8058], [77.9208, 22.8488], [77.8657, 22.8229], [77.8638, 22.8587], [77.8404, 22.8653], [77.7894, 22.8347], [77.7733, 22.7932], [77.7348, 22.7607], [77.6941, 22.7667], [77.6607, 22.7340], [77.6150, 22.7453], [77.5677, 22.6727], [77.3593, 22.6135], [77.3207, 22.5663], [77.2865, 22.5695], [77.2583, 22.6118], [77.2086, 22.5728], [77.1552, 22.5878], [77.1186, 22.5620], [77.1190, 22.6028], [77.0816, 22.6290], [77.0850, 22.6569], [77.0265, 22.6936], [77.0386, 22.7091], [77.0326, 22.7358], [77.0164, 22.7409], [77.0241, 22.7787], [77.0072, 22.7998], [76.9965, 22.8737], [76.9808, 22.8832], [76.9573, 22.8666], [76.9419, 22.8835], [76.9347, 22.8699], [76.9220, 22.8774], [76.9186, 22.8316], [76.9028, 22.8365], [76.9147, 22.8732], [76.8998, 22.8664], [76.9059, 22.8821], [76.8894, 22.8752], [76.8939, 22.8937], [76.8860, 22.8842], [76.8750, 22.8959], [76.8762, 22.8764], [76.8610, 22.8899], [76.8592, 22.8727], [76.8463, 22.8842], [76.8470, 22.8707], [76.8052, 22.8664], [76.7866, 22.8372], [76.7595, 22.8283], [76.7664, 22.8206], [76.6906, 22.8249], [76.7003, 22.7967], [76.6527, 22.7885], [76.6396, 22.8090], [76.5665, 22.7641], [76.5436, 22.8026], [76.5265, 22.7995], [76.5189, 22.8640], [76.4960, 22.8958], [76.4621, 22.9051], [76.4494, 22.9322], [76.4710, 22.9736], [76.4439, 22.9891], [76.4676, 23.0033], [76.4468, 23.0276], [76.4600, 23.0749], [76.4468, 23.0906], [76.5136, 23.0764], [76.5162, 23.0915], [76.4933, 23.1100], [76.5357, 23.1324], [76.5870, 23.1134], [76.6249, 23.1407], [76.6287, 23.1996], [76.6441, 23.2020], [76.6550, 23.1897], [76.6852, 23.1958], [76.6978, 23.1606], [76.7313, 23.1455], [76.7514, 23.1578], [76.7474, 23.1850], [76.8276, 23.1152], [76.8786, 23.1206], [76.8961, 23.1365], [76.8907, 23.2097], [76.9904, 23.2891], [76.9934, 23.4027], [77.0153, 23.4111], [77.0481, 23.4846], [77.1461, 23.5780], [77.1521, 23.6149], [77.1358, 23.6505], [77.1713, 23.6837]]]}}, {"type": "Feature", "properties": {"district": "Seoni"}, "geometry": {"type": "Polygon", "coordinates": [[[79.6556, 22.9245], [79.7424, 22.9197], [79.7383, 22.9022], [79.7699, 22.8807], [79.7538, 22.8591], [79.7609, 22.8456], [79.8050, 22.8702], [79.8370, 22.8320], [79.8808, 22.8621], [79.9017, 22.8476], [79.9484, 22.8590], [80.0603, 22.7600], [80.0963, 22.7728], [80.1783, 22.7680], [80.2089, 22.8031], [80.2620, 22.7961], [80.2841, 22.7273], [80.2334, 22.7182], [80.2297, 22.6776], [80.1888, 22.6534], [80.2094, 22.6303], [80.1921, 22.6080], [80.1459, 22.6036], [80.1063, 22.6288], [80.0295, 22.6087], [80.0019, 22.5799], [79.9473, 22.5586], [80.0253, 22.5441], [80.0194, 22.5051], [80.0867, 22.4251], [80.0641, 22.3778], [80.0947, 22.3375], [80.0761, 22.2998], [80.0918, 22.2502], [80.0284, 22.1828], [80.0634, 22.0774], [79.9986, 22.0834], [79.9229, 22.0629], [79.9176, 21.9715], [79.8574, 21.9670], [79.8323, 21.9398], [79.8862, 21.9295], [79.8646, 21.8997], [79.8350, 21.9043], [79.8347, 21.8852], [79.8125, 21.8696], [79.7759, 21.8634], [79.7891, 21.8440], [79.7631, 21.8075], [79.6861, 21.8002], [79.6756, 21.7455], [79.6514, 21.7346], [79.6680, 21.6955], [79.5950, 21.7088], [79.6044, 21.6865], [79.5823, 21.6561], [79.5889, 21.6443], [79.5350, 21.6271], [79.5363, 21.6048], [79.5058, 21.5902], [79.4981, 21.6123], [79.5116, 21.6311], [79.4885, 21.6741], [79.4157, 21.6914], [79.3947, 21.6745], [79.3490, 21.6788], [79.2190, 21.7196], [79.2262, 21.7602], [79.2799, 21.7794], [79.2882, 21.8109], [79.2716, 21.8359], [79.3223, 21.9193], [79.3426, 21.9252], [79.3364, 21.9537], [79.3684, 21.9730], [79.3702, 21.9930], [79.3911, 21.9925], [79.4027, 22.0418], [79.3841, 22.0440], [79.3716, 22.0853], [79.3871, 22.1037], [79.3503, 22.1343], [79.3197, 22.2262], [79.3304, 22.2421], [79.3603, 22.2228], [79.3577, 22.2654], [79.3377, 22.2866], [79.2991, 22.2917], [79.2809, 22.3164], [79.3479, 22.3514], [79.3380, 22.3864], [79.3124, 22.3950], [79.2792, 22.3773], [79.2930, 22.4167], [79.3309, 22.4250], [79.3292, 22.4449], [79.3180, 22.4354], [79.2602, 22.4554], [79.2307, 22.4488], [79.2186, 22.4257], [79.1937, 22.4501], [79.2314, 22.4754], [79.3390, 22.4877], [79.3151, 22.5412], [79.3681, 22.6014], [79.3194, 22.6179], [79.3862, 22.6734], [79.4068, 22.7244], [79.4635, 22.7430], [79.4664, 22.7259], [79.5075, 22.7222], [79.5103, 22.7777], [79.5381, 22.8199], [79.6188, 22.8757], [79.6157, 22.9047], [79.5775, 22.9443], [79.6165, 22.9572], [79.6556, 22.9245]]]}}, {"type": "Feature", "properties": {"district": "Shahdol"}, "geometry": {"type": "Polygon", "coordinates": [[[81.4495, 24.2848], [81.4756, 24.2030], [81.4645, 24.1793], [81.4948, 24.1636], [81.4784, 24.1504], [81.5026, 24.1168], [81.5022, 24.0884], [81.5517, 24.0785], [81.4755, 24.0365], [81.5056, 24.0236], [81.5011, 23.9826], [81.5289, 23.9843], [81.5473, 23.9627], [81.5324, 23.9473], [81.5376, 23.9143], [81.6148, 23.8727], [81.5973, 23.8619], [81.6058, 23.8382], [81.6281, 23.8343], [81.6396, 23.7711], [81.6740, 23.7539], [81.6872, 23.7213], [81.6431, 23.6603], [81.6132, 23.6609], [81.6026, 23.6000], [81.5697, 23.5886], [81.5770, 23.5548], [81.6056, 23.5504], [81.6052, 23.5108], [81.6282, 23.4903], [81.6545, 23.5315], [81.6930, 23.5233], [81.7360, 23.5674], [81.8046, 23.5458], [81.8271, 23.5112], [81.9137, 23.5337], [81.9489, 23.4967], [81.9476, 23.4716], [81.9750, 23.4318], [81.9627, 23.3716], [81.9325, 23.3850], [81.9261, 23.3511], [81.8688, 23.2983], [81.8478, 23.3196], [81.8128, 23.3083], [81.8566, 23.2772], [81.8756, 23.2397], [81.7814, 23.2603], [81.7484, 23.2135], [81.6657, 23.2142], [81.6428, 23.1949], [81.6064, 23.1979], [81.6242, 23.2309], [81.5836, 23.2276], [81.5624, 23.2111], [81.5946, 23.1939], [81.5898, 23.1714], [81.5310, 23.1185], [81.5464, 23.0905], [81.6097, 23.0640], [81.6019, 23.0381], [81.5521, 23.0187], [81.5894, 23.0199], [81.6196, 22.9981], [81.6405, 23.0136], [81.6865, 22.9397], [81.7859, 22.8770], [81.7694, 22.8735], [81.7608, 22.8343], [81.7842, 22.7666], [81.7466, 22.7264], [81.7659, 22.6761], [81.7489, 22.6460], [81.7229, 22.6762], [81.7318, 22.6891], [81.6869, 22.7134], [81.6965, 22.7460], [81.6848, 22.7791], [81.6386, 22.7841], [81.5897, 22.7580], [81.5225, 22.7508], [81.5021, 22.7645], [81.4688, 22.7596], [81.3989, 22.8513], [81.3534, 22.8499], [81.1917, 22.9143], [81.1813, 22.9519], [81.2031, 23.0172], [81.2242, 23.0590], [81.2478, 23.0542], [81.2562, 23.0709], [81.2355, 23.1102], [81.2064, 23.1187], [81.2075, 23.1394], [81.1875, 23.1312], [81.1746, 23.1546], [81.1850, 23.1673], [81.1537, 23.1666], [81.1175, 23.2178], [81.0867, 23.2108], [81.0983, 23.2305], [81.0796, 23.2333], [81.0982, 23.2550], [81.0642, 23.2523], [81.0481, 23.2601], [81.0506, 23.2766], [81.0355, 23.2731], [81.0353, 23.3446], [80.9983, 23.3748], [81.0163, 23.4254], [81.0087, 23.4443], [81.1387, 23.4622], [81.1393, 23.4869], [81.1691, 23.5036], [81.1545, 23.5344], [81.1963, 23.5783], [81.2103, 23.6439], [81.2327, 23.6474], [81.2215, 23.6813], [81.2405, 23.7209], [81.2065, 23.7471], [81.1747, 23.8081], [81.1847, 23.8227], [81.2616, 23.8410], [81.2457, 23.8577], [81.2175, 23.8558], [81.1985, 23.8849], [81.1627, 23.8836], [81.1545, 23.8988], [81.1696, 23.9153], [81.1331, 23.9272], [81.1199, 23.9716], [81.0622, 23.9684], [80.9946, 24.0878], [81.1392, 24.1394], [81.1935, 24.1124], [81.2194, 24.1320], [81.2173, 24.1555], [81.2716, 24.1893], [81.3529, 24.2007], [81.3828, 24.2675], [81.4369, 24.2618], [81.4495, 24.2848]]]}}, {"type": "Feature", "properties": {"district": "Shajapur"}, "geometry": {"type": "Polygon", "coordinates": [[[76.2351, 24.1051], [76.2012, 24.1037], [76.2128, 24.0593], [76.2679, 24.0526], [76.2761, 24.0069], [76.2527, 23.9852], [76.3000, 23.9661], [76.3126, 23.9306], [76.2969, 23.9013], [76.3248, 23.8898], [76.3287, 23.8676], [76.3552, 23.8535], [76.3589, 23.8192], [76.3814, 23.8129], [76.3755, 23.7728], [76.3947, 23.7660], [76.4097, 23.7231], [76.4007, 23.6784], [76.4616, 23.5983], [76.4372, 23.6071], [76.4356, 23.5499], [76.5035, 23.5151], [76.4891, 23.5380], [76.5125, 23.5357], [76.5022, 23.5680], [76.5277, 23.5764], [76.5803, 23.5521], [76.6000, 23.5651], [76.6572, 23.5397], [76.6567, 23.5032], [76.6922, 23.4908], [76.7593, 23.5007], [76.7939, 23.4597], [76.8166, 23.4885], [76.8761, 23.5004], [76.8922, 23.5264], [76.9166, 23.5195], [76.9073, 23.4993], [76.9352, 23.4758], [76.9712, 23.5091], [77.0481, 23.4846], [77.0153, 23.4111], [76.9934, 23.4027], [76.9904, 23.2891], [76.9414, 23.2391], [76.9063, 23.2344], [76.8907, 23.2097], [76.8961, 23.1365], [76.8610, 23.1090], [76.8048, 23.1278], [76.7546, 23.1833], [76.7411, 23.1805], [76.7440, 23.1459], [76.6978, 23.1606], [76.6760, 23.1995], [76.6287, 23.1996], [76.6249, 23.1407], [76.5870, 23.1134], [76.5357, 23.1324], [76.5063, 23.1826], [76.4234, 23.1946], [76.4068, 23.2209], [76.3759, 23.2303], [76.2796, 23.2309], [76.2452, 23.2165], [76.1347, 23.2312], [76.1113, 23.2449], [76.1275, 23.2818], [76.1722, 23.2688], [76.2011, 23.3456], [76.2216, 23.3395], [76.2479, 23.3563], [76.2422, 23.3917], [76.2064, 23.3897], [76.1953, 23.4279], [76.2080, 23.4548], [76.1918, 23.4711], [76.2475, 23.5138], [76.2210, 23.5337], [76.1938, 23.5027], [76.1537, 23.5086], [76.1715, 23.5544], [76.1589, 23.5787], [76.1107, 23.5485], [76.0861, 23.5797], [76.0158, 23.5638], [75.9946, 23.5847], [75.9455, 23.5570], [75.9050, 23.5731], [75.8765, 23.5622], [75.8478, 23.5770], [75.8100, 23.6624], [75.8437, 23.6928], [75.8431, 23.7334], [75.8269, 23.7357], [75.8207, 23.7012], [75.7509, 23.7294], [75.7265, 23.7615], [75.6894, 23.7508], [75.6986, 23.7918], [75.6874, 23.8192], [75.7178, 23.8190], [75.7291, 23.8582], [75.6981, 23.8771], [75.7023, 23.9040], [75.7497, 23.8900], [75.7616, 23.8568], [75.7770, 23.8538], [75.7942, 23.8743], [75.8534, 23.8942], [75.8786, 23.8845], [75.9318, 23.9019], [75.9809, 23.9430], [75.9601, 24.0253], [76.0021, 24.0352], [76.0469, 24.0756], [76.1346, 24.0952], [76.1213, 24.1963], [76.1544, 24.2437], [76.1430, 24.2852], [76.1692, 24.2960], [76.1854, 24.3315], [76.2062, 24.3109], [76.1946, 24.2847], [76.2242, 24.1570], [76.2451, 24.1523], [76.2253, 24.1204], [76.2351, 24.1051]]]}}, {"type": "Feature", "properties": {"district": "Sheopur"}, "geometry": {"type": "Polygon", "coordinates": [[[77.1405, 26.1950], [77.1302, 26.1796], [77.1394, 26.1682], [77.1730, 26.1782], [77.2001, 26.1110], [77.2271, 26.0853], [77.2685, 26.1298], [77.3938, 26.1579], [77.5731, 26.0181], [77.6057, 26.0465], [77.5976, 26.0763], [77.6558, 26.1048], [77.6612, 26.0750], [77.6284, 26.0714], [77.6076, 26.0354], [77.6153, 26.0176], [77.6416, 26.0141], [77.6406, 25.9696], [77.5930, 25.9652], [77.5586, 25.9372], [77.5311, 25.9458], [77.5420, 25.9084], [77.5921, 25.9235], [77.6494, 25.9164], [77.6306, 25.8728], [77.5747, 25.8660], [77.5750, 25.8260], [77.5510, 25.8192], [77.5378, 25.8409], [77.4675, 25.8660], [77.4352, 25.8967], [77.4013, 25.8879], [77.4031, 25.8164], [77.4366, 25.7831], [77.3224, 25.7972], [77.3103, 25.7384], [77.2702, 25.7247], [77.3156, 25.6737], [77.2657, 25.6801], [77.2469, 25.6648], [77.2759, 25.6353], [77.2502, 25.5929], [77.2651, 25.5881], [77.2660, 25.5655], [77.2965, 25.5621], [77.2938, 25.5474], [77.1723, 25.5146], [77.1790, 25.4711], [77.1355, 25.4628], [77.1455, 25.4277], [77.0996, 25.4151], [77.0957, 25.3888], [77.0103, 25.3873], [77.0066, 25.3580], [77.0749, 25.3503], [77.0634, 25.3241], [77.0393, 25.3250], [77.0241, 25.3010], [76.9587, 25.2971], [76.9527, 25.2785], [76.9339, 25.2759], [76.9292, 25.2972], [76.8932, 25.3224], [76.8429, 25.3305], [76.7700, 25.3121], [76.7667, 25.3362], [76.6810, 25.3454], [76.6025, 25.3889], [76.5225, 25.5242], [76.5147, 25.6336], [76.4994, 25.6483], [76.5108, 25.6728], [76.4777, 25.6950], [76.4823, 25.7181], [76.5306, 25.7339], [76.5226, 25.7743], [76.5354, 25.8091], [76.5927, 25.8741], [76.6316, 25.8752], [76.6461, 25.9088], [76.7333, 25.9025], [76.7624, 25.9220], [76.7559, 25.9416], [76.8063, 25.9529], [76.8402, 26.0112], [76.8304, 26.0295], [76.8704, 26.0564], [76.8877, 26.0933], [76.9860, 26.1323], [77.0347, 26.1819], [77.0916, 26.1908], [77.1093, 26.2250], [77.1405, 26.1950]]]}}, {"type": "Feature", "properties": {"district": "Shivpuri"}, "geometry": {"type": "Polygon", "coordinates": [[[77.7014, 25.8844], [77.7385, 25.8876], [77.7392, 25.8683], [77.7757, 25.8611], [77.7959, 25.8257], [77.8559, 25.8144], [77.8718, 25.7437], [77.9913, 25.7709], [77.9887, 25.7457], [78.0351, 25.7187], [78.1515, 25.7241], [78.2736, 25.7863], [78.2737, 25.7555], [78.2217, 25.7308], [78.2091, 25.7045], [78.2423, 25.6967], [78.2405, 25.7200], [78.2531, 25.7243], [78.2760, 25.7068], [78.3007, 25.7098], [78.3282, 25.6693], [78.3685, 25.6661], [78.3816, 25.6128], [78.4030, 25.6034], [78.3905, 25.5757], [78.4372, 25.5998], [78.4604, 25.5897], [78.4566, 25.5691], [78.4475, 25.5795], [78.4099, 25.5377], [78.4207, 25.4776], [78.3773, 25.4483], [78.3475, 25.4548], [78.3324, 25.4045], [78.2942, 25.3676], [78.3312, 25.3367], [78.3080, 25.3109], [78.3451, 25.2979], [78.3622, 25.2654], [78.3545, 25.2460], [78.3977, 25.2177], [78.3853, 25.1951], [78.4464, 25.1690], [78.4182, 25.1534], [78.4429, 25.1287], [78.3953, 25.1305], [78.3277, 25.0887], [78.3380, 25.0273], [78.3275, 24.9995], [78.1653, 24.8817], [78.1618, 24.8448], [78.1056, 24.8400], [78.0427, 24.8607], [78.0154, 24.8408], [77.9917, 24.8555], [77.9676, 24.8498], [77.9761, 24.9172], [78.0107, 24.9580], [77.9567, 24.9701], [77.9459, 24.9912], [77.9069, 24.9871], [77.8791, 25.0111], [77.8201, 25.0045], [77.7921, 24.9380], [77.7298, 24.8628], [77.6673, 24.8702], [77.6046, 24.9322], [77.5868, 24.9308], [77.5823, 24.9677], [77.5368, 24.9161], [77.5432, 24.9008], [77.5814, 24.8935], [77.5572, 24.8759], [77.4747, 24.8791], [77.4560, 24.9316], [77.3987, 24.9518], [77.3828, 24.9308], [77.3640, 24.9318], [77.3026, 25.0764], [77.3866, 25.1219], [77.3985, 25.1132], [77.3907, 25.1881], [77.4179, 25.1930], [77.4064, 25.2262], [77.3496, 25.2717], [77.3748, 25.3058], [77.3637, 25.3330], [77.3364, 25.3255], [77.3560, 25.3678], [77.3442, 25.3879], [77.3543, 25.4240], [77.3052, 25.4364], [77.2829, 25.4235], [77.2202, 25.3734], [77.2150, 25.3245], [77.1981, 25.3305], [77.2051, 25.3114], [77.0754, 25.3396], [77.0724, 25.3577], [77.0368, 25.3467], [77.0066, 25.3580], [77.0103, 25.3873], [77.0899, 25.3861], [77.1048, 25.3979], [77.0996, 25.4151], [77.1424, 25.4235], [77.1355, 25.4628], [77.1790, 25.4711], [77.1723, 25.5146], [77.2884, 25.5394], [77.2965, 25.5621], [77.2660, 25.5655], [77.2651, 25.5881], [77.2502, 25.5929], [77.2759, 25.6353], [77.2469, 25.6648], [77.2657, 25.6801], [77.3156, 25.6737], [77.2702, 25.7247], [77.3103, 25.7384], [77.3224, 25.7972], [77.4366, 25.7831], [77.4031, 25.8164], [77.4013, 25.8879], [77.4352, 25.8967], [77.4675, 25.8660], [77.5378, 25.8409], [77.5510, 25.8192], [77.5750, 25.8260], [77.5747, 25.8660], [77.6306, 25.8728], [77.6494, 25.9164], [77.6786, 25.9187], [77.7014, 25.8844]]]}}, {"type": "Feature", "properties": {"district": "Sidhi"}, "geometry": {"type": "Polygon", "coordinates": [[[82.4448, 24.6800], [82.5184, 24.6783], [82.5292, 24.6519], [82.6655, 24.6998], [82.6959, 24.6757], [82.6951, 24.6442], [82.7627, 24.6456], [82.7600, 24.5998], [82.7963, 24.5997], [82.8007, 24.5526], [82.7460, 24.5415], [82.7412, 24.5545], [82.7125, 24.5562], [82.7156, 24.5132], [82.7365, 24.4997], [82.7237, 24.4763], [82.7327, 24.4327], [82.7071, 24.3851], [82.7184, 24.3712], [82.7605, 24.3730], [82.7641, 24.2924], [82.7499, 24.2361], [82.7269, 24.2232], [82.7361, 24.1683], [82.7203, 24.1389], [82.6708, 24.1584], [82.6573, 24.1347], [82.7083, 24.0807], [82.7662, 24.0778], [82.7419, 24.0214], [82.7972, 24.0051], [82.8077, 23.9630], [82.7481, 23.9222], [82.6565, 23.9078], [82.6533, 23.8577], [82.5859, 23.8228], [82.5273, 23.8240], [82.5402, 23.7912], [82.4917, 23.7857], [82.4600, 23.8113], [82.3282, 23.8036], [82.2552, 23.8218], [82.2261, 23.8069], [82.1992, 23.8319], [82.2038, 23.8529], [82.1624, 23.8199], [82.0454, 23.8205], [82.0007, 23.8631], [81.9507, 23.8528], [81.9164, 23.8729], [81.8529, 23.8243], [81.7826, 23.8118], [81.7190, 23.8404], [81.7230, 23.8589], [81.7026, 23.8633], [81.6615, 23.9255], [81.5969, 23.8890], [81.5409, 23.9123], [81.5324, 23.9473], [81.5473, 23.9627], [81.5289, 23.9843], [81.5011, 23.9826], [81.5056, 24.0236], [81.4742, 24.0395], [81.5118, 24.0466], [81.5517, 24.0785], [81.5022, 24.0884], [81.5026, 24.1168], [81.4784, 24.1504], [81.4948, 24.1636], [81.4645, 24.1793], [81.4746, 24.2390], [81.4613, 24.2715], [81.4495, 24.2848], [81.4369, 24.2618], [81.3784, 24.2698], [81.3440, 24.2569], [81.3419, 24.2898], [81.2983, 24.3252], [81.5072, 24.4318], [81.6894, 24.5034], [81.7285, 24.5147], [81.7380, 24.4984], [81.8912, 24.5311], [81.8876, 24.5558], [81.9203, 24.5723], [81.9429, 24.5761], [81.9469, 24.5496], [82.0534, 24.5788], [82.0621, 24.6034], [82.1223, 24.5956], [82.1774, 24.6108], [82.1710, 24.6218], [82.2665, 24.5956], [82.3297, 24.6237], [82.3608, 24.6020], [82.4091, 24.5978], [82.4015, 24.6837], [82.4323, 24.7062], [82.4448, 24.6800]]]}}, {"type": "Feature", "properties": {"district": "Tikamgarh"}, "geometry": {"type": "Polygon", "coordinates": [[[78.8690, 25.5511], [78.9103, 25.5593], [78.9168, 25.5412], [78.9256, 25.5599], [78.9416, 25.5514], [78.9418, 25.5311], [78.9163, 25.5207], [78.9356, 25.4800], [78.9032, 25.4469], [78.9291, 25.4283], [78.9601, 25.4388], [78.9785, 25.3760], [78.9286, 25.3518], [78.8924, 25.3752], [78.9311, 25.3771], [78.9493, 25.4001], [78.8747, 25.3876], [78.8377, 25.3521], [78.8435, 25.3323], [78.7832, 25.3031], [78.8116, 25.2998], [78.8056, 25.2709], [78.8417, 25.2291], [78.8724, 25.2882], [78.8564, 25.3169], [78.8765, 25.3444], [78.9188, 25.3459], [78.9276, 25.3317], [78.9557, 25.3477], [78.9527, 25.3118], [78.9700, 25.2852], [78.9475, 25.2837], [78.9406, 25.2626], [78.9085, 25.2743], [78.8916, 25.2454], [78.8758, 25.2557], [78.8739, 25.1632], [78.9483, 25.2201], [78.9958, 25.1959], [78.9946, 25.2337], [78.9711, 25.2449], [78.9867, 25.2749], [79.0049, 25.2769], [79.0121, 25.2482], [79.0564, 25.2257], [79.0245, 25.1865], [79.0357, 25.1739], [79.0217, 25.1431], [79.0430, 25.1381], [79.0842, 25.1925], [79.1204, 25.1641], [79.1078, 25.1436], [79.1291, 25.1107], [79.1793, 25.1176], [79.1667, 25.1423], [79.1848, 25.1511], [79.2063, 25.1137], [79.2396, 25.1178], [79.2435, 25.1407], [79.2139, 25.1483], [79.2251, 25.1581], [79.2559, 25.1572], [79.2580, 25.1240], [79.2765, 25.1202], [79.3138, 25.1509], [79.3371, 25.0807], [79.3242, 25.0504], [79.3419, 24.9052], [79.3006, 24.8100], [79.3138, 24.7443], [79.2964, 24.6891], [79.2722, 24.6690], [79.2123, 24.6658], [79.1859, 24.6167], [79.0597, 24.6274], [79.0640, 24.5975], [79.0110, 24.5395], [78.9718, 24.4447], [78.9443, 24.4432], [78.9026, 24.4783], [78.9175, 24.5025], [78.9307, 24.4845], [78.9663, 24.4969], [78.9441, 24.5095], [78.9446, 24.5562], [78.8730, 24.6469], [78.8287, 24.6078], [78.7769, 24.5930], [78.7494, 24.6049], [78.7400, 24.6599], [78.7723, 24.7041], [78.7645, 24.7949], [78.7805, 24.8149], [78.7644, 24.8613], [78.6683, 24.9023], [78.6537, 24.9442], [78.6405, 24.9403], [78.6220, 24.9649], [78.6419, 25.0614], [78.5971, 25.0978], [78.5937, 25.1573], [78.5614, 25.2274], [78.5643, 25.2652], [78.4966, 25.2938], [78.4540, 25.2706], [78.4273, 25.2886], [78.4405, 25.3041], [78.4670, 25.2930], [78.4921, 25.3238], [78.5002, 25.3041], [78.5250, 25.3065], [78.5414, 25.3265], [78.5251, 25.3630], [78.5762, 25.3519], [78.5611, 25.3956], [78.5883, 25.3921], [78.6034, 25.4170], [78.6285, 25.4064], [78.6336, 25.4380], [78.6527, 25.4440], [78.6857, 25.4477], [78.7014, 25.4288], [78.6690, 25.4038], [78.6565, 25.4201], [78.6578, 25.3879], [78.7090, 25.3787], [78.7136, 25.3529], [78.7643, 25.3584], [78.7596, 25.4020], [78.7415, 25.3985], [78.7431, 25.4127], [78.8129, 25.4304], [78.7894, 25.4420], [78.7550, 25.4338], [78.7246, 25.4633], [78.7317, 25.5006], [78.7565, 25.4761], [78.7895, 25.4835], [78.8298, 25.4656], [78.8457, 25.4543], [78.8138, 25.4463], [78.8342, 25.4324], [78.8571, 25.4671], [78.8283, 25.5099], [78.8760, 25.5243], [78.8690, 25.5511]]]}}, {"type": "Feature", "properties": {"district": "Ujjain"}, "geometry": {"type": "Polygon", "coordinates": [[[75.7307, 23.7559], [75.7509, 23.7294], [75.8207, 23.7012], [75.8269, 23.7357], [75.8431, 23.7334], [75.8437, 23.6928], [75.8100, 23.6624], [75.8502, 23.5739], [75.8765, 23.5622], [75.9168, 23.5711], [75.9340, 23.5564], [75.9946, 23.5847], [76.0158, 23.5638], [76.0911, 23.5793], [76.1107, 23.5485], [76.1589, 23.5787], [76.1715, 23.5544], [76.1537, 23.5086], [76.1938, 23.5027], [76.2102, 23.5309], [76.2289, 23.5300], [76.2475, 23.5138], [76.1917, 23.4785], [76.2083, 23.4515], [76.1956, 23.4247], [76.2078, 23.3873], [76.2422, 23.3917], [76.2479, 23.3563], [76.2216, 23.3395], [76.2011, 23.3456], [76.1722, 23.2688], [76.1275, 23.2818], [76.1113, 23.2449], [76.0691, 23.2389], [76.0723, 23.2116], [76.0470, 23.2135], [76.0785, 23.1959], [76.1223, 23.2135], [76.1381, 23.1976], [76.1321, 23.1827], [76.0699, 23.1657], [76.0493, 23.1829], [76.0463, 23.1464], [76.1008, 23.0956], [76.1005, 23.0562], [76.0727, 23.0539], [76.0512, 23.0818], [76.0551, 23.1045], [76.0284, 23.1839], [76.0023, 23.2110], [75.9983, 23.2505], [75.9689, 23.2525], [75.9906, 23.2839], [75.9604, 23.3252], [75.9472, 23.3234], [75.9276, 23.2766], [75.9297, 23.2308], [75.9493, 23.2296], [75.9526, 23.1845], [75.9322, 23.1383], [75.9584, 23.1298], [75.9575, 23.1108], [75.9904, 23.0818], [75.9625, 23.0290], [75.9023, 23.0290], [75.8992, 23.0037], [75.8725, 23.0417], [75.8116, 23.0443], [75.7367, 23.0386], [75.7298, 23.0198], [75.6394, 23.0271], [75.6417, 23.0092], [75.6187, 23.0565], [75.6254, 23.0907], [75.5668, 23.0893], [75.5697, 23.0713], [75.5212, 23.0440], [75.5073, 23.0084], [75.4897, 23.0181], [75.4757, 23.0065], [75.4888, 22.9871], [75.4554, 22.9447], [75.4787, 22.9334], [75.4401, 22.9106], [75.4376, 22.8726], [75.3744, 22.8713], [75.3414, 22.8347], [75.3063, 22.9423], [75.3276, 22.9850], [75.3038, 22.9965], [75.3032, 23.0188], [75.3054, 23.0499], [75.3384, 23.0463], [75.3496, 23.0722], [75.3271, 23.0748], [75.3019, 23.1321], [75.2415, 23.1390], [75.2257, 23.2144], [75.2452, 23.2309], [75.2824, 23.2227], [75.2626, 23.2718], [75.3206, 23.2800], [75.3257, 23.2985], [75.2636, 23.3022], [75.2585, 23.3169], [75.2009, 23.3298], [75.2057, 23.3530], [75.1896, 23.3730], [75.1651, 23.4020], [75.1340, 23.4111], [75.1577, 23.4244], [75.1905, 23.5325], [75.2357, 23.5182], [75.2437, 23.5377], [75.2733, 23.5453], [75.2790, 23.5908], [75.3105, 23.6084], [75.3145, 23.6267], [75.3405, 23.6311], [75.3322, 23.5966], [75.3972, 23.6053], [75.4451, 23.5529], [75.5038, 23.5306], [75.5226, 23.5434], [75.4950, 23.5620], [75.5135, 23.5921], [75.5030, 23.6245], [75.5233, 23.6723], [75.6175, 23.6639], [75.6431, 23.7137], [75.6858, 23.7184], [75.6877, 23.7499], [75.7307, 23.7559]]]}}, {"type": "Feature", "properties": {"district": "Umariya"}, "geometry": {"type": "Polygon", "coordinates": [[[81.0039, 24.0952], [80.9948, 24.0735], [81.0531, 24.0029], [81.0622, 23.9684], [81.1199, 23.9716], [81.1331, 23.9272], [81.1696, 23.9153], [81.1545, 23.8988], [81.1627, 23.8836], [81.1985, 23.8849], [81.2175, 23.8558], [81.2592, 23.8475], [81.2596, 23.8330], [81.1847, 23.8227], [81.1747, 23.8081], [81.2065, 23.7471], [81.2399, 23.7267], [81.2399, 23.6967], [81.2215, 23.6813], [81.2345, 23.6524], [81.2103, 23.6439], [81.1963, 23.5783], [81.1545, 23.5344], [81.1691, 23.5036], [81.1393, 23.4869], [81.1423, 23.4641], [81.0087, 23.4443], [81.0163, 23.4254], [80.9983, 23.3748], [81.0353, 23.3446], [81.0355, 23.2731], [81.0506, 23.2766], [81.0481, 23.2601], [81.0642, 23.2523], [81.0982, 23.2550], [81.0796, 23.2333], [81.0983, 23.2305], [81.0931, 23.2035], [81.0605, 23.1959], [81.0262, 23.2086], [80.9345, 23.2907], [80.8552, 23.2236], [80.8010, 23.2547], [80.7861, 23.2517], [80.7818, 23.2245], [80.7554, 23.2215], [80.7099, 23.2824], [80.7476, 23.3220], [80.7498, 23.3461], [80.6943, 23.3730], [80.5871, 23.3491], [80.5333, 23.3590], [80.5505, 23.3796], [80.5237, 23.4183], [80.5534, 23.4429], [80.5580, 23.4699], [80.5385, 23.4952], [80.5438, 23.5457], [80.5550, 23.5681], [80.6152, 23.5949], [80.6139, 23.6147], [80.6424, 23.6363], [80.6361, 23.6512], [80.6625, 23.6717], [80.7029, 23.7634], [80.7230, 23.7316], [80.8141, 23.6717], [80.8947, 23.6815], [80.8844, 23.7683], [80.9057, 23.7890], [80.8870, 23.8632], [80.8548, 23.8808], [80.8683, 23.9062], [80.8351, 23.9101], [80.8280, 23.9559], [80.8692, 23.9715], [80.8978, 24.0413], [81.0039, 24.0952]]]}}, {"type": "Feature", "properties": {"district": "Vidisha"}, "geometry": {"type": "Polygon", "coordinates": [[[77.3943, 24.2837], [77.4465, 24.2445], [77.4869, 24.2808], [77.4990, 24.2582], [77.5485, 24.2531], [77.5889, 24.2736], [77.5933, 24.3021], [77.6437, 24.3196], [77.7104, 24.3069], [77.7661, 24.3074], [77.7813, 24.3222], [77.8142, 24.3077], [77.8859, 24.3196], [77.8804, 24.2841], [77.9216, 24.2728], [77.9365, 24.2357], [77.9605, 24.2523], [78.0021, 24.2430], [78.0297, 24.2936], [78.0656, 24.2482], [78.0903, 24.2479], [78.0871, 24.2316], [78.0616, 24.2441], [78.0533, 24.2332], [78.1371, 24.2066], [78.1200, 24.1681], [78.0909, 24.1600], [78.1297, 24.1201], [78.1130, 24.0540], [78.0846, 24.0691], [78.0695, 24.0484], [78.1076, 24.0317], [78.1186, 24.0458], [78.1698, 24.0132], [78.2061, 24.0722], [78.2723, 24.0330], [78.2830, 23.9692], [78.2592, 23.9500], [78.2873, 23.9186], [78.2725, 23.8701], [78.2565, 23.8628], [78.2695, 23.8469], [78.2903, 23.8506], [78.2928, 23.8324], [78.2582, 23.8193], [78.2786, 23.8145], [78.2809, 23.7878], [78.2517, 23.7925], [78.2627, 23.7815], [78.2478, 23.7602], [78.2596, 23.7545], [78.2321, 23.7179], [78.2463, 23.7104], [78.2634, 23.7319], [78.2871, 23.6776], [78.2714, 23.6145], [78.2207, 23.5635], [78.2161, 23.5326], [78.1894, 23.5445], [78.1273, 23.5187], [78.1432, 23.4785], [78.0807, 23.4541], [78.0200, 23.4759], [77.9957, 23.4700], [77.9890, 23.4187], [78.0431, 23.4051], [78.0519, 23.3878], [78.0171, 23.3487], [77.9557, 23.3762], [77.9557, 23.4160], [77.9103, 23.4561], [77.8694, 23.4451], [77.8106, 23.4626], [77.7300, 23.5385], [77.6679, 23.5219], [77.6244, 23.5504], [77.6472, 23.4850], [77.6210, 23.4677], [77.5612, 23.5067], [77.5198, 23.5074], [77.5045, 23.5800], [77.5531, 23.6019], [77.5687, 23.6534], [77.6295, 23.6684], [77.6451, 23.7221], [77.6154, 23.7193], [77.5998, 23.7346], [77.6090, 23.7540], [77.5694, 23.7728], [77.5455, 23.7618], [77.4989, 23.7825], [77.4665, 23.7646], [77.4341, 23.7836], [77.4431, 23.8007], [77.4110, 23.8107], [77.3702, 23.8883], [77.3141, 23.8980], [77.3182, 23.9155], [77.2922, 23.9350], [77.3021, 23.9523], [77.2910, 23.9795], [77.3085, 23.9885], [77.2899, 24.0039], [77.3071, 24.0162], [77.2750, 24.0288], [77.2907, 24.0475], [77.2554, 24.0605], [77.2936, 24.0928], [77.2841, 24.1291], [77.3087, 24.1553], [77.2982, 24.1709], [77.3397, 24.1874], [77.3273, 24.2192], [77.3468, 24.2210], [77.3241, 24.2527], [77.3187, 24.2984], [77.3533, 24.3516], [77.4041, 24.3319], [77.3943, 24.2837]]]}}, {"type": "Feature", "properties": {"district": "Khargone"}, "geometry": {"type": "Polygon", "coordinates": [[[76.0857, 22.5505], [76.1041, 22.4738], [76.2140, 22.4213], [76.2368, 22.3957], [76.2215, 22.3601], [76.2051, 22.3571], [76.2167, 22.3391], [76.1816, 22.2748], [76.0232, 22.2170], [76.0318, 22.1994], [76.0774, 22.1892], [76.0982, 22.1924], [76.1076, 22.2145], [76.1634, 22.2072], [76.1556, 22.1798], [76.1261, 22.1674], [76.1453, 22.1126], [76.1036, 22.0931], [76.1058, 22.0567], [76.1591, 22.0660], [76.1647, 22.0801], [76.1420, 22.0982], [76.1645, 22.1202], [76.2274, 22.1027], [76.2330, 22.0759], [76.2118, 22.0687], [76.1997, 22.0415], [76.1684, 22.0454], [76.1684, 22.0044], [76.1457, 21.9817], [76.1594, 21.9695], [76.1512, 21.9482], [76.1702, 21.8880], [76.1030, 21.8500], [76.1109, 21.7954], [76.0960, 21.7716], [76.1262, 21.7555], [76.1024, 21.7405], [76.1178, 21.7230], [76.1544, 21.7344], [76.1743, 21.6887], [76.1619, 21.6754], [76.1082, 21.6912], [76.0736, 21.6637], [76.0787, 21.5745], [76.0283, 21.5506], [75.9537, 21.5470], [75.9483, 21.4832], [75.9897, 21.4876], [76.0122, 21.4696], [75.9916, 21.3760], [75.9593, 21.3961], [75.8881, 21.3996], [75.8326, 21.3833], [75.7383, 21.3934], [75.6267, 21.3820], [75.6293, 21.3996], [75.5926, 21.4254], [75.6089, 21.4622], [75.4993, 21.4912], [75.4672, 21.5188], [75.4658, 21.5529], [75.5056, 21.6165], [75.4535, 21.6429], [75.4412, 21.6782], [75.3413, 21.6688], [75.2979, 21.6365], [75.2695, 21.6829], [75.2121, 21.7115], [75.2192, 21.7382], [75.2828, 21.7441], [75.2787, 21.8063], [75.3110, 21.8414], [75.2819, 21.8739], [75.2868, 21.9175], [75.2967, 21.9271], [75.3087, 21.9111], [75.3379, 21.9141], [75.3546, 21.9832], [75.3978, 21.9904], [75.4458, 22.0268], [75.4209, 22.0302], [75.4167, 22.0601], [75.4578, 22.0650], [75.3870, 22.0744], [75.4033, 22.0788], [75.3975, 22.0940], [75.3200, 22.1363], [75.5105, 22.1641], [75.5358, 22.2287], [75.5152, 22.3126], [75.4919, 22.3306], [75.5089, 22.3430], [75.5055, 22.3720], [75.5255, 22.3757], [75.5364, 22.3604], [75.5768, 22.3794], [75.6088, 22.3652], [75.6015, 22.3442], [75.6399, 22.3568], [75.6523, 22.3356], [75.7206, 22.3721], [75.7801, 22.3730], [75.8270, 22.4082], [75.8553, 22.3836], [75.9084, 22.3895], [75.9164, 22.4243], [75.9685, 22.4407], [76.0077, 22.4224], [76.0129, 22.4465], [76.0343, 22.4401], [76.0557, 22.4562], [76.0540, 22.4809], [76.0273, 22.4991], [76.0300, 22.5319], [76.0781, 22.5287], [76.0857, 22.5505]]]}}]};
+
+  </script>
+  <script>
+// scripts/mandiMap.js — QW4K2
+
+document.addEventListener("DOMContentLoaded", function () {
+
+// MP_GEO is defined in scripts/mandiMap_geo.js, loaded before this file.
+
+const RAW = [
+["Gulli","Gulli","Sidhi Apmc","Sidhi",2800,2800,2800,"none",0],
+["Gulli","Gulli","Barghat Apmc","Seoni",4800,4850,4900,"none",0],
+["Bengal Gram (Whole)","Gram","Javera Apmc","Damoh",5405,5405,5405,"none",0],
+["Wheat","Mill Quality","Badamalhera Apmc","Chhatarpur",0,2400,2400,"none",0],
+["Wheat","Wheat","Banda Apmc","Sagar",2425,2425,2425,"none",0],
+["Bengal Gram (Whole)","Gram","Chaurai Apmc","Chhindwara",5000,5000,5000,"none",0],
+["Lentil Masur (Whole)","Masur Dal","Khurai Apmc","Sagar",5720,6145,6145,"none",0],
+["Wheat","Mill Quality","Mandla Apmc","Mandla",2375,2375,2375,"down",25],
+["Potato","Other","Kailaras Apmc","Morena",600,700,1000,"up",100],
+["Tinda","Tinda","Kailaras Apmc","Morena",1400,1400,1400,"down",100],
+["Bhindi (Ladies Finger)","Bhindi","Kailaras Apmc","Morena",1000,1500,2200,"none",0],
+["Onion","Other","Kailaras Apmc","Morena",1400,2400,2400,"up",400],
+["Gulli","Gulli","Umariya Apmc","Umariya",3950,3950,3950,"down",1050],
+["Paddy (Common)","Other","Dindori Apmc","Dindori",2010,2010,2010,"up",10],
+["Coriander Leaves","Coriander","Mandsaur Apmc","Mandsaur",5400,14670,14670,"none",0],
+["Green Gram Moong (Whole)","Green (Whole)","Itarsi Apmc","Hoshangabad",1000,7250,7250,"up",545],
+["Green Gram Moong (Whole)","Green (Whole)","Raisen Apmc","Raisen",5600,6000,6666,"down",951],
+["Paddy (Common)","Basmati","Raisen Apmc","Raisen",3505,4300,4300,"none",0],
+["Wheat","Mill Quality","Katni Apmc","Katni",2300,2300,2300,"down",150],
+["Wheat","Wheat","Neemuch Apmc","Neemuch",2580,2755,2901,"none",0],
+["Garlic","Garlic","Bhopal Apmc","Bhopal",1100,11300,18000,"up",4300],
+["Black Gram Urd (Whole)","Urda/Urd","Paatan Apmc","Jabalpur",9600,9645,9645,"up",100],
+["Wheat","Wheat","Khatora Apmc","Shivpuri",2450,2500,2500,"none",0],
+["Papaya","Papaya","Sagar F V Apmc","Sagar",1200,1600,2400,"none",0],
+["Cauliflower","Cauliflower","Sagar F V Apmc","Sagar",300,400,500,"none",0],
+["Cucumber (Kheera)","Cucumber","Sagar F V Apmc","Sagar",1000,1100,1200,"none",0],
+["Spinach","Spinach","Sagar F V Apmc","Sagar",500,600,700,"none",0],
+["Mango","Other","Sagar F V Apmc","Sagar",3000,4000,5000,"up",500],
+["Spinach","Spinach","Ujjain F V Apmc","Ujjain",375,894,1725,"none",0],
+["Tomato","Deshi","Ujjain F V Apmc","Ujjain",575,1356,1830,"none",0],
+["Cabbage","Cabbage","Ujjain F V Apmc","Ujjain",415,964,1475,"none",0],
+["Bitter Gourd","Bitter Gourd","Ujjain F V Apmc","Ujjain",430,721,1475,"none",0],
+["Onion","Local","Burhanpur F V Apmc","Burhanpur",1000,1800,2000,"up",200],
+["Guar","Gwar","Burhanpur F V Apmc","Burhanpur",2500,4000,4500,"none",0],
+["Bhindi (Ladies Finger)","Bhindi","Burhanpur F V Apmc","Burhanpur",2000,2800,3000,"down",200],
+["Paddy (Common)","Paddy","Seoni Apmc","Seoni",2850,2850,2850,"none",0],
+["Wheat","Wheat","Gotegaon Apmc","Narsinghpur",2400,2405,2405,"none",0],
+["Green Gram Moong (Whole)","Green (Whole)","Kolaras Apmc","Shivpuri",6800,6800,6800,"none",0],
+["Bengal Gram (Whole)","Gram","Kolaras Apmc","Shivpuri",5770,5770,5770,"up",265],
+["Soyabean","Soyabeen","Kolaras Apmc","Shivpuri",5010,7130,7130,"up",255],
+["Bengal Gram (Whole)","Gram","Guna Apmc","Guna",5155,5765,5765,"up",55],
+["Wheat","Mill Quality","Keolari Apmc","Seoni",2200,2240,2240,"none",0],
+["Wheat","Wheat","Taal Apmc","Ratlam",2486,2570,2686,"none",0],
+["Wheat","Wheat","Kasrawad Apmc","Khargone",2550,2550,2550,"down",50],
+["Maize","Local","Badwaha Apmc","Khargone",2075,2240,2240,"none",0],
+["Green Gram Moong (Whole)","Green (Whole)","Sanawad Apmc","Khargone",6705,7500,7500,"up",400],
+["Bengal Gram (Whole)","Gram","Sanawad Apmc","Khargone",6600,6600,6600,"down",905],
+["Soyabean","Soyabeen","Rajgarh Apmc","Dhar",6010,6300,6300,"up",220],
+["Wheat","Mill Quality","Shyampur Apmc","Sehore",2375,2400,2400,"none",0],
+["Tomato","Hybrid","Sendhwa F V Apmc","Badwani",1200,1600,2000,"none",0]
+].map(function(r){return {commodity:r[0],variety:r[1],market:r[2],district:r[3],min:r[4],modal:r[5],max:r[6],dir:r[7],chg:r[8]};});
+
+// group by commodity + by district
+const byCommodity={}, commodityOrder=[];
+RAW.forEach(function(r){
+  if(!byCommodity[r.commodity]){ byCommodity[r.commodity]=[]; commodityOrder.push(r.commodity); }
+  byCommodity[r.commodity].push(r);
+});
+commodityOrder.sort();
+
+// sentinel for the "all commodities" view
+const ALL="__all";
+
+// Hindi names for each commodity (fallback = English key)
+const CROP_HI={
+  "Bengal Gram (Whole)":"चना",
+  "Bhindi (Ladies Finger)":"भिंडी",
+  "Bitter Gourd":"करेला",
+  "Black Gram Urd (Whole)":"उरद",
+  "Cabbage":"पत्ता गोभी",
+  "Cauliflower":"फूल गोभी",
+  "Coriander Leaves":"धनिया",
+  "Cucumber (Kheera)":"खीरा",
+  "Garlic":"लहसुन",
+  "Green Gram Moong (Whole)":"मूंग",
+  "Guar":"ग्वार",
+  "Gulli":"गुल्ली",
+  "Lentil Masur (Whole)":"मसूर",
+  "Maize":"मक्का",
+  "Mango":"आम",
+  "Onion":"प्याज",
+  "Paddy (Common)":"धान",
+  "Papaya":"पपीता",
+  "Potato":"आलू",
+  "Soyabean":"सोयाबीन",
+  "Spinach":"पालक",
+  "Tinda":"टिंडा",
+  "Tomato":"टमाटर",
+  "Wheat":"गेहूं"
+};
+// Hindi names for the districts that appear in the data (fallback = English)
+const DIST_HI={
+  "Sidhi":"सीधी","Seoni":"सिवनी","Damoh":"दमोह",
+  "Chhatarpur":"छतरपुर","Sagar":"सागर","Chhindwara":"छिंदवाड़ा",
+  "Mandla":"मंडला","Morena":"मुरैना","Umariya":"उमरिया",
+  "Dindori":"डिंडोरी","Mandsaur":"मंदसौर","Hoshangabad":"होशंगाबाद",
+  "Raisen":"रायसेन","Katni":"कटनी","Neemuch":"नीमच",
+  "Bhopal":"भोपाल","Jabalpur":"जबलपुर","Shivpuri":"शिवपुरी",
+  "Ujjain":"उज्जैन","Burhanpur":"बुरहानपुर","Narsinghpur":"नरसिंहपुर",
+  "Guna":"गुना","Ratlam":"रतलाम","Khargone":"खरगोन",
+  "Dhar":"धार","Sehore":"सीहोर","Badwani":"बड़वानी"
+};
+// Hindi names for the mandi terminals (markets) that appear in the data
+const MARKET_HI={
+  "Sidhi Apmc":"सीधी मंडी", "Barghat Apmc":"बरघाट मंडी", "Javera Apmc":"जावेरा मंडी",
+  "Badamalhera Apmc":"बड़ामलहरा मंडी", "Banda Apmc":"बांदा मंडी", "Chaurai Apmc":"चौरई मंडी",
+  "Khurai Apmc":"खुरई मंडी", "Mandla Apmc":"मंडला मंडी", "Kailaras Apmc":"कैलारस मंडी",
+  "Umariya Apmc":"उमरिया मंडी", "Dindori Apmc":"डिंडोरी मंडी", "Mandsaur Apmc":"मंदसौर मंडी",
+  "Itarsi Apmc":"इटारसी मंडी", "Raisen Apmc":"रायसेन मंडी", "Katni Apmc":"कटनी मंडी",
+  "Neemuch Apmc":"नीमच मंडी", "Bhopal Apmc":"भोपाल मंडी", "Paatan Apmc":"पाटन मंडी",
+  "Khatora Apmc":"खटोरा मंडी", "Sagar F V Apmc":"सागर फल-सब्जी मंडी",
+  "Ujjain F V Apmc":"उज्जैन फल-सब्जी मंडी", "Burhanpur F V Apmc":"बुरहानपुर फल-सब्जी मंडी",
+  "Seoni Apmc":"सिवनी मंडी", "Gotegaon Apmc":"गोटेगांव मंडी", "Kolaras Apmc":"कोलारस मंडी",
+  "Guna Apmc":"गुना मंडी", "Keolari Apmc":"केवलारी मंडी", "Taal Apmc":"ताल मंडी",
+  "Kasrawad Apmc":"कसरावद मंडी", "Badwaha Apmc":"बड़वाहा मंडी", "Sanawad Apmc":"सनावद मंडी",
+  "Rajgarh Apmc":"राजगढ़ मंडी", "Shyampur Apmc":"श्यामपुर मंडी", "Sendhwa F V Apmc":"सेंधवा फल-सब्जी मंडी"
+};
+function distLabel(dname){ return lang==="hi" ? (DIST_HI[dname]||dname) : dname; }
+function marketLabel(mname){ return lang==="hi" ? (MARKET_HI[mname]||mname) : mname; }
+
+// Devanagari digits — used to localize every rendered number in Hindi mode
+const HINDI_DIGITS=['०','१','२','३','४','५','६','७','८','९'];
+function toHindiDigits(v){ return String(v).replace(/[0-9]/g, function(d){ return HINDI_DIGITS[+d]; }); }
+function localizeNum(v){ return lang==="hi" ? toHindiDigits(v) : String(v); }
+function cropLabel(c){
+  if(c===ALL) return lang==="hi"?"सभी फसलें":"All commodities";
+  return lang==="hi" ? (CROP_HI[c]||c) : c;
+}
+
+// source prices are quoted per quintal (100kg) — divide by 100 for a per-kg rate
+var perKgOpts={minimumFractionDigits:2,maximumFractionDigits:2};
+const fmt=function(n){ return localizeNum("Rs."+(n/100).toLocaleString("en-IN",perKgOpts)+"/kg"); };
+const fmtRange=function(lo,hi){ return localizeNum("Rs."+(lo/100).toLocaleString("en-IN",perKgOpts)+"–"+(hi/100).toLocaleString("en-IN",perKgOpts)+"/kg"); };
+const pluralize=function(n,singular,plural){ return n===1 ? singular : plural; };
+
+// ---- i18n ----
+const dict={
+  hi:{ title:"e-Choupal : भारतीय किसान के लिए तकनीक...",
+    brand:"ई-चौपाल", side:"कृषि जिंस",
+    desc:"चयनित फसल की मंडी भाव का जिलावार मध्य प्रदेश नक्शा:",
+    descAll:"प्रत्येक जिले में दर्ज फसलों की संख्या का मध्य प्रदेश नक्शा:",
+    th1:"मंडी क्षेत्र", th2:"जिला", th3:"फसल", th5:"सरकारी मंडी भाव",
+    cropsel:"फसल:", low:"निम्न", high:"उच्च", markets:"मंडियां",
+    norate:"कोई भाव नहीं", nrec:"कोई दर्ज नहीं",
+    admin:"एडमिन विकल्प", stateLbl:"वरीयता:", code:"प्रवेश कोड बदलिये" },
+  en:{ title:"e-Choupal was revolutionary for farmers. This is a re-imagined representation of its website.",
+    brand:"e-Choupal", side:"Commodities",
+    desc:"District-wise Madhya Pradesh map of modal mandi price for the selected commodity:",
+    descAll:"District-wise Madhya Pradesh map of how many commodities each district recorded:",
+    th1:"Mandi Terminal", th2:"District", th3:"Commodity", th5:"Govt Mandi Rate",
+    cropsel:"Crop:", low:"Low", high:"High", markets:"markets",
+    norate:"No rate", nrec:"No record",
+    admin:"2026 Prices", stateLbl:"Priority:", code:"Change access code" }
+};
+let lang="en", currentCrop=ALL;
+
+// ---- Leaflet map ----
+// Zoom is locked (see setMinZoom/setMaxZoom below, once bounds are known) — panning
+// within the padded MP bounds still works, but users can't zoom in/out at all.
+const map=L.map("QW4K2-map",{
+  scrollWheelZoom:false,
+  doubleClickZoom:false,
+  touchZoom:false,
+  boxZoom:false,
+  keyboard:false,
+  zoomControl:false,
+  // on mobile the map sits inside a page that's already meant to scroll
+  // vertically — a draggable map there just fights that scroll gesture
+  dragging: window.innerWidth > 768
+});
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,
+  attribution:"© OpenStreetMap contributors"}).addTo(map);
+
+// placeholder hint: tied to the map container as a whole (not each district
+// layer's own mouseover/mouseout) — per-district toggling flickered the hint
+// back on for an instant every time the cursor crossed from one district
+// into an adjacent one, since there's a brief gap between one layer's
+// mouseout and the next one's mouseover. Hiding/showing once, on actually
+// entering/leaving the whole map, avoids that.
+(function(){
+  var hint=document.getElementById("QW4K2-map-hint");
+  if(!hint) return;
+  var container=map.getContainer();
+  container.addEventListener("mouseenter",function(){ hint.style.display="none"; });
+  container.addEventListener("mouseleave",function(){ hint.style.display=""; });
+})();
+
+// choupal-yellow -> choupal-green sequential ramp
+function lerp(a,b,t){return Math.round(a+(b-a)*t);}
+function rampColor(t){ // t in [0,1]
+  // #eeddab -> #b3a25d -> #006600 (matches prototype visualMap)
+  var stops=[[238,221,171],[179,162,93],[0,102,0]];
+  if(t<=0) return "rgb("+stops[0].join(",")+")";
+  if(t>=1) return "rgb("+stops[2].join(",")+")";
+  var seg=t*2, i=Math.min(1,Math.floor(seg)), f=seg-i;
+  var c0=stops[i], c1=stops[i+1];
+  return "rgb("+lerp(c0[0],c1[0],f)+","+lerp(c0[1],c1[1],f)+","+lerp(c0[2],c1[2],f)+")";
+}
+
+var geoLayer=null, labelLayer=L.layerGroup().addTo(map), mpBounds=null;
+var lastLo=null, lastHi=null;
+
+// modal price per district for a crop (max across that district's markets)
+function priceByDistrict(crop){
+  var rows=byCommodity[crop]||[], m={};
+  rows.forEach(function(r){ if(!(r.district in m)||r.modal>m[r.district]) m[r.district]=r.modal; });
+  return m;
+}
+// distinct-commodity count per district (for ALL mode)
+function countByDistrict(){
+  var m={};
+  RAW.forEach(function(r){ (m[r.district]=m[r.district]||new Set()).add(r.commodity); });
+  var out={}; Object.keys(m).forEach(function(k){ out[k]=m[k].size; });
+  return out;
+}
+
+function popupHtml(dist,rows,isAll){
+  var sub = isAll ? (localizeNum(rows.length)+" "+(lang==="hi"?"फसलें":"commodities")) : cropLabel(currentCrop);
+  var h='<div class="QW4K2-pop-h">'+distLabel(dist)+'</div><div class="QW4K2-pop-sub">'+sub+'</div><hr class="QW4K2-pop-rule">';
+  rows.forEach(function(r){
+    var name = isAll ? "<b>"+cropLabel(r.commodity)+"</b> " : "<b>"+marketLabel(r.market)+"</b><br>";
+    h+='<div style="margin:2px 0">'+name+'<span style="font-family:monospace">'+fmt(r.modal)+
+       '</span> <span style="color:#555">('+(isAll?marketLabel(r.market):r.variety)+')</span></div>';
+  });
+  return h;
+}
+
+function render(){
+  var d=dict[lang];
+  var isAll=(currentCrop===ALL);
+
+  // choose the value each district is shaded by
+  var valMap, lo, hi;
+  if(isAll){ valMap=countByDistrict(); }
+  else{ valMap=priceByDistrict(currentCrop); }
+  var vals=Object.keys(valMap).map(function(k){return valMap[k];});
+  lo=Math.min.apply(null,vals); hi=Math.max.apply(null,vals);
+  if(!isFinite(lo)){lo=0;hi=1;}
+  var span=(hi-lo)||1;
+  lastLo=lo; lastHi=hi;
+
+  if(geoLayer) map.removeLayer(geoLayer);
+  labelLayer.clearLayers();
+
+  geoLayer=L.geoJSON(MP_GEO,{
+    style:function(feat){
+      var dist=feat.properties.district;
+      if(dist in valMap){
+        var t=(valMap[dist]-lo)/span;
+        return {fillColor:rampColor(t),fillOpacity:.85,color:"#556",weight:1};
+      }
+      return {fillColor:"#f3f0e0",fillOpacity:.45,color:"#a08a5c",weight:.6,dashArray:"2,3"};
+    },
+    onEachFeature:function(feat,lyr){
+      var dist=feat.properties.district;
+      if(!(dist in valMap)) return;
+      var drows = isAll ? RAW.filter(function(r){return r.district===dist;})
+                        : (byCommodity[currentCrop]||[]).filter(function(r){return r.district===dist;});
+      lyr.bindPopup(popupHtml(dist,drows,isAll),{closeButton:false});
+      lyr.on("mouseover",function(){lyr.setStyle({weight:2.6,color:"#ffcc00"});lyr.openPopup();lyr.bringToFront();});
+      lyr.on("mouseout",function(){geoLayer.resetStyle(lyr);});
+      try{
+        var mk=L.marker(lyr.getBounds().getCenter(),
+          {icon:L.divIcon({className:"QW4K2-dlabel",html:distLabel(dist),iconSize:null}),interactive:false});
+        labelLayer.addLayer(mk);
+      }catch(e){}
+    }
+  }).addTo(map);
+  geoLayer.bringToBack();
+
+  if(!mpBounds){ mpBounds=geoLayer.getBounds(); map.fitBounds(mpBounds,{padding:[12,12]});
+    map.setMaxBounds(mpBounds.pad(0.25));
+    var lockedZoom=map.getBoundsZoom(mpBounds);
+    map.setMinZoom(lockedZoom); map.setMaxZoom(lockedZoom); }
+
+  // description
+  document.getElementById("QW4K2-desc-text").textContent = isAll ? d.descAll : d.desc;
+
+  // caption + stat
+  var mapPrefix = lang==="hi" ? "म.प्र. मंडी मानचित्र — " : "MP Mandi Map — ";
+  document.getElementById("QW4K2-map-title").textContent = mapPrefix + cropLabel(currentCrop);
+  var districtCount = Object.keys(valMap).length;
+  // Hindi nouns here don't inflect for count the way English does, so the
+  // singular/plural split only applies to the English labels
+  var districtsWord = lang==="hi" ? "जिले" : pluralize(districtCount,"district","districts");
+  var cropsWord = lang==="hi" ? "फसलें" : pluralize(hi,"crop","crops");
+  var marketsWord = lang==="hi" ? d.markets : pluralize(districtCount,"market","markets");
+  document.getElementById("QW4K2-map-stat").textContent = isAll
+    ? (localizeNum(districtCount)+" "+districtsWord+" · "+localizeNum(lo)+"–"+localizeNum(hi)+" "+cropsWord)
+    : (localizeNum(districtCount)+" "+marketsWord+" · "+fmtRange(lo,hi));
+
+  // table
+  var tbody=document.getElementById("QW4K2-table-body"); tbody.innerHTML="";
+  if(isAll){
+    document.getElementById("QW4K2-table-headers").innerHTML=
+      "<th>"+d.th1+"</th><th>"+d.th2+"</th><th>"+d.th3+"</th><th>"+d.th5+"</th>";
+    RAW.forEach(function(r){
+      var tr=document.createElement("tr");
+      tr.innerHTML="<td>"+marketLabel(r.market)+"</td><td>"+distLabel(r.district)+"</td><td>"+cropLabel(r.commodity)+
+        "</td><td class='QW4K2-highlight-row'>"+fmt(r.modal)+"</td>";
+      tbody.appendChild(tr);
+    });
+  }else{
+    document.getElementById("QW4K2-table-headers").innerHTML=
+      "<th>"+d.th1+"</th><th>"+d.th2+"</th><th>"+d.th5+"</th>";
+    (byCommodity[currentCrop]||[]).forEach(function(r){
+      var tr=document.createElement("tr");
+      tr.innerHTML="<td>"+marketLabel(r.market)+"</td><td>"+distLabel(r.district)+
+        "</td><td class='QW4K2-highlight-row'>"+fmt(r.modal)+"</td>";
+      tbody.appendChild(tr);
+    });
+  }
+
+  // sidebar active state
+  document.querySelectorAll("#QW4K2-commodity-list button").forEach(function(b){
+    b.classList.toggle("QW4K2-active", b.dataset.crop===currentCrop);
+    var lbl=b.querySelector(".QW4K2-clabel"); if(lbl) lbl.textContent=cropLabel(b.dataset.crop);
+  });
+
+  // crop-nav quick links (All + first few)
+  var quick=[ALL].concat(commodityOrder.slice(0,6));
+  document.getElementById("QW4K2-crop-links").innerHTML="<span>"+d.cropsel+"</span> "+
+    quick.map(function(c){
+      return "<a class='"+(c===currentCrop?"QW4K2-selected-crop":"")+"' data-crop=\""+c+"\">"+cropLabel(c)+"</a>";
+    }).join(" | ");
+  document.querySelectorAll("#QW4K2-crop-links a").forEach(function(a){
+    a.addEventListener("click",function(){selectCrop(a.dataset.crop);});
+  });
+
+  // keep the marquee in sync with the current crop/all view
+  var mk=document.getElementById("QW4K2-marquee-ticker");
+  if(mk) mk.textContent=buildTicker();
+}
+
+function selectCrop(c){
+  currentCrop=c;
+  render();
+  // dismissed for good the first time the user picks a crop from either
+  // panel — no need to keep nudging them once they've found it
+  document.querySelectorAll(".QW4K2-crop-hint").forEach(function(h){ h.style.display="none"; });
+}
+
+function buildSidebar(){
+  var ul=document.getElementById("QW4K2-commodity-list"); ul.innerHTML="";
+  var items=[ALL].concat(commodityOrder);
+  items.forEach(function(c){
+    var li=document.createElement("li"); li.className="QW4K2-before-marker";
+    var b=document.createElement("button"); b.dataset.crop=c;
+    if(c===ALL) li.classList.add("QW4K2-all-item");
+    b.innerHTML="<span class='QW4K2-clabel'>"+cropLabel(c)+"</span>";
+    b.addEventListener("click",function(){selectCrop(c);});
+    li.appendChild(b); ul.appendChild(li);
+  });
+}
+
+function applyLang(){
+  var d=dict[lang];
+  document.getElementById("QW4K2-win-title").textContent=d.title;
+  document.getElementById("QW4K2-brand-title").textContent=d.brand;
+  document.getElementById("QW4K2-side-title").textContent=d.admin;
+  document.getElementById("QW4K2-state-label").textContent=d.stateLbl;
+  document.getElementById("QW4K2-side-code").textContent=d.code;
+  // sidebar crop labels
+  document.querySelectorAll("#QW4K2-commodity-list button").forEach(function(b){
+    var lbl=b.querySelector(".QW4K2-clabel"); if(lbl) lbl.textContent=cropLabel(b.dataset.crop);
+  });
+  document.getElementById("QW4K2-side-note").textContent=(lang==="hi"
+    ? "रंग मान दर्शाता है — गहरा हरा = अधिक। जिले पर क्लिक करें।"
+    : "Colour shows the value — darker green = higher. Click a district for detail.");
+  document.getElementById("QW4K2-marquee-ticker").textContent=buildTicker();
+}
+
+// Build the marquee text from real data: district – crop – modal price.
+// For a selected crop, list its markets; for ALL, one representative row per district.
+function buildTicker(){
+  var rows;
+  if(currentCrop===ALL){
+    var seen={}; rows=[];
+    RAW.forEach(function(r){ if(!seen[r.district]){ seen[r.district]=1; rows.push(r); } });
+  } else {
+    rows=(byCommodity[currentCrop]||[]).slice();
+  }
+  var parts=rows.map(function(r){
+    var who = currentCrop===ALL ? distLabel(r.district)
+                                : distLabel(r.district)+" ("+cropLabel(r.commodity)+")";
+    return who+" — "+fmt(r.modal);
+  });
+  // hint leads, then alternates with the real data (hint, real, hint,
+  // real, ...) so it's the very first thing shown and keeps resurfacing
+  // as the ticker loops
+  var withHint=[];
+  parts.forEach(function(p){
+    withHint.push("Click the map to interact", p);
+  });
+  // repeat once so the loop reads continuously without a long gap
+  var line=withHint.join("   •   ");
+  return line+"   •   "+line;
+}
+
+function toggleLanguage(){ lang=document.getElementById("QW4K2-langToggle").value; applyLang(); render(); }
+
+// legend control on the map
+var legend=L.control({position:"bottomleft"});
+legend.onAdd=function(){
+  var div=L.DomUtil.create("div","QW4K2-map-legend");
+  div.innerHTML="<div id='QW4K2-leg-body'></div>";
+  return div;
+};
+legend.addTo(map);
+function refreshLegend(){
+  var d=dict[lang];
+  var isAll=(currentCrop===ALL);
+  var head = isAll ? (lang==="hi"?"फसलों की संख्या":"No. of commodities")
+                   : (lang==="hi"?"मंडी भाव (Rs./kg)":"Mandi price (Rs./kg)");
+  var none  = isAll ? d.nrec : d.norate;
+
+  var rampRows;
+  if(isAll && lastLo!==null && lastHi!==null){
+    // real district crop counts, not vague "fewer/more" labels — mirrors
+    // the 3-stop gradient in rampColor() (low/mid/high)
+    var mid=Math.round((lastLo+lastHi)/2);
+    var cropWord=function(n){ return lang==="hi" ? "फसलें" : pluralize(n,"crop","crops"); };
+    var loTxt=localizeNum(lastLo)+" "+cropWord(lastLo);
+    var midTxt=localizeNum(mid)+" "+cropWord(mid);
+    var hiTxt=localizeNum(lastHi)+"+ "+cropWord(lastHi);
+    rampRows=
+      "<div><span class='QW4K2-sw' style='background:rgb(0,102,0)'></span>"+hiTxt+"</div>"+
+      "<div><span class='QW4K2-sw' style='background:rgb(179,162,93)'></span>"+midTxt+"</div>"+
+      "<div><span class='QW4K2-sw' style='background:rgb(238,221,171)'></span>"+loTxt+"</div>";
+  } else {
+    rampRows=
+      "<div><span class='QW4K2-sw' style='background:rgb(0,102,0)'></span>"+d.high+"</div>"+
+      "<div><span class='QW4K2-sw' style='background:rgb(238,221,171)'></span>"+d.low+"</div>";
+  }
+
+  document.getElementById("QW4K2-leg-body").innerHTML=
+    "<div style='margin-bottom:3px'>"+head+"</div>"+
+    rampRows+
+    "<div><span class='QW4K2-sw' style='background:#f3f0e0'></span>"+none+"</div>";
+}
+var _origRender=render;
+render=function(){ _origRender(); refreshLegend(); };
+
+// language select now wires up here instead of an inline onchange= attribute
+document.getElementById("QW4K2-langToggle").addEventListener("change", toggleLanguage);
+
+buildSidebar();
+applyLang();
+render();
+// ensure the map fills the fixed-height frame after layout settles
+setTimeout(function(){ map.invalidateSize(); if(mpBounds) map.fitBounds(mpBounds,{padding:[12,12]}); },80);
+window.addEventListener("resize",function(){ map.invalidateSize(); });
+
+});
+  </script>
+</body>
+</html>

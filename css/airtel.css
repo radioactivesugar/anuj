@@ -1,0 +1,30 @@
+/* =========================================================
+   AIRTEL (page-specific)
+   This page follows the shared case-study layout
+   (css/story.css + css/case-study.css) - the exceptions are the
+   Q&A section's device screenshots (own aspect ratios below) and
+   the SCRIPT/EXPLORATIONS captions, left-aligned instead of the
+   shared .story-image-label's default center.
+   ========================================================= */
+
+/* .story-image-label (css/story.css) is centered by default - this
+   page's SCRIPT (02) and EXPLORATIONS (03, "Family Tree") captions
+   read better flush with the image's left edge instead. */
+.story-image-label--left {
+  text-align: left;
+}
+
+/* css/story.css's .story-image--mobile/--ipad ratios are tuned to
+   project.html's own iPhone 12 (299x640) / iPad Mini (574x657)
+   screenshots specifically - this page's 11.png (381x606) and
+   12.png (527x701) are different photos with different real
+   proportions, so object-fit: cover was cropping them. This file
+   only loads on airtel.html, so overriding the shared class
+   here doesn't touch project.html's own Q&A images. */
+.story-image--mobile {
+  aspect-ratio: 381 / 606;
+}
+
+.story-image--ipad {
+  aspect-ratio: 527 / 701;
+}

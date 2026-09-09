@@ -1,0 +1,403 @@
+/* =========================================================
+   REVENUE GROWTH (page-specific)
+   This page follows the shared case-study layout (css/story.css +
+   css/case-study.css + css/case-study-alt.css) - the one thing
+   unique to it is the DATA section: instead of a static screenshot,
+   the "primary/secondary layer" buttons live in a toolbar built
+   into the .sheet-frame itself (like a real spreadsheet's ribbon)
+   and highlight matching columns in the live preview of
+   images/revenue-growth/02.csv below them. Same frame language as
+   css/lightrock.css (kept separate rather than shared so each case
+   study's CSS stays independent - see js/revenue-growth.js for the
+   click-to-highlight wiring).
+   ========================================================= */
+
+/* ---------- In-frame layer toolbar ----------
+   Sits between the titlebar and the data grid, so the buttons read
+   as part of the spreadsheet window rather than separate page copy.
+   Primary/secondary each get their own colour (reused from the
+   site's category palette in css/style.css) so the two layers stay
+   visually distinct at a glance. Sized up and glowing on purpose -
+   this is the one interactive control in an otherwise static-looking
+   spreadsheet, so it needs to read as obviously clickable. */
+.sheet-frame__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem 3rem;
+  padding: 1.4rem 1.5rem;
+  background: #f5f6f8;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.sheet-frame__layer-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+/* The "Primary Layer" / "Secondary Layer" text, reduced to a small
+   annotation that labels its own row of buttons instead of a
+   headline sitting above the frame. */
+.sheet-frame__layer-tag {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-family: var(--font-caption);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sheet-frame__layer-tag-sub {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--text-muted);
+}
+
+.sheet-frame__layer-tag--primary {
+  color: var(--color-web-development);
+}
+
+.sheet-frame__layer-tag--secondary {
+  color: var(--color-visual-journalism);
+}
+
+.sheet-frame__button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+}
+
+/* The buttons themselves - coloured per layer, sitting directly on
+   the frame like real toolbar controls. Bigger + bolder than a
+   typical inline button so they can't be mistaken for plain text,
+   with a soft ambient glow that pulses until the visitor interacts
+   with the toolbar at all (see .has-interacted below). */
+.sheet-btn {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0.85rem 1.5rem;
+  border-radius: 4px;
+  border-width: 2px;
+  border-style: solid;
+  cursor: pointer;
+  background: #fff;
+  transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease, box-shadow 0.2s ease;
+}
+
+.sheet-btn:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.sheet-btn:focus-visible {
+  outline: 2px solid var(--text-color);
+  outline-offset: 2px;
+}
+
+.sheet-btn--primary {
+  border-color: var(--color-web-development);
+  color: var(--color-web-development);
+  animation: sheet-btn-glow-primary 2.4s ease-in-out infinite;
+}
+
+.sheet-btn--secondary {
+  border-color: var(--color-visual-journalism);
+  color: var(--color-visual-journalism);
+  animation: sheet-btn-glow-secondary 2.4s ease-in-out infinite;
+}
+
+/* Each button in a row glows on a slight stagger, so a row of
+   several pills doesn't pulse in lockstep like a single blinking
+   blob. */
+.sheet-frame__button-row .sheet-btn:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.sheet-frame__button-row .sheet-btn:nth-child(3) {
+  animation-delay: 0.8s;
+}
+
+.sheet-frame__button-row .sheet-btn:nth-child(4) {
+  animation-delay: 1.2s;
+}
+
+/* Once the visitor has clicked anything in the toolbar, the "look at
+   me" pulse has done its job - drop it so several buttons don't glow
+   forever next to a table someone is trying to read. */
+.sheet-frame__toolbar.has-interacted .sheet-btn {
+  animation: none;
+}
+
+@keyframes sheet-btn-glow-primary {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(49, 130, 206, 0.5), 0 2px 8px rgba(0, 0, 0, 0.06); }
+  50% { box-shadow: 0 0 0 9px rgba(49, 130, 206, 0), 0 2px 8px rgba(0, 0, 0, 0.06); }
+}
+
+@keyframes sheet-btn-glow-secondary {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(224, 93, 93, 0.5), 0 2px 8px rgba(0, 0, 0, 0.06); }
+  50% { box-shadow: 0 0 0 9px rgba(224, 93, 93, 0), 0 2px 8px rgba(0, 0, 0, 0.06); }
+}
+
+/* Active state - each button fills solid with its own layer colour,
+   sits up slightly, and glows steadily (rather than pulsing) so it
+   stays legible as "currently selected." The matching sheet
+   column(s) below tint to the same colour (see
+   [data-col].is-highlighted--primary/secondary) and briefly flash in
+   (see the highlight-flash keyframes further down), so button and
+   data read as one coloured thread the moment you click. */
+.sheet-btn.is-active {
+  animation: none;
+  transform: translateY(-1px) scale(1.05);
+}
+
+.sheet-btn--primary.is-active {
+  background: var(--color-web-development);
+  color: #fff;
+  box-shadow: 0 0 0 5px rgba(49, 130, 206, 0.22), 0 6px 18px rgba(49, 130, 206, 0.4);
+}
+
+.sheet-btn--secondary.is-active {
+  background: var(--color-visual-journalism);
+  color: #fff;
+  box-shadow: 0 0 0 5px rgba(224, 93, 93, 0.22), 0 6px 18px rgba(224, 93, 93, 0.4);
+}
+
+/* ---------- Excel-style sheet preview ----------
+   Same frame language as .doc-frame (css/story.css) - titlebar with
+   an app icon + filename - but the body is a scrollable data grid
+   instead of a page of prose. */
+.sheet-frame {
+  width: 100%;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.sheet-frame__titlebar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fafafa;
+}
+
+.sheet-frame__icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.sheet-frame__filename {
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: #444;
+}
+
+.sheet-frame__note {
+  font-family: var(--font-caption);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-left: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sheet-frame__scroll {
+  max-height: 480px;
+  overflow: auto;
+}
+
+.sheet-frame__table {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+  font-family: var(--font-caption);
+  font-size: 0.7rem;
+  line-height: 1.5;
+}
+
+.sheet-frame__table th,
+.sheet-frame__table td {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 0.4rem 0.6rem;
+  white-space: nowrap;
+  text-align: left;
+}
+
+/* Column-letter row (A, B, C...) - sticky so it stays visible while
+   scrolling through 25+ rows of NBFCs. */
+.sheet-frame__col-headers th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  height: 26px;
+  background: #f0f0f0;
+  color: var(--text-muted);
+  text-align: center;
+  font-weight: 400;
+}
+
+/* Field-name row (NBFC, FY24 Revenue, ...) - the CSV's actual
+   header row, sits right under the column letters and is sticky
+   too so it scrolls with them as one frozen block. Its `top` must
+   match .sheet-frame__col-headers th's height exactly (both are
+   box-sizing: border-box, and border-collapse shares the 1px
+   border between them) or the two rows gap/overlap while scrolling. */
+.sheet-frame__field-row th {
+  position: sticky;
+  top: 26px;
+  z-index: 1;
+  height: 30px;
+  background: #f7f7f7;
+  font-weight: 600;
+  color: var(--text-color);
+  text-align: left;
+}
+
+.sheet-frame__row-num {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: #f0f0f0;
+  color: var(--text-muted);
+  text-align: center;
+  font-weight: 400;
+}
+
+.sheet-frame__col-headers .sheet-frame__row-num {
+  z-index: 3;
+}
+
+/* Corner cell of the frozen field-name row - sticky on both axes
+   (top from .sheet-frame__field-row td, left from .sheet-frame__row-num
+   above), so it needs to out-rank plain row-number cells (z-index: 1)
+   without covering the true top-left corner above it (z-index: 3). */
+.sheet-frame__field-row .sheet-frame__row-num {
+  z-index: 2;
+}
+
+/* Faint zebra striping, like a real spreadsheet - overridden by
+   .is-highlighted below when a data-card is active. */
+.sheet-frame__table tbody tr:nth-child(even) td {
+  background: rgba(0, 0, 0, 0.015);
+}
+
+/* The CSV's own median row - visually set apart from the company
+   rows it summarises, same way a totals row reads in a real sheet. */
+.sheet-frame__total-row td {
+  background: #f7f7f7 !important;
+  font-weight: 600;
+}
+
+/* The column(s) matching the active .sheet-btn - tinted with that
+   button's own layer colour, so the button and the data it points at
+   read as one highlight rather than two unrelated colors. Attribute
+   selector so it matches both the <td> data cells and the
+   <th data-col> field-name header cell for that column. Each starts
+   with a brief brighter flash (see keyframes below) so a click reads
+   as an obvious event in the grid, then settles to a steady tint. */
+[data-col].is-highlighted--primary {
+  animation: highlight-flash-primary 0.7s ease-out;
+  background: rgba(49, 130, 206, 0.22) !important;
+}
+
+[data-col].is-highlighted--secondary {
+  animation: highlight-flash-secondary 0.7s ease-out;
+  background: rgba(224, 93, 93, 0.22) !important;
+}
+
+@keyframes highlight-flash-primary {
+  0% { background: rgba(49, 130, 206, 0.55) !important; }
+  100% { background: rgba(49, 130, 206, 0.22) !important; }
+}
+
+@keyframes highlight-flash-secondary {
+  0% { background: rgba(224, 93, 93, 0.55) !important; }
+  100% { background: rgba(224, 93, 93, 0.22) !important; }
+}
+
+/* ---------- DESIGN heading ----------
+   Left edge pushed in to match the text column below it, so "T"
+   (of "The result is a packed bubble chart...") lines up under the
+   "D" - that column starts after a 45%-wide spacer
+   (.story-columns__spacer--wide, css/case-study-alt.css) plus the
+   row's own 2rem gap (.story-columns, css/story.css), both siblings
+   of the same section width as this heading. Same alignment as
+   css/undersea-cables.css. Vertically it straddles the rise image's
+   top edge - half the letters sit in the whitespace above, half
+   overlap the image - tuned by eye against the actual rendered
+   glyph ink (not just the heading's box, which has empty space
+   below the letters). Also trims the shared story.css gap above the
+   section (calc(5rem + 30vh)) down to a flat 5rem.
+   revenue-growth.css is only linked from this page, so overriding
+   the shared class here doesn't touch undersea-cables.html /
+   lightrock.html. */
+.story-heading--design {
+  margin-left: calc(45% + 2rem);
+  margin-top: 5rem;
+  margin-bottom: -0.5rem;
+}
+
+.story-heading--design + .story-image--rise {
+  margin-top: -2rem;
+}
+
+/* ---------- Closing iframe block ----------
+   .story-iframe-block (css/case-study-alt.css) stacks its lede
+   above the iframe at 62.6% width. Here the two sit side by side in
+   one flex row instead, full width: the lede pinned to the far left
+   of the row (independent of wherever the iframe lands, not aligned
+   to its edge) and the iframe wrapper filling the rest of the row
+   toward the right - same treatment as css/lightrock.css, kept as
+   its own copy since revenue-growth.css is only linked from this
+   page. */
+.story-iframe-block {
+  display: flex;
+  align-items: flex-start;
+  gap: 3rem;
+  width: 100%;
+}
+
+.story-iframe-block .story-text__lede {
+  flex: 0 0 28%;
+  margin: 0;
+}
+
+.story-iframe-block .story-iframe-wrapper {
+  flex: 1 1 auto;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .sheet-frame__toolbar {
+    gap: 1rem 1.5rem;
+    padding: 0.8rem;
+  }
+
+  .sheet-frame__scroll {
+    max-height: 400px;
+  }
+
+  .sheet-frame__table {
+    font-size: 0.65rem;
+  }
+
+  .story-iframe-block {
+    flex-direction: column;
+  }
+
+  .story-iframe-block .story-text__lede {
+    flex-basis: auto;
+  }
+}

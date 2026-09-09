@@ -1,0 +1,147 @@
+/* styles/shareholding.css — QW4K1 */
+
+.QW4K1-chart-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.QW4K1-chart-frame {
+  width: 100%;
+  max-width: 1450px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 40px 24px;
+  box-sizing: border-box;
+}
+
+.QW4K1-chart-container {
+  width: 100%;
+  max-width: 1350px;
+  min-width: 0;
+  margin: 0 auto;
+  background: #f2f1ef;
+  border-radius: 0; /* No border radius */
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.3); /* Only outer container has shadow */
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.QW4K1-chart-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  /* bottom-aligns the legend with the title's last wrapped line — there's
+     no separate subheader anymore (merged into the title), so the title's
+     last line is effectively where a subheader would sit */
+  align-items: flex-end;
+  gap: 12px 20px;
+  margin-bottom: 24px;
+  padding: 16px; /* Restored balance padding */
+  box-sizing: border-box;
+}
+
+.QW4K1-chart-header-text {
+  /* 50% each plus the header's 20px column-gap adds up to slightly over
+     100%, which was enough to force the legend to wrap onto its own line
+     instead of sitting beside the title — calc() accounts for the gap so
+     both halves plus the gap between them add up to exactly 100% */
+  flex: 0 1 calc(50% - 10px);
+  max-width: calc(50% - 10px);
+  min-width: 0;
+}
+
+.QW4K1-chart-title {
+  margin: 0 0 14px 0;
+  font-family: var(--font-display);
+  font-size: var(--type-heading);
+  color: #1a1a32;
+}
+
+.QW4K1-chart-subtitle {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--type-subheading);
+  font-weight: 400;
+  color: #6b6b80;
+  max-width: 100%;
+}
+
+.QW4K1-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  justify-content: flex-end;
+  flex: 0 1 calc(50% - 10px);
+  max-width: calc(50% - 10px);
+}
+
+.QW4K1-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-size: var(--type-legend);
+  color: #1a1a32;
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.15s ease;
+  white-space: nowrap;
+}
+
+.QW4K1-legend-item.is-inactive {
+  opacity: 0.35;
+}
+
+.QW4K1-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+#QW4K1-main-chart {
+  width: 100%;
+  min-width: 0;
+  height: 600px;
+  padding: 16px; /* Restored balance padding */
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .QW4K1-chart-frame {
+    padding: 20px 12px;
+  }
+
+  .QW4K1-chart-container {
+    padding: 16px; /* Snugger layout wrap for mobile */
+  }
+
+  .QW4K1-chart-subtitle {
+    max-width: 100%;
+  }
+
+  .QW4K1-chart-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 8px;
+  }
+
+  .QW4K1-chart-header-text {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .QW4K1-legend {
+    width: 100%;
+    max-width: 100%;
+    justify-content: center;
+  }
+
+  #QW4K1-main-chart {
+    padding: 8px;
+    height: 500px; /* Slight height adjustments for narrow screens */
+  }
+}

@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    CASE STUDY PAGE: Intermission // Investment Chart (Lightrock)
+    Built on the shared case-study design system: css/style.css +
+    css/story.css + css/case-study.css + css/case-study-alt.css (the
+    shared "alternate layout" family also used by undersea-cables.html
+    and revenue-growth.html), plus js/common.js, js/story.js,
+    js/case-study.js. css/lightrock.css + js/lightrock.js are the one
+    thing unique to this page: the DATA section's clickable
+    .data-card layer cards and the .sheet-frame Excel-style preview
+    of images/lightrock/Final.csv they highlight.
+    Series order: project.html -> undersea-cables.html -> airtel.html -> lightrock.html -> revenue-growth.html
+  -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intermission // Investment Chart - Anuj Debnath</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/story.css">
+  <link rel="stylesheet" href="css/contact.css">
+  <link rel="stylesheet" href="css/case-study.css">
+  <link rel="stylesheet" href="css/case-study-alt.css">
+  <link rel="stylesheet" href="css/lightrock.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+</head>
+<body>
+
+  <!-- ============ SITE HEADER ============ -->
+  <header class="site-header">
+    <a href="index.html" class="site-header__brand">Anuj<br>Debnath</a>
+    <nav class="site-nav">
+      <a class="site-nav__link" href="index.html">home</a>
+      <a class="site-nav__link" href="aboutme.html">about me</a>
+      <a class="site-nav__link" href="index.html#works">works</a>
+      <a class="site-nav__link" href="index.html#connect">connect</a>
+    </nav>
+  </header>
+
+  <!-- ============ CASE STUDY HERO ============ -->
+  <section id="case-study-hero" class="section">
+    <div class="case-study-hero">
+      <div class="case-study-hero__image" id="caseStudyHeroImage"><img src="images/lightrock/00-cover.png" alt="Investment Chart (Lightrock) cover" onerror="this.remove()"></div>
+
+      <div class="case-study-hero__content">
+        <h1 class="section-title case-study-hero__title" id="case-study-title">INVESTMENT CHART</h1>
+        <p class="story-text__lede case-study-hero__subtitle">A royal family's billion-dollar bet on Indian startups — without a winner.</p>
+      </div>
+
+      <div class="meta-list case-study-hero__meta">
+        <span>09/04/2026</span>
+        <span>Duration: 1 Week</span>
+        <span>Writer: Mrunmayee Kulkarni</span>
+        <span>Information Design, Web Development</span>
+        <span>eCharts, iFrame, CSS, JavaScript, Figma, GitHub, Google Gemini</span>
+        <span>Live link: <a href="https://the-ken.com/story/a-royal-familys-billion-dollar-bet-on-indian-startups-without-a-winner/" target="_blank" rel="noopener">Intermission/Lightrock</a></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STORY CONTENT ============ -->
+  <section class="section case-study-story">
+
+    <!-- Intro -->
+    <div class="story-block">
+      <div class="story-text">
+        <p class="story-text__lede">"VC firm Lightrock used the Liechtenstein dynasty's fortune to prop up Waycool, Pharmeasy, and Dunzo. Then it slid into irrelevance."</p>
+        <p class="story-text__body">The story tracked the scale of investment by Lightrock, a single investment firm, into a portfolio of companies over several years — examining how aggressively it deployed capital during the zero-interest-rate-policy (ZIRP) era, and how sharply that activity dropped off afterward.</p>
+        <p class="story-text__body">The valuations and growth trajectories of the companies in its portfolio sat at the centre of the narrative.</p>
+      </div>
+      <div class="story-image"><img src="images/lightrock/01.png" alt="Investment Chart (Lightrock) — image 01" onerror="this.remove()"></div>
+    </div>
+
+    <!-- Data -->
+    <h2 class="section-title story-heading story-heading--data">DATA</h2>
+    <div class="story-text-block">
+      <p class="story-text__lede">The data provided was broken down into 2 layers of information to make it digestible for the readers. Click a button on the sheet below to highlight where each layer lives.</p>
+    </div>
+
+    <div class="sheet-frame" id="lightrockSheet">
+      <div class="sheet-frame__titlebar">
+        <svg class="sheet-frame__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect x="2" y="2" width="20" height="20" rx="3" fill="#1D6F42"/>
+          <path d="M7 7L17 17M17 7L7 17" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="sheet-frame__filename">Final.csv</span>
+        <span class="sheet-frame__note">The rise and retreat of Lightrock — active during the ZIRP era before going quiet</span>
+      </div>
+      <div class="sheet-frame__toolbar">
+        <div class="sheet-frame__layer-group">
+          <span class="sheet-frame__layer-tag sheet-frame__layer-tag--primary">Primary Layer<span class="sheet-frame__layer-tag-sub">this information will be legible without any interaction</span></span>
+          <div class="sheet-frame__button-row">
+            <button type="button" class="sheet-btn sheet-btn--primary" data-layer="primary" data-columns="company,year" aria-pressed="false" title="The spread of companies Lightrock invested in, grouped by year">By Year</button>
+            <button type="button" class="sheet-btn sheet-btn--primary" data-layer="primary" data-columns="company,sector" aria-pressed="false" title="The industry each company belonged to">By Sector</button>
+          </div>
+        </div>
+        <div class="sheet-frame__layer-group">
+          <span class="sheet-frame__layer-tag sheet-frame__layer-tag--secondary">Secondary Layer<span class="sheet-frame__layer-tag-sub">this information will be visible on the chart with a click or hover</span></span>
+          <div class="sheet-frame__button-row">
+            <button type="button" class="sheet-btn sheet-btn--secondary" data-layer="secondary" data-columns="company,investment" aria-pressed="false" title="The nature and scale of each individual investment">Investment Size</button>
+            <button type="button" class="sheet-btn sheet-btn--secondary" data-layer="secondary" data-columns="company,funding,valuation" aria-pressed="false" title="Valuation growth and total funding raised by the company">Valuation &amp; Funding</button>
+          </div>
+        </div>
+      </div>
+      <div class="sheet-frame__scroll">
+        <table class="sheet-frame__table">
+          <caption class="sheet-frame__note" style="caption-side: bottom; text-align: left; padding: 0.6rem;">Source: The Ken research, Tracxn, Lightrock</caption>
+          <thead>
+            <tr class="sheet-frame__col-headers">
+              <th class="sheet-frame__row-num" aria-hidden="true"></th>
+              <th scope="col">A</th>
+              <th scope="col">B</th>
+              <th scope="col">C</th>
+              <th scope="col">D</th>
+              <th scope="col">E</th>
+              <th scope="col">F</th>
+            </tr>
+            <tr class="sheet-frame__field-row">
+              <th class="sheet-frame__row-num" scope="row">1</th>
+              <th data-col="company" scope="col">Company</th>
+              <th data-col="year" scope="col">Invested In</th>
+              <th data-col="funding" scope="col">Total Funding (USD)</th>
+              <th data-col="valuation" scope="col">Latest Valuation (USD)</th>
+              <th data-col="sector" scope="col">Sector</th>
+              <th data-col="investment" scope="col">Lightrock's investment</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">2</th>
+              <td data-col="company">Aye Finance</td>
+              <td data-col="year">2017</td>
+              <td data-col="funding">$16,44,26,190</td>
+              <td data-col="valuation">$40,44,90,162</td>
+              <td data-col="sector">Finance</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">3</th>
+              <td data-col="company">Ummeed Housing Finance</td>
+              <td data-col="year">2018</td>
+              <td data-col="funding">$15,00,00,000</td>
+              <td data-col="valuation">$28,19,19,323</td>
+              <td data-col="sector">Finance</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">4</th>
+              <td data-col="company">Arya.ag</td>
+              <td data-col="year">2019</td>
+              <td data-col="funding">$16,84,25,936</td>
+              <td data-col="valuation">$30,97,19,478</td>
+              <td data-col="sector">Agri</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">5</th>
+              <td data-col="company">EM3 Agri Services</td>
+              <td data-col="year">2019</td>
+              <td data-col="funding">$2,34,51,872</td>
+              <td data-col="valuation">$3,67,63,245</td>
+              <td data-col="sector">Agri</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">6</th>
+              <td data-col="company">Dunzo</td>
+              <td data-col="year">2019</td>
+              <td data-col="funding">$45,21,86,038</td>
+              <td data-col="valuation">$77,54,49,704</td>
+              <td data-col="sector">Logistics</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">7</th>
+              <td data-col="company">Kauvery Hospitals</td>
+              <td data-col="year">2019</td>
+              <td data-col="funding">Not disclosed</td>
+              <td data-col="valuation">Not disclosed</td>
+              <td data-col="sector">Healthcare</td>
+              <td data-col="investment">$10 million</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">8</th>
+              <td data-col="company">NeoGrowth</td>
+              <td data-col="year">2019</td>
+              <td data-col="funding">$14,73,08,209</td>
+              <td data-col="valuation">$11,93,22,462</td>
+              <td data-col="sector">Finance</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">9</th>
+              <td data-col="company">PharmEasy</td>
+              <td data-col="year">2019</td>
+              <td data-col="funding">$68,84,09,700</td>
+              <td data-col="valuation">$45,60,00,000</td>
+              <td data-col="sector">Healthcare</td>
+              <td data-col="investment">$50 million</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">10</th>
+              <td data-col="company">Waycool</td>
+              <td data-col="year">2019</td>
+              <td data-col="funding">$38,82,29,262</td>
+              <td data-col="valuation">$74,50,92,199</td>
+              <td data-col="sector">Agri</td>
+              <td data-col="investment">$95 million</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">11</th>
+              <td data-col="company">Aknamed</td>
+              <td data-col="year">2020</td>
+              <td data-col="funding">$2,18,48,799</td>
+              <td data-col="valuation">$4,20,00,000</td>
+              <td data-col="sector">Healthcare</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">12</th>
+              <td data-col="company">Ampin Energy</td>
+              <td data-col="year">2020</td>
+              <td data-col="funding">$44,82,81,553</td>
+              <td data-col="valuation">$50,73,27,641</td>
+              <td data-col="sector">Energy</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">13</th>
+              <td data-col="company">Vivriti Capital</td>
+              <td data-col="year">2020</td>
+              <td data-col="funding">$20,52,02,242</td>
+              <td data-col="valuation">$1,70,15,20,497</td>
+              <td data-col="sector">Finance</td>
+              <td data-col="investment">$80 milion</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">14</th>
+              <td data-col="company">Porter</td>
+              <td data-col="year">2020</td>
+              <td data-col="funding">$19,78,60,832</td>
+              <td data-col="valuation">$1,15,28,44,970</td>
+              <td data-col="sector">Logistics</td>
+              <td data-col="investment">$25 milion</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">15</th>
+              <td data-col="company">Olyv</td>
+              <td data-col="year">2020</td>
+              <td data-col="funding">$4,95,33,659</td>
+              <td data-col="valuation">$10,71,31,757</td>
+              <td data-col="sector">Finance</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">16</th>
+              <td data-col="company">Cuemath</td>
+              <td data-col="year">2020</td>
+              <td data-col="funding">$12,64,99,043</td>
+              <td data-col="valuation">$38,08,41,944</td>
+              <td data-col="sector">Education</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">17</th>
+              <td data-col="company">Scaler</td>
+              <td data-col="year">2021</td>
+              <td data-col="funding">$7,65,00,000</td>
+              <td data-col="valuation">$71,00,00,000</td>
+              <td data-col="sector">Education</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">18</th>
+              <td data-col="company">Shiprocket</td>
+              <td data-col="year">2021</td>
+              <td data-col="funding">$32,15,71,900</td>
+              <td data-col="valuation">$1,15,17,83,470</td>
+              <td data-col="sector">Logistics</td>
+              <td data-col="investment">$45 million</td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">19</th>
+              <td data-col="company">Yubi</td>
+              <td data-col="year">2021</td>
+              <td data-col="funding">$24,08,63,740</td>
+              <td data-col="valuation">$1,19,93,37,847</td>
+              <td data-col="sector">Finance</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">20</th>
+              <td data-col="company">MediBuddy</td>
+              <td data-col="year">2021</td>
+              <td data-col="funding">$19,31,20,879</td>
+              <td data-col="valuation">$39,65,69,111</td>
+              <td data-col="sector">Healthcare</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">21</th>
+              <td data-col="company">Navya Technology</td>
+              <td data-col="year">2021</td>
+              <td data-col="funding">$3,84,67,610</td>
+              <td data-col="valuation">$22,20,00,000</td>
+              <td data-col="sector">Healthcare</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">22</th>
+              <td data-col="company">Eupheus Learning</td>
+              <td data-col="year">2021</td>
+              <td data-col="funding">$2,72,02,635</td>
+              <td data-col="valuation">$7,21,76,061</td>
+              <td data-col="sector">Education</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">23</th>
+              <td data-col="company">Axio Global</td>
+              <td data-col="year">2021</td>
+              <td data-col="funding">$3,00,00,000</td>
+              <td data-col="valuation">Not disclosed</td>
+              <td data-col="sector">Finance</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">24</th>
+              <td data-col="company">Bugworks Research</td>
+              <td data-col="year">2021</td>
+              <td data-col="funding">$4,28,87,356</td>
+              <td data-col="valuation">Not disclosed</td>
+              <td data-col="sector">Healthcare</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">25</th>
+              <td data-col="company">Chalo</td>
+              <td data-col="year">2021</td>
+              <td data-col="funding">$11,74,43,344</td>
+              <td data-col="valuation">$29,00,00,000</td>
+              <td data-col="sector">Logistics</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">26</th>
+              <td data-col="company">DeHaat</td>
+              <td data-col="year">2021</td>
+              <td data-col="funding">$22,20,35,532</td>
+              <td data-col="valuation">$68,84,75,581</td>
+              <td data-col="sector">Agri</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">27</th>
+              <td data-col="company">Sukoon</td>
+              <td data-col="year">2022</td>
+              <td data-col="funding">$1,50,00,000</td>
+              <td data-col="valuation">$2,12,22,682</td>
+              <td data-col="sector">Healthcare</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">28</th>
+              <td data-col="company">EdgeGrid</td>
+              <td data-col="year">2022</td>
+              <td data-col="funding">$60,00,000</td>
+              <td data-col="valuation">$1,66,84,710</td>
+              <td data-col="sector">Energy</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">29</th>
+              <td data-col="company">BeatO</td>
+              <td data-col="year">2022</td>
+              <td data-col="funding">$5,08,25,302</td>
+              <td data-col="valuation">$9,39,44,775</td>
+              <td data-col="sector">Healthcare</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">30</th>
+              <td data-col="company">Even</td>
+              <td data-col="year">2022</td>
+              <td data-col="funding">$7,24,77,727</td>
+              <td data-col="valuation">$15,28,26,795</td>
+              <td data-col="sector">Healthcare</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">31</th>
+              <td data-col="company">Niyo</td>
+              <td data-col="year">2022</td>
+              <td data-col="funding">$17,93,50,000</td>
+              <td data-col="valuation">$13,64,00,000</td>
+              <td data-col="sector">Finance</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">32</th>
+              <td data-col="company">SolarSquare</td>
+              <td data-col="year">2024</td>
+              <td data-col="funding">$6,11,14,176</td>
+              <td data-col="valuation">$21,55,91,342</td>
+              <td data-col="sector">Energy</td>
+              <td data-col="investment"></td>
+            </tr>
+            <tr>
+              <th class="sheet-frame__row-num" scope="row">33</th>
+              <td data-col="company">ATEC Global</td>
+              <td data-col="year">2025</td>
+              <td data-col="funding">$2,07,50,000</td>
+              <td data-col="valuation">Not disclosed</td>
+              <td data-col="sector">Climate</td>
+              <td data-col="investment"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Design -->
+    <h2 class="section-title story-heading story-heading--design">DESIGN</h2>
+    <div class="story-image story-image--full story-image--rise"><img src="images/lightrock/03.png" alt="Investment Chart (Lightrock) — image 03" onerror="this.remove()"></div>
+
+    <div class="story-columns">
+      <div class="story-columns__spacer story-columns__spacer--wide" aria-hidden="true"></div>
+      <div>
+        <p class="story-text__lede">Rather than a bar graph or a simple bubble chart, I built a clustered bubble chart. This gave the visualisation a sense of dimension per company.</p>
+        <p class="story-text__body"><strong>Bubble size</strong> mapped to the company's valuation scale (under $100M, $100M–$500M, $500M+)</p>
+        <p class="story-text__body"><strong>In-bubble label</strong> Lightrock's actual investment amount, where disclosed</p>
+        <div class="story-image story-stack-image"><img src="images/lightrock/04.png" alt="Investment Chart (Lightrock) — image 04" onerror="this.remove()"></div>
+      </div>
+    </div>
+
+    <div class="story-columns">
+      <div class="story-columns__spacer story-columns__spacer--wide" aria-hidden="true"></div>
+      <div>
+        <p class="story-text__lede">Hover state — surfaces company-level detail</p>
+        <p class="story-text__body">Surfaces company name, latest valuation, total funding raised, and Lightrock's investment amount.</p>
+        <div class="story-image story-stack-image"><img src="images/lightrock/05.png" alt="Investment Chart (Lightrock) — image 05" onerror="this.remove()"></div>
+      </div>
+    </div>
+
+    <div class="story-iframe-block">
+      <p class="story-text__lede">The final visualisation was embedded into <a href="https://the-ken.com/story/a-royal-familys-billion-dollar-bet-on-indian-startups-without-a-winner/" target="_blank" rel="noopener">the story</a> via an iframe, and published on 16th April.</p>
+      <div class="story-iframe-wrapper">
+        <iframe class="story-iframe story-iframe--tall" src="prototypes/Lightrock_Investment_Chart_Arundhati/index.html" title="Investment Chart - interactive visualisation" loading="lazy"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BACK / NEXT PROJECT PAGER ============ -->
+  <section class="section case-study-pager">
+    <div class="case-study-pager-previews">
+      <a href="airtel.html" class="case-study-pager-preview case-study-pager-preview--back">
+        <div class="story-overlap">
+          <span class="section-title case-study-pager__label story-overlap__heading back-header">BACK</span>
+          <div class="story-image"><img src="images/airtel/00-cover.png" alt="Intermission // Airtel cover" onerror="this.remove()"></div>
+        </div>
+        <p class="case-study-pager-preview__lede">Airtel: A Bank in All But Name &mdash; the story of a family business split, and the branch that grew into a lending giant.</p>
+        <div class="meta-list">
+          <span>17/09/2026</span>
+          <span>The-Ken/Intermission</span>
+          <span>eCharts, GSAP, CSS, JavaScript, Figma, GitHub, Google Gemini, Claude Code</span>
+        </div>
+      </a>
+
+      <a href="revenue-growth.html" class="case-study-pager-preview case-study-pager-preview--next">
+        <div class="story-overlap">
+          <span class="section-title case-study-pager__label story-overlap__heading next-header">NEXT</span>
+          <div class="story-image"><img src="images/revenue-growth/00-cover.png" alt="Revenue Growth (NBFC) cover" onerror="this.remove()"></div>
+        </div>
+        <p class="case-study-pager-preview__lede">Revenue Growth: at RBI-licensed NBFCs, 600% annual interest is board-approved, "reasonable," and perfectly legal.</p>
+        <div class="meta-list">
+          <span>09/04/2026</span>
+          <span>The-Ken/Intermission</span>
+          <span>eCharts, iFrame, CSS, JavaScript, Figma, GitHub, Google Gemini, Claude Code</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <section class="section contact-section">
+    <div class="contact-details">
+      <a class="contact-details__line" href="tel:+919874608128">+91 98746 08128</a>
+      <a class="contact-details__line" href="mailto:anujdebnath246@gmail.com">anujdebnath246@gmail.com</a>
+    </div>
+
+    <div class="contact-social-row">
+      <a class="link-arrow" href="https://www.instagram.com/codegarden.space/" target="_blank" rel="noopener">Instagram &#8599;</a>
+      <a class="link-arrow" href="https://medium.com/@radioactivesugar" target="_blank" rel="noopener">Medium &#8599;</a>
+    </div>
+
+    <div class="footer-columns">
+      <ul class="footer-nav">
+        <li><a class="footer-nav__link" href="aboutme.html">About Me</a></li>
+        <li><a class="footer-nav__link" href="index.html#works">Works</a></li>
+      </ul>
+
+      <address class="footer-address">
+        Address:<br>
+        Bengaluru,<br>
+        India
+      </address>
+    </div>
+
+    <div class="footer-links-row">
+      <a class="footer-links-row__link" href="https://radioactive-sugar.itch.io/" target="_blank" rel="noopener">[ itch.io ]</a>
+      <a class="footer-links-row__link" href="https://www.behance.net/anujdebnat6978" target="_blank" rel="noopener">[ Behance ]</a>
+      <a class="footer-links-row__link" href="https://www.linkedin.com/in/anuj-debnath-150407163/" target="_blank" rel="noopener">[ LinkedIn ]</a>
+    </div>
+
+    <h2 class="footer-wordmark" id="footer-wordmark">ANUJ DEBNATH</h2>
+  </section>
+
+  <div class="footer-bottom">
+    <span class="footer-bottom__location" id="footerClock">INDIA: (GMT+5:30) --:--</span>
+    <span class="footer-bottom__credit">Design &amp; Development &mdash; Anuj Debnath</span>
+    <span class="footer-bottom__copyright">2026 All Rights Reserved. Anuj Debnath. Any reproduction, distribution, or use of the materials without permission is prohibited.</span>
+  </div>
+
+  <!-- Custom "expand" cursor shown over the BACK/NEXT pager previews -->
+  <div class="custom-cursor" id="customCursor" aria-hidden="true">
+    <svg viewBox="0 0 24 24">
+      <line x1="7" y1="17" x2="17" y2="7"></line>
+      <polyline points="8 7 17 7 17 16"></polyline>
+    </svg>
+  </div>
+
+  <script src="js/common.js"></script>
+  <script src="js/story.js"></script>
+  <script src="js/case-study.js"></script>
+  <script src="js/lightrock.js"></script>
+</body>
+</html>
